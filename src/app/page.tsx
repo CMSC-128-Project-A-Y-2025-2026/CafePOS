@@ -6,8 +6,6 @@ import SelectionMenu from '@/components/SelectionMenu';
 export default function Home() {
   return (
     <main>
-      <h1>Welcome to CafePOS INITIAL TEST</h1>
-      
       {/* This line displays your component on the page */}
       <SelectionMenu />
     </main>
