@@ -4,8 +4,9 @@
 import React, { useState, useEffect } from 'react';
 import { Coffee, PieChart, Boxes, ArrowRight, ClipboardPen } from 'lucide-react';
 import { Lato } from 'next/font/google';
+import { useRouter } from 'next/navigation';
 
-const lato = Lato({ subsets: ['latin'], weight: ['400', '700'] }); // Using regular and bold
+const lato = Lato({ subsets: ['latin'], weight: ['400', '700'] }); 
 
 /**
  * A reusable card component for each choice.
@@ -30,14 +31,14 @@ function ChoiceCard({ icon, label, onClick }) {
         onClick={onClick}
         className="
           flex h-20 w-20 items-center justify-center 
-          rounded-full bg-[#6290C3] text-white 
+          rounded-full bg-[#6290C3] 
           transition-all hover:scale-110 hover:bg-[#1A1B41]
           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
           drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]
         "
         aria-label={`Go to ${label}`}
       >
-        <ArrowRight size={40} />
+        <ArrowRight size={40} className="text-[#F9F1E9]" />
       </button>
     </div>
   );
@@ -49,6 +50,7 @@ function ChoiceCard({ icon, label, onClick }) {
 export default function SelectionMenu() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const router = useRouter();
 
   // This useEffect hook sets up a live-updating clock
   useEffect(() => {
@@ -78,7 +80,8 @@ export default function SelectionMenu() {
   };
 
   const handleInventoryClick = () => {
-    console.log('Inventory clicked');
+    // console.log('Inventory clicked'); 
+    router.push('/inventory'); 
   };
 
   return (
@@ -181,12 +184,12 @@ function DropdownItem({ icon, label, onClick }) {
   return (
     <button
       onClick={onClick}
-      className="
+      className={`
         flex w-full items-center gap-3 px-4 py-3 
         text-left text-lg font-medium text-gray-800 
         transition-colors hover:bg-gray-100
         ${lato.className}
-      "
+      `}
     >
       <IconComponent size={20} className="text-gray-600" />
       <span>{label}</span>
