@@ -69,18 +69,17 @@ export default function SelectionMenu() {
     hour12: true,
   });
 
-  // --- Click Handlers (You can wire these up later) ---
-  const handleOrderClick = () => {
-    console.log('Order clicked');
-    // You would navigate to the order page here
-  };
+  // --- Click Handlers ---
+  const handleOrderClick = () => {
+    // console.log('Order clicked'); 
+    router.push('/order'); 
+  };
 
   const handleAnalyticsClick = () => {
     console.log('Analytics clicked');
   };
 
   const handleInventoryClick = () => {
-    // console.log('Inventory clicked'); 
     router.push('/inventory'); 
   };
 
