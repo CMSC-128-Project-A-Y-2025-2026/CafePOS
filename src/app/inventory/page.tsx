@@ -78,7 +78,6 @@ export default function InventoryPage() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handleOrderClick = () => {
-    // We'll just log for now, but you can change this to router.push('/order')
     console.log('Order clicked'); 
   };
 
@@ -87,7 +86,6 @@ export default function InventoryPage() {
   };
 
   const handleInventoryClick = () => {
-    // Already on this page, so we can just close the menu
     setIsDropdownOpen(false);
     console.log('Inventory clicked');
   };
@@ -109,7 +107,7 @@ export default function InventoryPage() {
           {/* Logo and Title */}
           <div
             className="flex cursor-pointer items-center gap-5 drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]"
-            onClick={handleLogoClick} // This still works!
+            onClick={handleLogoClick} 
           >
             <Coffee size={82} className="text-gray-900" />
             <span className="text-[64px] font-black text-gray-900">
