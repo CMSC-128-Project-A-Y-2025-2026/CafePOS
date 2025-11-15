@@ -10,7 +10,7 @@ import {
   Boxes,
   X,
   AlertTriangle, 
-  Search, // <-- 1. ADDED SEARCH ICON
+  Search, 
 } from 'lucide-react';
 
 // --- Mock Data for the table ---
@@ -25,6 +25,8 @@ const initialInventoryData = [
   { id: 8, product: 'green tea', category: 'tea', stock: 15, status: 'in stock', cost: 'PHP 120' },
   { id: 9, product: 'hazelnut syrup', category: 'syrups', stock: 3, status: 'low stock', cost: 'PHP 250' },
   { id: 10, product: 'dark roast beans', category: 'coffee', stock: 20, status: 'in stock', cost: 'PHP 450' },
+  { id: 11, product: 'vanilla syrup', category: 'syrups', stock: 30, status: 'in stock', cost: 'PHP 250' },
+  { id: 12, product: 'muffins', category: 'pastry', stock: 10, status: 'in stock', cost: 'PHP 60' },
 ];
 
 // --- Reusable Button components for this page ---
@@ -85,7 +87,21 @@ export default function InventoryPage() {
   const [inventoryData, setInventoryData] = useState(initialInventoryData);
   const [activeStatusFilter, setActiveStatusFilter] = useState('all');
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(''); // <-- 2. ADDED SEARCH STATE
+  const [searchTerm, setSearchTerm] = useState(''); 
+  const [currentTime, setCurrentTime] = useState(new Date()); 
+
+  // --- Clock Timer ---
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formattedTime = currentTime.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
+  // ---------------------
 
   // --- Handlers ---
   const handleLogoClick = () => { window.location.href = '/'; };
@@ -123,11 +139,11 @@ export default function InventoryPage() {
   // ---------------------
 
   // --- Filtered Data ---
-  // 4. UPDATED FILTER LOGIC
   const filteredInventory = useMemo(() => {
     const lowerSearchTerm = searchTerm.toLowerCase();
     
-    return inventoryData
+    // Get the filtered results
+    const filtered = inventoryData
       .filter(item => { // First, filter by Status
         if (activeStatusFilter === 'all') return true;
         return item.status === activeStatusFilter;
@@ -138,6 +154,13 @@ export default function InventoryPage() {
           item.category.toLowerCase().includes(lowerSearchTerm)
         );
       });
+    
+    // --- 1. SORT ALPHABETICALLY ---
+    // Sort the filtered results by product name
+    filtered.sort((a, b) => a.product.localeCompare(b.product));
+
+    return filtered;
+
   }, [inventoryData, activeStatusFilter, searchTerm]); // Re-run if any of these change
 
 
@@ -174,11 +197,11 @@ export default function InventoryPage() {
       )}
       {/* --- END MODALS --- */}
 
-
-      <div className="flex min-h-screen flex-col bg-[#F9F1E9] p-6">
+      {/* *** THE FIX: Changed min-h-screen to h-screen *** */}
+      <div className="flex h-screen flex-col bg-[#F9F1E9] p-6">
         
-        {/* 1. Header */}
-        <header className="flex w-full items-center justify-between">
+        {/* 1. Header (this is flex-shrink-0, it won't grow) */}
+        <header className="flex w-full items-center justify-between relative z-30 flex-shrink-0">
           <div
             className="relative"
             onMouseEnter={() => setIsDropdownOpen(true)}
@@ -213,10 +236,15 @@ export default function InventoryPage() {
               </div>
             )}
           </div>
+          
+          <div className="text-[64px] font-black italic drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]">
+            <span className="text-[#6290C3]">{formattedTime.split(' ')[0]}</span>
+            <span className="text-gray-900"> {formattedTime.split(' ')[1]}</span>
+          </div>
         </header>
 
-        {/* 2. Action Buttons Row */}
-        <nav className="my-6 flex items-center justify-between">
+        {/* 2. Action Buttons Row (this is flex-shrink-0, it won't grow) */}
+        <nav className="my-6 flex items-center justify-between flex-shrink-0">
           <div className="flex gap-4">
             <ActionButton
               className="bg-[#6290C3] text-[#F9F1E9]"
@@ -232,7 +260,6 @@ export default function InventoryPage() {
             </ActionButton>
           </div>
           
-          {/* UPDATED Filter Pills */}
           <div className="flex gap-3">
             <FilterPill
               className="bg-[#333333] text-[#F9F1E9]"
@@ -265,8 +292,8 @@ export default function InventoryPage() {
           </div>
         </nav>
 
-        {/* --- 3. NEW SEARCH BAR --- */}
-        <div className="relative mb-4 drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]"> 
+        {/* 3. Search Bar (this is flex-shrink-0, it won't grow) */}
+        <div className="relative mb-4 drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)] flex-shrink-0"> 
           <input
             type="text"
             placeholder="Search by product or category..."
@@ -276,10 +303,10 @@ export default function InventoryPage() {
           />
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#C2E7DA]" size={30} />
         </div>
-        {/* --- END SEARCH BAR --- */}
-
 
         {/* 4. Main Table Content */}
+        {/* *** THE FIX: `flex-1` and `overflow-hidden` *** */}
+        {/* This <main> tag will now fill the *remaining* space and hide overflow */}
         <main className="flex-1 rounded-2xl bg-white p-8 shadow-lg flex flex-col overflow-hidden">
           
           {/* Table Header (This stays fixed) */}
@@ -292,7 +319,8 @@ export default function InventoryPage() {
             <div className="font-bold text-gray-600">Actions</div>
           </div>
 
-          {/* Table Body (This will now scroll) */}
+          {/* Table Body */}
+          {/* This div grows (`flex-1`) and scrolls (`overflow-y-auto`) */}
           <div className="mt-4 flex flex-col gap-4 flex-1 overflow-y-auto">
             {filteredInventory.map((item) => (
               <div key={item.id} className="grid grid-cols-6 items-center gap-4 border-b border-gray-100 px-6 py-4">
@@ -418,6 +446,7 @@ function InventoryProductModal({ title, initialData, onClose, onSave }) {
               id="stock"
               value={stock} 
               onChange={(e) => setStock(e.target.value)} 
+              min="0" // <-- 2. ADDED THIS to prevent numbers below 0
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900" 
               required
             />
