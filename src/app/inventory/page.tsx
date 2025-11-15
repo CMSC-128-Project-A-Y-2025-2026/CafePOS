@@ -106,7 +106,7 @@ export default function InventoryPage() {
   // --- Handlers ---
   const handleLogoClick = () => { window.location.href = '/'; };
   const handleOrderClick = () => { window.location.href = '/order'; };
-  const handleAnalyticsClick = () => { console.log('Analytics clicked'); };
+  const handleAnalyticsClick = () => { window.location.href = '/analytics'; };
   const handleInventoryClick = () => { setIsDropdownOpen(false); };
 
   // --- CRUD Handlers ---
