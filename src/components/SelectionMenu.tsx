@@ -76,8 +76,8 @@ export default function SelectionMenu() {
   };
 
   const handleAnalyticsClick = () => {
-    console.log('Analytics clicked');
-  };
+        router.push('/analytics');
+      };
 
   const handleInventoryClick = () => {
     router.push('/inventory'); 

@@ -103,7 +103,7 @@ export default function OrderPage() {
   // --- Navigation Handlers ---
   const handleLogoClick = () => router.push('/');
   const handleOrderClick = () => setIsDropdownOpen(false);
-  const handleAnalyticsClick = () => console.log('Analytics clicked'); 
+  const handleAnalyticsClick = () => router.push('/analytics');
   const handleInventoryClick = () => router.push('/inventory');
 
   // --- Cart Logic ---
