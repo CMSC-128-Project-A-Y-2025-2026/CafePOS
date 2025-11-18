@@ -11,11 +11,12 @@ import {
   Search,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { Lato } from 'next/font/google';
+import { Montserrat } from 'next/font/google'; 
 
-const lato = Lato({ subsets: ['latin'], weight: ['400', '700'] });
+// Load Montserrat font
+const montserrat = Montserrat({ subsets: ['latin'], weight: ['400', '700', '900'] });
 
-// --- Types ---
+// --- Types  ---
 
 interface InventoryItem {
   id: number;
@@ -26,7 +27,7 @@ interface InventoryItem {
   cost: string;
 }
 
-// --- Mock Data ---
+// --- Mock Data  ---
 
 const initialInventoryData: InventoryItem[] = [
   { id: 1, product: 'oatmilk', category: 'dairy', stock: 12, status: 'in stock', cost: 'PHP 95' },
@@ -48,7 +49,7 @@ const initialInventoryData: InventoryItem[] = [
 export default function InventoryPage() {
   const router = useRouter();
 
-  // --- State ---
+  // --- State  ---
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [productToEdit, setProductToEdit] = useState<InventoryItem | null>(null);
@@ -57,21 +58,22 @@ export default function InventoryPage() {
   const [activeStatusFilter, setActiveStatusFilter] = useState('all');
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState<Date | null>(null); // Consistent with previous component fix
 
   // --- Effects ---
   useEffect(() => {
+    setCurrentTime(new Date()); // Initialize client-side
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  const formattedTime = currentTime.toLocaleTimeString('en-US', {
+  const formattedTime = currentTime ? currentTime.toLocaleTimeString('en-US', {
     hour: '2-digit',
     minute: '2-digit',
     hour12: true,
-  });
+  }) : '--:-- --'; // Fallback for safety
 
-  // --- Handlers ---
+  // --- Handlers  ---
   const handleLogoClick = () => router.push('/');
   const handleOrderClick = () => router.push('/order');
   const handleAnalyticsClick = () => router.push('/analytics');
@@ -126,8 +128,8 @@ export default function InventoryPage() {
   }, [inventoryData, activeStatusFilter, searchTerm]);
 
   return (
-    <>
-      {/* --- Modals --- */}
+    <div className={montserrat.className}> {/* Apply Montserrat globally */}
+      {/* --- Modals ---  */}
       {isAddModalOpen && (
         <InventoryProductModal
           title="Add New Product"
@@ -161,34 +163,46 @@ export default function InventoryPage() {
         {/* Header */}
         <header className="flex w-full items-center justify-between relative z-30 flex-shrink-0">
           <div
-            className="relative"
+            className="relative z-50"
             onMouseEnter={() => setIsDropdownOpen(true)}
             onMouseLeave={() => setIsDropdownOpen(false)}
           >
+            {/* Logo */}
             <div
-              className="flex cursor-pointer items-center gap-5 drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]"
+              className="flex cursor-pointer items-center gap-4 transition-opacity hover:opacity-80 pb-1"
               onClick={handleLogoClick}
             >
-              <Coffee size={82} className="text-gray-900" />
-              <span className="text-[64px] font-black text-gray-900">
+              <div className="drop-shadow-md">
+                <Coffee size={72} className="text-gray-900" />
+              </div>
+              <span className="text-[64px] font-black leading-tight text-gray-900 drop-shadow-sm">
                 Inventory <span className="text-[#6290C3]">Management</span>
               </span>
             </div>
 
-            {isDropdownOpen && (
-              <div className="absolute top-full left-0 z-10 w-64 overflow-hidden rounded-lg bg-white shadow-xl ring-1 ring-black ring-opacity-5 drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]">
-                <div className="py-2">
-                  <DropdownItem icon={ClipboardPen} label="Order" onClick={handleOrderClick} />
-                  <DropdownItem icon={PieChart} label="Analytics" onClick={handleAnalyticsClick} />
-                  <DropdownItem icon={Boxes} label="Inventory" onClick={handleInventoryClick} />
-                </div>
+            {/* Dropdown Menu */}
+            <div 
+              className={`
+                absolute left-0 top-full w-64 overflow-hidden rounded-xl bg-white shadow-xl ring-1 ring-black ring-opacity-5 transition-all duration-200 ease-in-out
+                ${isDropdownOpen ? 'max-h-64 opacity-100 translate-y-0' : 'max-h-0 opacity-0 -translate-y-2 pointer-events-none'}
+              `}
+            >
+              <div className="py-2">
+                <DropdownItem icon={ClipboardPen} label="Order" onClick={handleOrderClick} />
+                <DropdownItem icon={PieChart} label="Analytics" onClick={handleAnalyticsClick} />
+                <DropdownItem icon={Boxes} label="Inventory" onClick={handleInventoryClick} />
               </div>
-            )}
+            </div>
           </div>
 
-          <div className="text-[64px] font-black italic drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]">
-            <span className="text-[#6290C3]">{formattedTime.split(' ')[0]}</span>
-            <span className="text-gray-900"> {formattedTime.split(' ')[1]}</span>
+          {/* Time */}
+          <div className="flex items-baseline gap-3 font-black italic tracking-tight drop-shadow-sm">
+            <span className="text-[64px] text-[#6290C3]">
+              {formattedTime.split(' ')[0]}
+            </span>
+            <span className="text-gray-900 text-[48px]">
+              {formattedTime.split(' ')[1]}
+            </span>
           </div>
         </header>
 
@@ -196,13 +210,13 @@ export default function InventoryPage() {
         <nav className="my-6 flex items-center justify-between flex-shrink-0">
           <div className="flex gap-4">
             <ActionButton
-              className="bg-[#6290C3] text-[#F9F1E9]"
+              className="bg-[#6290C3] text-[#F9F1E9] hover:bg-[#1A1B41]" 
               onClick={() => setIsAddModalOpen(true)}
             >
               + new product
             </ActionButton>
             <ActionButton
-              className="bg-[#D9D9D9] text-gray-800"
+              className="bg-[#D9D9D9] text-gray-800 hover:bg-[#C0C0C0]" 
               onClick={() => setIsReportModalOpen(true)}
             >
               generate weekly report
@@ -210,6 +224,7 @@ export default function InventoryPage() {
           </div>
 
           <div className="flex gap-3">
+            {/* Filter Pills */}
             <FilterPill
               className="bg-[#333333] text-[#F9F1E9]"
               active={activeStatusFilter === 'all'}
@@ -218,21 +233,21 @@ export default function InventoryPage() {
               all
             </FilterPill>
             <FilterPill
-              className="bg-[#7CB342] text-[#F9F1E9]"
+              className="bg-[#7CB342] text-white" // Using white text for better contrast on colors
               active={activeStatusFilter === 'in stock'}
               onClick={() => setActiveStatusFilter('in stock')}
             >
               in
             </FilterPill>
             <FilterPill
-              className="bg-[#FBC02D] text-[#F9F1E9]"
+              className="bg-[#FBC02D] text-white" 
               active={activeStatusFilter === 'low stock'}
               onClick={() => setActiveStatusFilter('low stock')}
             >
               low
             </FilterPill>
             <FilterPill
-              className="bg-[#E53935] text-[#F9F1E9]"
+              className="bg-[#E53935] text-white" 
               active={activeStatusFilter === 'out of stock'}
               onClick={() => setActiveStatusFilter('out of stock')}
             >
@@ -248,21 +263,21 @@ export default function InventoryPage() {
             placeholder="Search by product or category..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded-2xl border-2 border-gray-200 bg-white p-4 pl-12 text-lg text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+            className="w-full rounded-2xl border-2 border-gray-200 bg-white p-4 pl-12 text-lg text-gray-900 placeholder-gray-500 focus:border-[#6290C3] focus:ring-[#6290C3] transition-all"
           />
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#C2E7DA]" size={30} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={24} /> {/* Icon size/color updated */}
         </div>
 
         {/* Main Table Content */}
         <main className="flex-1 rounded-2xl bg-white p-8 shadow-lg flex flex-col overflow-hidden">
           {/* Table Header */}
           <div className="grid grid-cols-6 gap-4 rounded-lg bg-[#E5F1FB] px-6 py-4 flex-shrink-0">
-            <div className="font-bold text-gray-600">Product</div>
-            <div className="font-bold text-gray-600">Category</div>
-            <div className="font-bold text-gray-600">Stock</div>
-            <div className="font-bold text-gray-600">Status</div>
-            <div className="font-bold text-gray-600">Cost</div>
-            <div className="font-bold text-gray-600">Actions</div>
+            <div className="font-bold text-gray-700">Product</div>
+            <div className="font-bold text-gray-700">Category</div>
+            <div className="font-bold text-gray-700">Stock</div>
+            <div className="font-bold text-gray-700">Status</div>
+            <div className="font-bold text-gray-700">Cost</div>
+            <div className="font-bold text-gray-700">Actions</div>
           </div>
 
           {/* Table Body */}
@@ -276,13 +291,13 @@ export default function InventoryPage() {
                 <div className="text-gray-700">{item.cost}</div>
                 <div className="flex gap-2">
                   <TableActionButton
-                    className="bg-[#D7EFE0] text-[#34A853]"
+                    className="bg-[#D7EFE0] text-[#34A853] hover:bg-[#BDECD5]"
                     onClick={() => setProductToEdit(item)}
                   >
                     edit
                   </TableActionButton>
                   <TableActionButton
-                    className="bg-[#FADADD] text-[#E53935]"
+                    className="bg-[#FADADD] text-[#E53935] hover:bg-[#F8C6D2]"
                     onClick={() => setProductToDelete(item)}
                   >
                     del
@@ -293,7 +308,7 @@ export default function InventoryPage() {
           </div>
         </main>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -311,8 +326,8 @@ function ActionButton({ children, className, onClick }: ActionButtonProps) {
       onClick={onClick}
       className={`
         rounded-full px-6 py-3 text-sm font-bold
-        transition-all hover:scale-105
-        drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]
+        transition-all hover:scale-[1.02] active:scale-[0.98] // Adjusted scale for a smoother feel
+        drop-shadow-md // Changed bracket shadow to consistent tailwind class
         ${className}
       `}
     >
@@ -333,10 +348,10 @@ function FilterPill({ children, className, onClick, active }: FilterPillProps) {
     <button
       onClick={onClick}
       className={`
-        rounded-full px-5 py-2 text-sm font-bold text-white
-        transition-all
+        rounded-full px-5 py-2 text-sm font-bold
+        transition-all duration-200
         ${className}
-        ${active ? 'opacity-100 ring-2 ring-white ring-offset-2 ring-offset-gray-800' : 'opacity-70 hover:opacity-100'}
+        ${active ? 'opacity-100 shadow-md ring-2 ring-[#6290C3] ring-offset-2 ring-offset-[#F9F1E9]' : 'opacity-70 hover:opacity-100'} // Use blue brand color for active ring
       `}
     >
       {children}
@@ -356,7 +371,7 @@ function TableActionButton({ children, className, onClick }: TableActionButtonPr
       onClick={onClick}
       className={`
         rounded-md px-4 py-1.5 text-sm font-bold
-        transition-all hover:opacity-80
+        transition-all hover:opacity-90 active:scale-[0.98] // Added active state
         ${className}
       `}
     >
@@ -378,11 +393,11 @@ function DropdownItem({ icon: IconComponent, label, onClick }: DropdownItemProps
       className={`
         flex w-full items-center gap-3 px-4 py-3 
         text-left text-lg font-medium text-gray-800 
-        transition-colors hover:bg-gray-100
-        ${lato.className}
+        transition-colors hover:bg-[#6290C3]/10 hover:text-[#6290C3] // Consistent hover color
+        ${montserrat.className} // Used Montserrat
       `}
     >
-      <IconComponent size={20} className="text-gray-600" />
+      <IconComponent size={20} className="text-gray-500" />
       <span>{label}</span>
     </button>
   );
@@ -394,7 +409,7 @@ interface InventoryProductModalProps {
   title: string;
   initialData?: InventoryItem;
   onClose: () => void;
-  onSave: (data: any) => void; // Using 'any' here for simplicity in handling both edit/add payload shapes
+  onSave: (data: any) => void;
 }
 
 function InventoryProductModal({ title, initialData, onClose, onSave }: InventoryProductModalProps) {
@@ -429,64 +444,43 @@ function InventoryProductModal({ title, initialData, onClose, onSave }: Inventor
       <div className="w-full max-w-lg rounded-2xl bg-white p-8 shadow-2xl">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-700">
             <X size={24} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          {/* Input fields... */}
           <div>
-            <label htmlFor="product" className="block text-sm font-medium text-gray-700">
-              Product Name
-            </label>
+            <label htmlFor="product" className="block text-sm font-medium text-gray-700">Product Name</label>
             <input
-              type="text"
-              id="product"
-              value={product}
-              onChange={(e) => setProduct(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900"
+              type="text" id="product" value={product} onChange={(e) => setProduct(e.target.value)}
+              className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-[#6290C3] focus:ring-[#6290C3] text-gray-900 transition-all"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="category" className="block text-sm font-medium text-gray-700">Category</label>
+            <input
+              type="text" id="category" value={category} onChange={(e) => setCategory(e.target.value)}
+              className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-[#6290C3] focus:ring-[#6290C3] text-gray-900 transition-all"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="stock" className="block text-sm font-medium text-gray-700">Stock</label>
+            <input
+              type="number" id="stock" value={stock} onChange={(e) => setStock(e.target.value)} min="0"
+              className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-[#6290C3] focus:ring-[#6290C3] text-gray-900 transition-all"
               required
             />
           </div>
 
           <div>
-            <label htmlFor="category" className="block text-sm font-medium text-gray-700">
-              Category
-            </label>
-            <input
-              type="text"
-              id="category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900"
-              required
-            />
-          </div>
-
-          <div>
-            <label htmlFor="stock" className="block text-sm font-medium text-gray-700">
-              Stock
-            </label>
-            <input
-              type="number"
-              id="stock"
-              value={stock}
-              onChange={(e) => setStock(e.target.value)}
-              min="0"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900"
-              required
-            />
-          </div>
-
-          <div>
-            <label htmlFor="status" className="block text-sm font-medium text-gray-700">
-              Status
-            </label>
+            <label htmlFor="status" className="block text-sm font-medium text-gray-700">Status</label>
             <select
-              id="status"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 transition-all hover:border-[#1A1B41] hover:ring-1 hover:ring-[#1A1B41]"
+              id="status" value={status} onChange={(e) => setStatus(e.target.value)}
+              className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-[#6290C3] focus:ring-[#6290C3] text-gray-900 transition-all"
               required
             >
               <option value="in stock">In stock</option>
@@ -496,30 +490,24 @@ function InventoryProductModal({ title, initialData, onClose, onSave }: Inventor
           </div>
 
           <div>
-            <label htmlFor="cost" className="block text-sm font-medium text-gray-700">
-              Cost (e.g., PHP 95)
-            </label>
+            <label htmlFor="cost" className="block text-sm font-medium text-gray-700">Cost (e.g., PHP 95)</label>
             <input
-              type="text"
-              id="cost"
-              value={cost}
-              onChange={(e) => setCost(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900"
+              type="text" id="cost" value={cost} onChange={(e) => setCost(e.target.value)}
+              className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-[#6290C3] focus:ring-[#6290C3] text-gray-900 transition-all"
               required
             />
           </div>
 
           <div className="mt-6 flex justify-end gap-4">
             <button
-              type="button"
-              onClick={onClose}
-              className="rounded-lg bg-gray-100 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+              type="button" onClick={onClose}
+              className="rounded-lg bg-gray-200 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 transition-colors" // Standardized gray button
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="rounded-lg bg-[#6290C3] px-5 py-2 text-sm font-medium text-white transition-all hover:bg-[#1A1B41]"
+              className="rounded-lg bg-[#6290C3] px-5 py-2 text-sm font-medium text-white transition-all hover:bg-[#1A1B41]" // Consistent brand color button
             >
               {isEditMode ? 'Save Changes' : 'Add Product'}
             </button>
@@ -550,7 +538,7 @@ function DeleteConfirmationModal({ productName, onClose, onConfirm }: DeleteConf
             </h3>
             <div className="mt-2">
               <p className="text-sm text-gray-500">
-                Are you sure you want to delete "{productName}"? This action cannot be undone.
+                Are you sure you want to delete <span className="font-semibold text-gray-700">"{productName}"</span>? This action cannot be undone.
               </p>
             </div>
           </div>
@@ -558,14 +546,14 @@ function DeleteConfirmationModal({ productName, onClose, onConfirm }: DeleteConf
         <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
           <button
             type="button"
-            className="inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 sm:ml-3 sm:w-auto sm:text-sm"
+            className="inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 sm:ml-3 sm:w-auto sm:text-sm transition-colors"
             onClick={onConfirm}
           >
             Delete
           </button>
           <button
             type="button"
-            className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 sm:mt-0 sm:w-auto sm:text-sm"
+            className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-100 sm:mt-0 sm:w-auto sm:text-sm transition-colors"
             onClick={onClose}
           >
             Cancel
@@ -597,42 +585,42 @@ function WeeklyReportModal({ inventory, onClose }: WeeklyReportModalProps) {
         </div>
 
         {/* Report Content */}
-        <div className="mt-6 max-h-[60vh] overflow-y-auto">
+        <div className="mt-6 max-h-[60vh] overflow-y-auto pr-2"> 
           {/* Out of Stock (High Priority) */}
           <div>
-            <h3 className="text-lg font-semibold text-red-600">
+            <h3 className="text-xl font-bold text-red-600 border-b border-red-100 pb-1"> 
               Immediate Priority (Out of Stock)
             </h3>
             {outOfStock.length > 0 ? (
-              <ul className="mt-2 list-disc pl-5 space-y-1 text-gray-700">
+              <ul className="mt-3 list-disc pl-5 space-y-2 text-gray-700">
                 {outOfStock.map(item => (
                   <li key={item.id}>
-                    <span className="font-medium text-gray-900">{item.product}</span>
-                    (Category: {item.category})
+                    <span className="font-semibold text-gray-900">{item.product}</span>
+                    <span className="text-sm text-gray-500 ml-1">(Category: {item.category})</span>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="mt-2 text-sm text-gray-500">No items are out of stock. Great job!</p>
+              <p className="mt-2 text-sm text-gray-500 p-2 bg-green-50 rounded-lg">✅ No items are out of stock. Great job!</p>
             )}
           </div>
 
           {/* Low Stock (Medium Priority) */}
           <div className="mt-6">
-            <h3 className="text-lg font-semibold text-yellow-600">
+            <h3 className="text-xl font-bold text-yellow-600 border-b border-yellow-100 pb-1"> 
               Low Stock (Restock Soon)
             </h3>
             {lowStock.length > 0 ? (
-              <ul className="mt-2 list-disc pl-5 space-y-1 text-gray-700">
+              <ul className="mt-3 list-disc pl-5 space-y-2 text-gray-700">
                 {lowStock.map(item => (
                   <li key={item.id}>
-                    <span className="font-medium text-gray-900">{item.product}</span>
-                    (Current Stock: {item.stock})
+                    <span className="font-semibold text-gray-900">{item.product}</span>
+                    <span className="text-sm text-gray-500 ml-1">(Current Stock: {item.stock})</span>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="mt-2 text-sm text-gray-500">No items are low in stock.</p>
+              <p className="mt-2 text-sm text-gray-500 p-2 bg-green-50 rounded-lg">🎉 No items are low in stock.</p>
             )}
           </div>
         </div>
@@ -642,9 +630,9 @@ function WeeklyReportModal({ inventory, onClose }: WeeklyReportModalProps) {
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg bg-gray-100 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+            className="rounded-lg bg-gray-200 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 transition-colors"
           >
-            Close
+            Close Report
           </button>
         </div>
       </div>
