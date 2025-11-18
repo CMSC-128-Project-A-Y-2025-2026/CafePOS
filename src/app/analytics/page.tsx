@@ -8,7 +8,7 @@ import {
   Boxes,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { Lato } from 'next/font/google';
+import { Montserrat } from 'next/font/google'; 
 import Image from 'next/image';
 import {
   Bar,
@@ -22,7 +22,8 @@ import {
   CartesianGrid
 } from 'recharts';
 
-const lato = Lato({ subsets: ['latin'], weight: ['400', '700'] });
+// CHANGED: Load Montserrat font
+const montserrat = Montserrat({ subsets: ['latin'], weight: ['400', '700', '900'] });
 
 // --- Types ---
 
@@ -104,46 +105,55 @@ export default function AnalyticsPage() {
   const handleInventoryClick = () => router.push('/inventory');
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#F9F1E9] p-6">
+    <div className={`flex min-h-screen flex-col bg-[#F9F1E9] p-6 ${montserrat.className}`}>
       {/* Header */}
       <header className="flex w-full items-center justify-between relative z-30 flex-shrink-0">
         <div
-          className="relative"
+          className="relative z-50" // ADDED: z-50 for dropdown layering
           onMouseEnter={() => setIsDropdownOpen(true)}
           onMouseLeave={() => setIsDropdownOpen(false)}
         >
           {/* Logo */}
           <div
-            className="flex cursor-pointer items-center gap-5 drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]"
+            className="flex cursor-pointer items-center gap-4 transition-opacity hover:opacity-80 pb-1" 
             onClick={handleLogoClick}
           >
-            <Coffee size={82} className="text-gray-900" />
-            <span className="text-[64px] font-black text-gray-900">
+            <div className="drop-shadow-md"> 
+              <Coffee size={72} className="text-gray-900" /> 
+            </div>
+            <span className="text-[64px] font-black leading-tight text-gray-900 drop-shadow-sm"> 
               Sales Report <span className="text-[#6290C3]">Generation</span>
             </span>
           </div>
 
           {/* Dropdown Menu */}
-          {isDropdownOpen && (
-            <div className="absolute top-full left-0 z-10 w-64 overflow-hidden rounded-lg bg-white shadow-xl ring-1 ring-black ring-opacity-5 drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]">
-              <div className="py-2">
-                <DropdownItem icon={ClipboardPen} label="Order" onClick={handleOrderClick} />
-                <DropdownItem icon={PieChart} label="Analytics" onClick={handleAnalyticsClick} />
-                <DropdownItem icon={Boxes} label="Inventory" onClick={handleInventoryClick} />
-              </div>
+          <div 
+            className={`
+              absolute left-0 top-full w-64 overflow-hidden rounded-xl bg-white shadow-xl ring-1 ring-black ring-opacity-5 transition-all duration-200 ease-in-out
+              ${isDropdownOpen ? 'max-h-64 opacity-100 translate-y-0' : 'max-h-0 opacity-0 -translate-y-2 pointer-events-none'}
+            `}
+          >
+            <div className="py-2">
+              <DropdownItem icon={ClipboardPen} label="Order" onClick={handleOrderClick} />
+              <DropdownItem icon={PieChart} label="Analytics" onClick={handleAnalyticsClick} />
+              <DropdownItem icon={Boxes} label="Inventory" onClick={handleInventoryClick} />
             </div>
-          )}
+          </div>
         </div>
 
         {/* Time */}
-        <div className="text-[64px] font-black italic drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]">
-          <span className="text-[#6290C3]">{formattedTime.split(' ')[0]}</span>
-          <span className="text-gray-900"> {formattedTime.split(' ')[1]}</span>
+        <div className="flex items-baseline gap-3 font-black italic tracking-tight drop-shadow-sm"> 
+          <span className="text-[64px] text-[#6290C3]">
+            {formattedTime.split(' ')[0]}
+          </span>
+          <span className="text-gray-900 text-[48px]"> 
+            {formattedTime.split(' ')[1]}
+          </span>
         </div>
       </header>
 
       {/* Tab Navigation */}
-      <nav className="my-6 flex w-full max-w-4xl mx-auto items-center justify-between rounded-full bg-white p-2 shadow-lg drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]">
+      <nav className="my-6 flex w-full max-w-4xl mx-auto items-center justify-between rounded-full bg-white p-2 shadow-lg drop-shadow-md"> 
         {/* Left: Main Tabs */}
         <div className="flex">
           <TabButton label="Performance" active={activeMainTab === 'performance'} onClick={() => setActiveMainTab('performance')} />
@@ -160,7 +170,7 @@ export default function AnalyticsPage() {
       </nav>
 
       {/* Tab Content */}
-      <main className="flex-1 rounded-2xl bg-white p-8 shadow-lg overflow-hidden drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]">
+      <main className="flex-1 rounded-2xl bg-white p-8 shadow-lg overflow-hidden drop-shadow-md"> {/* CHANGED: Replaced bracket shadow with drop-shadow-md */}
         {activeMainTab === 'performance' && <PerformanceTab />}
         {activeMainTab === 'bestseller' && <BestsellerTab />}
         {activeMainTab === 'trend' && <TrendTab />}
@@ -184,11 +194,11 @@ function DropdownItem({ icon: IconComponent, label, onClick }: DropdownItemProps
       className={`
         flex w-full items-center gap-3 px-4 py-3 
         text-left text-lg font-medium text-gray-800 
-        transition-colors hover:bg-gray-100
-        ${lato.className} 
+        transition-colors hover:bg-[#6290C3]/10 hover:text-[#6290C3] // CHANGED: Consistent hover color
+        ${montserrat.className} // CHANGED: Switched to Montserrat
       `}
     >
-      <IconComponent size={20} className="text-gray-600" />
+      <IconComponent size={20} className="text-gray-500" /> 
       <span>{label}</span>
     </button>
   );
@@ -207,12 +217,12 @@ function TabButton({ label, active, onClick }: TabButtonProps) {
       className={`
         relative flex-1 rounded-full px-6 py-3 text-center text-lg font-bold
         transition-colors z-10
-        ${active ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'}
+        ${active ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'} // Text color remains similar
       `}
     >
       {label}
       {active && (
-        <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1/2 h-1.5 rounded-full bg-[#C2E7DA]" />
+        <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1/2 h-1.5 rounded-full bg-[#6290C3]" /> 
       )}
     </button>
   );
@@ -231,7 +241,7 @@ function TimeFilterButton({ label, active, onClick }: TimeFilterButtonProps) {
       className={`
         rounded-full px-5 py-2 text-sm font-bold capitalize transition-all
         ${active
-          ? 'bg-[#1A1B41] text-white shadow-md'
+          ? 'bg-[#1A1B41] text-white shadow-md' 
           : 'bg-transparent text-gray-600 hover:bg-gray-200'
         }
       `}
@@ -241,7 +251,6 @@ function TimeFilterButton({ label, active, onClick }: TimeFilterButtonProps) {
   );
 }
 
-// --- Tab Content Views ---
 
 function PerformanceTab() {
   return (
@@ -258,7 +267,7 @@ function PerformanceTab() {
       <div className="flex-1">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={performanceData} margin={{ top: 5, right: 30, bottom: 5, left: 20 }}>
-            <Line type="monotone" dataKey="value" stroke="#C2E7DA" strokeWidth={4} dot={false} />
+            <Line type="monotone" dataKey="value" stroke="#6290C3" strokeWidth={4} dot={false} /> {/* CHANGED: Line stroke to brand blue */}
             <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
             <XAxis dataKey="name" />
             <YAxis />
@@ -324,7 +333,7 @@ function TrendTab() {
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <XAxis dataKey={dataKey} />
             <YAxis
-              tickFormatter={(value) => `$${value}`}
+              tickFormatter={(value) => `PHP ${value}`} 
               axisLine={false}
               tickLine={false}
             />
@@ -354,8 +363,8 @@ function BestsellerFilterPill({ label, active, onClick }: BestsellerFilterPillPr
       onClick={onClick}
       className={`
         rounded-full px-5 py-2 text-sm font-bold capitalize
-        drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]
-        ${active ? 'bg-[#333333] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}
+        drop-shadow-md // CHANGED: Replaced bracket shadow with drop-shadow-md
+        ${active ? 'bg-[#1A1B41] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} // CHANGED: Active color to consistent dark brand color
       `}
     >
       {label}
@@ -372,14 +381,14 @@ interface StatCardProps {
 
 function StatCard({ label, value, color, smallText = false }: StatCardProps) {
   const colorClasses = {
-    green: 'bg-[#F1FFE7] text-gray-900',
+    green: 'bg-[#D7EFE0] text-gray-900', 
     teal: 'bg-[#C2E7DA] text-gray-900',
-    blue: 'bg-[#6290C3] text-white',
-    dark: 'bg-[#000000] text-white',
+    blue: 'bg-[#6290C3] text-white', 
+    dark: 'bg-[#1A1B41] text-white', 
   };
 
   return (
-    <div className={`rounded-2xl p-6 ${colorClasses[color]} drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]`}>
+    <div className={`rounded-2xl p-6 ${colorClasses[color]} drop-shadow-md`}> 
       <span className="block text-lg font-semibold">{label}</span>
       <span className={`block mt-2 ${smallText ? 'text-2xl' : 'text-4xl'} font-bold`}>{value}</span>
     </div>
