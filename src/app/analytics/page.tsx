@@ -1,49 +1,72 @@
-// src/app/analytics/page.tsx
-
 "use client";
 
-import React, { useState, useEffect, useMemo } from 'react'; 
+import React, { useState, useEffect } from 'react';
 import {
   Coffee,
-  ClipboardPen, 
+  ClipboardPen,
   PieChart,
   Boxes,
-  X,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { Lato } from 'next/font/google'; 
+import { Lato } from 'next/font/google';
 import Image from 'next/image';
-import { 
-  Bar, 
-  BarChart, 
-  Line, 
-  LineChart, 
-  ResponsiveContainer, 
-  Tooltip, 
-  XAxis, 
-  YAxis, 
+import {
+  Bar,
+  BarChart,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
   CartesianGrid
 } from 'recharts';
 
 const lato = Lato({ subsets: ['latin'], weight: ['400', '700'] });
 
-// --- Mock Data for Charts ---
-const performanceData = [
+// --- Types ---
+
+interface PerformanceItem {
+  name: string;
+  value: number;
+}
+
+interface SalesItem {
+  hour?: string;
+  day?: string;
+  sales: number;
+  color?: string;
+}
+
+interface BestsellerItem {
+  productName: string;
+  category: string;
+  itemsSold: number;
+  totalRevenue: number;
+  image: string;
+}
+
+// --- Mock Data ---
+
+const performanceData: PerformanceItem[] = [
   { name: 'A', value: 100 }, { name: 'B', value: 500 }, { name: 'C', value: 400 },
   { name: 'D', value: 1000 }, { name: 'E', value: 400 }, { name: 'F', value: 200 },
   { name: 'G', value: 300 }, { name: 'H', value: 200 }, { name: 'I', value: 1000 },
 ];
-const salesByHourData = [
+
+const salesByHourData: SalesItem[] = [
   { hour: '11 AM', sales: 720 }, { hour: '12 PM', sales: 1942 }, { hour: '1 PM', sales: 971 },
   { hour: '2 PM', sales: 486 }, { hour: '3 PM', sales: 450 },
 ];
-const salesByDayData = [
-  { day: 'Sun', sales: 1300, color: '#FFB6C1' }, { day: 'Mon', sales: 1200, color: '#D2B48C' }, 
-  { day: 'Tue', sales: 1800, color: '#98FB98' }, { day: 'Wed', sales: 2100, color: '#20B2AA' }, 
-  { day: 'Thu', sales: 1300, color: '#ADD8E6' }, { day: 'Fri', sales: 1250, color: '#DDA0DD' }, 
+
+const salesByDayData: SalesItem[] = [
+  { day: 'Sun', sales: 1300, color: '#FFB6C1' }, { day: 'Mon', sales: 1200, color: '#D2B48C' },
+  { day: 'Tue', sales: 1800, color: '#98FB98' }, { day: 'Wed', sales: 2100, color: '#20B2AA' },
+  { day: 'Thu', sales: 1300, color: '#ADD8E6' }, { day: 'Fri', sales: 1250, color: '#DDA0DD' },
   { day: 'Sat', sales: 1250, color: '#F08080' },
 ];
-const bestsellerData = {
+
+const bestsellerData: BestsellerItem = {
   productName: 'Spanish Latte',
   category: 'Iced Coffee',
   itemsSold: 67,
@@ -51,35 +74,18 @@ const bestsellerData = {
   image: 'https://placehold.co/150x150/F9F1E9/333?text=Spanish+Latte'
 };
 
-// --- Reusable Button Components ---
-function TimeFilterButton({ label, active, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`
-        rounded-full px-5 py-2 text-sm font-bold capitalize transition-all
-        ${active
-          ? 'bg-[#1A1B41] text-white shadow-md' // Dark blue for active
-          : 'bg-transparent text-gray-600 hover:bg-gray-200' // Transparent for inactive
-        }
-      `}
-    >
-      {label}
-    </button>
-  );
-}
+// --- Main Component ---
 
-// --- Main Page Component ---
 export default function AnalyticsPage() {
   const router = useRouter();
 
   // --- State ---
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [activeMainTab, setActiveMainTab] = useState('performance'); 
-  const [activeTimeFilter, setActiveTimeFilter] = useState('week'); 
+  const [activeMainTab, setActiveMainTab] = useState('performance');
+  const [activeTimeFilter, setActiveTimeFilter] = useState('week');
 
-  // --- Clock Timer ---
+  // --- Effects ---
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
@@ -92,24 +98,24 @@ export default function AnalyticsPage() {
   });
 
   // --- Handlers ---
-  const handleLogoClick = () => { router.push('/'); };
-  const handleOrderClick = () => { router.push('/order'); };
-  const handleAnalyticsClick = () => { setIsDropdownOpen(false); };
-  const handleInventoryClick = () => { router.push('/inventory'); };
+  const handleLogoClick = () => router.push('/');
+  const handleOrderClick = () => router.push('/order');
+  const handleAnalyticsClick = () => setIsDropdownOpen(false);
+  const handleInventoryClick = () => router.push('/inventory');
 
   return (
     <div className="flex min-h-screen flex-col bg-[#F9F1E9] p-6">
-      {/* 1. Header */}
+      {/* Header */}
       <header className="flex w-full items-center justify-between relative z-30 flex-shrink-0">
         <div
           className="relative"
           onMouseEnter={() => setIsDropdownOpen(true)}
           onMouseLeave={() => setIsDropdownOpen(false)}
         >
-          {/* Logo and Title */}
+          {/* Logo */}
           <div
             className="flex cursor-pointer items-center gap-5 drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]"
-            onClick={handleLogoClick} 
+            onClick={handleLogoClick}
           >
             <Coffee size={82} className="text-gray-900" />
             <span className="text-[64px] font-black text-gray-900">
@@ -117,7 +123,7 @@ export default function AnalyticsPage() {
             </span>
           </div>
 
-          {/* --- Dropdown Menu --- */}
+          {/* Dropdown Menu */}
           {isDropdownOpen && (
             <div className="absolute top-full left-0 z-10 w-64 overflow-hidden rounded-lg bg-white shadow-xl ring-1 ring-black ring-opacity-5 drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]">
               <div className="py-2">
@@ -128,7 +134,7 @@ export default function AnalyticsPage() {
             </div>
           )}
         </div>
-        
+
         {/* Time */}
         <div className="text-[64px] font-black italic drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]">
           <span className="text-[#6290C3]">{formattedTime.split(' ')[0]}</span>
@@ -136,16 +142,16 @@ export default function AnalyticsPage() {
         </div>
       </header>
 
-      {/* 2. Main Tab Navigation */}
+      {/* Tab Navigation */}
       <nav className="my-6 flex w-full max-w-4xl mx-auto items-center justify-between rounded-full bg-white p-2 shadow-lg drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]">
-        {/* Left Side: Main Tabs */}
+        {/* Left: Main Tabs */}
         <div className="flex">
           <TabButton label="Performance" active={activeMainTab === 'performance'} onClick={() => setActiveMainTab('performance')} />
           <TabButton label="Bestseller" active={activeMainTab === 'bestseller'} onClick={() => setActiveMainTab('bestseller')} />
           <TabButton label="Trend" active={activeMainTab === 'trend'} onClick={() => setActiveMainTab('trend')} />
         </div>
 
-        {/* Right Side: Time Filter */}
+        {/* Right: Time Filter */}
         <div className="flex gap-1 rounded-full bg-gray-100 p-1 mr-2">
           <TimeFilterButton label="today" active={activeTimeFilter === 'today'} onClick={() => setActiveTimeFilter('today')} />
           <TimeFilterButton label="week" active={activeTimeFilter === 'week'} onClick={() => setActiveTimeFilter('week')} />
@@ -153,9 +159,8 @@ export default function AnalyticsPage() {
         </div>
       </nav>
 
-      {/* 3. Conditional Tab Content */}
+      {/* Tab Content */}
       <main className="flex-1 rounded-2xl bg-white p-8 shadow-lg overflow-hidden drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]">
-        {/* Render the correct tab based on state */}
         {activeMainTab === 'performance' && <PerformanceTab />}
         {activeMainTab === 'bestseller' && <BestsellerTab />}
         {activeMainTab === 'trend' && <TrendTab />}
@@ -164,9 +169,15 @@ export default function AnalyticsPage() {
   );
 }
 
-// --- Reusable DropdownItem Component ---
-function DropdownItem({ icon, label, onClick }) {
-  const IconComponent = icon;
+// --- Sub-Components ---
+
+interface DropdownItemProps {
+  icon: React.ElementType;
+  label: string;
+  onClick: () => void;
+}
+
+function DropdownItem({ icon: IconComponent, label, onClick }: DropdownItemProps) {
   return (
     <button
       onClick={onClick}
@@ -183,8 +194,13 @@ function DropdownItem({ icon, label, onClick }) {
   );
 }
 
-// --- Reusable Main Tab Button ---
-function TabButton({ label, active, onClick }) {
+interface TabButtonProps {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}
+
+function TabButton({ label, active, onClick }: TabButtonProps) {
   return (
     <button
       onClick={onClick}
@@ -195,7 +211,6 @@ function TabButton({ label, active, onClick }) {
       `}
     >
       {label}
-      {/* The green underline */}
       {active && (
         <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1/2 h-1.5 rounded-full bg-[#C2E7DA]" />
       )}
@@ -203,12 +218,35 @@ function TabButton({ label, active, onClick }) {
   );
 }
 
-// --- Tab Content Components ---
+interface TimeFilterButtonProps {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}
+
+function TimeFilterButton({ label, active, onClick }: TimeFilterButtonProps) {
+  return (
+    <button
+      onClick={onClick}
+      className={`
+        rounded-full px-5 py-2 text-sm font-bold capitalize transition-all
+        ${active
+          ? 'bg-[#1A1B41] text-white shadow-md'
+          : 'bg-transparent text-gray-600 hover:bg-gray-200'
+        }
+      `}
+    >
+      {label}
+    </button>
+  );
+}
+
+// --- Tab Content Views ---
 
 function PerformanceTab() {
   return (
     <div className="flex h-full gap-6">
-      {/* Left Column: Stats */}
+      {/* Stats */}
       <div className="flex w-72 flex-col gap-4">
         <h2 className="text-3xl font-bold text-gray-900 mb-4">PERFORMANCE ANALYSIS</h2>
         <StatCard label="Total Revenue" value={`PHP 15,450.00`} color="green" />
@@ -216,7 +254,7 @@ function PerformanceTab() {
         <StatCard label="Transactions" value="234" color="blue" />
         <StatCard label="Average Sale" value={`PHP 450.00`} color="dark" />
       </div>
-      {/* Right Column: Chart */}
+      {/* Chart */}
       <div className="flex-1">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={performanceData} margin={{ top: 5, right: 30, bottom: 5, left: 20 }}>
@@ -237,7 +275,7 @@ function BestsellerTab() {
   return (
     <div className="flex h-full flex-col">
       <h2 className="text-3xl font-bold text-gray-900 mb-4">BESTSELLER IDENTIFICATION</h2>
-      {/* Filter Pills */}
+      {/* Filters */}
       <div className="flex gap-2 mb-6">
         <BestsellerFilterPill label="all" active={filter === 'all'} onClick={() => setFilter('all')} />
         <BestsellerFilterPill label="iced" active={filter === 'iced'} onClick={() => setFilter('iced')} />
@@ -265,9 +303,8 @@ function BestsellerTab() {
   );
 }
 
-// --- *** THIS IS THE CHANGED SECTION *** ---
 function TrendTab() {
-  const [filter, setFilter] = useState('hour'); // 'hour' or 'day'
+  const [filter, setFilter] = useState<'hour' | 'day'>('hour');
   const data = filter === 'hour' ? salesByHourData : salesByDayData;
   const dataKey = filter === 'hour' ? 'hour' : 'day';
 
@@ -275,9 +312,6 @@ function TrendTab() {
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-3xl font-bold text-gray-900">TREND ANALYSIS</h2>
-        
-        {/* --- UPDATED THIS BLOCK --- */}
-        {/* Replaced SubFilterPill with TimeFilterButton */}
         <div className="flex gap-1 rounded-full bg-gray-100 p-1">
           <TimeFilterButton label="By Hour" active={filter === 'hour'} onClick={() => setFilter('hour')} />
           <TimeFilterButton label="By Day" active={filter === 'day'} onClick={() => setFilter('day')} />
@@ -289,25 +323,32 @@ function TrendTab() {
           <BarChart data={data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <XAxis dataKey={dataKey} />
-            <YAxis 
-              tickFormatter={(value) => `$${value}`} 
-              axisLine={false} 
-              tickLine={false} 
+            <YAxis
+              tickFormatter={(value) => `$${value}`}
+              axisLine={false}
+              tickLine={false}
             />
             <Tooltip />
             {filter === 'hour' && <Bar dataKey="sales" fill={'#6290C3'} radius={[8, 8, 0, 0]} />}
-            {filter === 'day' && data.map((entry) => <Bar key={entry.day} dataKey="sales" fill={entry.color} radius={[8, 8, 0, 0]} />)}
+            {filter === 'day' && data.map((entry, index) => (
+              <Bar key={`bar-${index}`} dataKey="sales" fill={entry.color || '#6290C3'} radius={[8, 8, 0, 0]} />
+            ))}
           </BarChart>
         </ResponsiveContainer>
       </div>
     </div>
   );
 }
-// --- *** END OF CHANGED SECTION *** ---
 
+// --- Helper Components ---
 
-// --- Bestseller Filter Pill ---
-function BestsellerFilterPill({ label, active, onClick }) {
+interface BestsellerFilterPillProps {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}
+
+function BestsellerFilterPill({ label, active, onClick }: BestsellerFilterPillProps) {
   return (
     <button
       onClick={onClick}
@@ -322,18 +363,19 @@ function BestsellerFilterPill({ label, active, onClick }) {
   );
 }
 
-// --- *** DELETED SubFilterPill component *** ---
-// We are now using TimeFilterButton instead.
+interface StatCardProps {
+  label: string;
+  value: string | number;
+  color: 'green' | 'teal' | 'blue' | 'dark';
+  smallText?: boolean;
+}
 
-
-// --- Reusable Stat Card ---
-function StatCard({ label, value, color, smallText = false }) {
-  // Updated the color values to use your hex codes
+function StatCard({ label, value, color, smallText = false }: StatCardProps) {
   const colorClasses = {
-    green: 'bg-[#F1FFE7] text-gray-900', // Light green bg, dark text
-    teal: 'bg-[#C2E7DA] text-gray-900', // Light teal bg, dark text
-    blue: 'bg-[#6290C3] text-white', // Brand blue bg, white text
-    dark: 'bg-[#000000] text-white', // Black bg, white text
+    green: 'bg-[#F1FFE7] text-gray-900',
+    teal: 'bg-[#C2E7DA] text-gray-900',
+    blue: 'bg-[#6290C3] text-white',
+    dark: 'bg-[#000000] text-white',
   };
 
   return (

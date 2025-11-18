@@ -1,26 +1,60 @@
-// src/app/order/page.tsx
-
 "use client";
 
 import React, { useState, useEffect, useMemo } from 'react';
 import {
-  Coffee, 
-  ClipboardPen, 
+  Coffee,
+  ClipboardPen,
   PieChart,
   Boxes,
   Search,
   Plus,
   Minus,
-  X, // For the modal
+  X,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { Lato } from 'next/font/google'; 
+import { Lato } from 'next/font/google';
 import Image from 'next/image';
 
 const lato = Lato({ subsets: ['latin'], weight: ['400', '700'] });
 
+// --- Types ---
+
+interface Category {
+  id: string;
+  label: string;
+}
+
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+  category: string;
+}
+
+interface Option {
+  name: string;
+  price: number;
+}
+
+interface CartItem {
+  cartItemId: string;
+  cartEntryId?: string;
+  productId: number;
+  name: string;
+  basePrice: number;
+  unitPrice: number;
+  baseSubtotal: number;
+  quantity: number;
+  options: Option[];
+  notes: string;
+  discountPercent: number;
+  discountAmount: number;
+}
+
 // --- Mock Data ---
-const categories = [
+
+const categories: Category[] = [
   { id: 'all', label: 'ALL' },
   { id: 'iced-coffee', label: 'iced coffee' },
   { id: 'espresso', label: 'espresso' },
@@ -28,7 +62,7 @@ const categories = [
   { id: 'food', label: 'food' },
 ];
 
-const products = [
+const products: Product[] = [
   { id: 1, name: 'Spanish Latte', price: 60, image: 'https://placehold.co/150x150/F9F1E9/333?text=Spanish+Latte', category: 'iced-coffee' },
   { id: 2, name: 'Hazelnut Latte', price: 60, image: 'https://placehold.co/150x150/F9F1E9/333?text=Hazelnut+Latte', category: 'iced-coffee' },
   { id: 3, name: 'Caramel Macchiato', price: 75, image: 'https://placehold.co/150x150/F9F1E9/333?text=Caramel+Macchiato', category: 'iced-coffee' },
@@ -41,27 +75,27 @@ const products = [
   { id: 10, name: 'Cheese Bread', price: 35, image: 'https://placehold.co/150x150/F9F1E9/333?text=Cheese+Bread', category: 'food' },
 ];
 
-// --- Main Page Component ---
+// --- Main Component ---
+
 export default function OrderPage() {
   const router = useRouter();
 
-  // --- State Management ---
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [activeCategory, setActiveCategory] = useState('all');
-  const [searchTerm, setSearchTerm] = useState(''); 
-  const [activePaymentMethod, setActivePaymentMethod] = useState('gcash'); 
-  const [productToCustomize, setProductToCustomize] = useState(null); 
-  const [totalOrderDiscountPercent, setTotalOrderDiscountPercent] = useState(0); 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activePaymentMethod, setActivePaymentMethod] = useState('gcash');
+  const [productToCustomize, setProductToCustomize] = useState<Product | null>(null);
+  const [totalOrderDiscountPercent, setTotalOrderDiscountPercent] = useState(0);
 
-  const [cart, setCart] = useState([
-    { 
-      cartItemId: 'uuid-1', 
-      productId: 1, 
-      name: 'Spanish Latte', 
+  const [cart, setCart] = useState<CartItem[]>([
+    {
+      cartItemId: 'uuid-1',
+      productId: 1,
+      name: 'Spanish Latte',
       basePrice: 60,
-      unitPrice: 70, 
-      quantity: 1, 
+      unitPrice: 70,
+      quantity: 1,
       options: [
         { name: 'Oatmilk', price: 10 },
         { name: 'Sugar: 100%', price: 0 },
@@ -71,13 +105,13 @@ export default function OrderPage() {
       discountAmount: 0,
       baseSubtotal: 70,
     },
-    { 
-      cartItemId: 'uuid-2', 
-      productId: 2, 
-      name: 'Hazelnut Latte', 
+    {
+      cartItemId: 'uuid-2',
+      productId: 2,
+      name: 'Hazelnut Latte',
       basePrice: 60,
       unitPrice: 60,
-      quantity: 2, 
+      quantity: 2,
       options: [
         { name: 'Sugar: 100%', price: 0 },
       ],
@@ -88,7 +122,6 @@ export default function OrderPage() {
     },
   ]);
 
-  // --- Clock ---
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
@@ -100,14 +133,17 @@ export default function OrderPage() {
     hour12: true,
   });
 
-  // --- Navigation Handlers ---
   const handleLogoClick = () => router.push('/');
   const handleOrderClick = () => setIsDropdownOpen(false);
   const handleAnalyticsClick = () => router.push('/analytics');
   const handleInventoryClick = () => router.push('/inventory');
 
-  // --- Cart Logic ---
-  const handleAddToCart = (product, options, notes, discountPercent) => {
+  const handleAddToCart = (
+    product: Product,
+    options: Option[],
+    notes: string,
+    discountPercent: number
+  ) => {
     const basePrice = product.price;
     const optionsPrice = options.reduce((acc, opt) => acc + opt.price, 0);
     const baseSubtotal = basePrice + optionsPrice;
@@ -119,15 +155,15 @@ export default function OrderPage() {
 
     setCart(currentCart => {
       const existingItem = currentCart.find(item => item.cartEntryId === cartEntryId);
-      
+
       if (existingItem) {
         return currentCart.map(item =>
           item.cartEntryId === cartEntryId ? { ...item, quantity: item.quantity + 1 } : item
         );
       } else {
-        const newCartItem = {
-          cartItemId: crypto.randomUUID(), 
-          cartEntryId: cartEntryId, 
+        const newCartItem: CartItem = {
+          cartItemId: crypto.randomUUID(),
+          cartEntryId: cartEntryId,
           productId: product.id,
           name: product.name,
           basePrice: basePrice,
@@ -143,10 +179,10 @@ export default function OrderPage() {
       }
     });
 
-    setProductToCustomize(null); 
+    setProductToCustomize(null);
   };
 
-  const handleUpdateQuantity = (cartItemId, change) => {
+  const handleUpdateQuantity = (cartItemId: string, change: number) => {
     setCart(currentCart => {
       const targetItem = currentCart.find(item => item.cartItemId === cartItemId);
       if (!targetItem) return currentCart;
@@ -163,15 +199,12 @@ export default function OrderPage() {
     });
   };
 
-  // --- Filtered Product List ---
   const filteredProducts = useMemo(() => {
     return products
       .filter(p => activeCategory === 'all' || p.category === activeCategory)
       .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
-  }, [activeCategory, searchTerm]); 
+  }, [activeCategory, searchTerm]);
 
-
-  // --- Calculated Totals ---
   const subtotal = cart.reduce((acc, item) => acc + (item.baseSubtotal * item.quantity), 0);
   const totalItemDiscount = cart.reduce((acc, item) => acc + (item.discountAmount * item.quantity), 0);
   const subtotalAfterItemDiscounts = subtotal - totalItemDiscount;
@@ -189,8 +222,7 @@ export default function OrderPage() {
       )}
 
       <div className="flex h-screen flex-col bg-[#F9F1E9] p-6">
-        
-        {/* 1. Header */}
+        {/* Header */}
         <header className="flex w-full items-center justify-between flex-shrink-0 relative z-30">
           <div
             className="relative"
@@ -199,7 +231,7 @@ export default function OrderPage() {
           >
             <div
               className="flex cursor-pointer items-center gap-5 drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]"
-              onClick={handleLogoClick} 
+              onClick={handleLogoClick}
             >
               <Coffee size={82} className="text-gray-900" />
               <span className="text-[64px] font-black text-gray-900">
@@ -222,10 +254,10 @@ export default function OrderPage() {
           </div>
         </header>
 
-        {/* 2. Main POS Layout */}
-        <div className="mt-6 flex flex-1 gap-6 overflow-hidden p-4 pb-6 pt-1"> 
+        {/* Main Layout */}
+        <div className="mt-6 flex flex-1 gap-6 overflow-hidden p-4 pb-6 pt-1">
           
-          {/* --- Column 1: Categories --- */}
+          {/* Categories */}
           <nav className="flex-shrink-0 rounded-3xl bg-white p-4 shadow-lg flex flex-col h-full">
             <div className="flex flex-1 flex-col justify-evenly">
               {categories.map((category) => (
@@ -237,7 +269,7 @@ export default function OrderPage() {
                     capitalize transition-all
                     drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]
                     ${activeCategory === category.id
-                      ? 'bg-[#1A1B41] text-white' 
+                      ? 'bg-[#1A1B41] text-white'
                       : 'bg-[#D9E6F2] text-gray-800'
                     }
                   `}
@@ -248,9 +280,9 @@ export default function OrderPage() {
             </div>
           </nav>
 
-          {/* --- Column 2: Products --- */}
+          {/* Products */}
           <main className="flex flex-1 flex-col">
-            <div className="relative mb-4 flex-shrink-0 drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)] z-10"> 
+            <div className="relative mb-4 flex-shrink-0 drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)] z-10">
               <input
                 type="text"
                 placeholder="Search..."
@@ -260,30 +292,30 @@ export default function OrderPage() {
               />
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#C2E7DA]" size={30} />
             </div>
-            
+
             <div className="flex-1 overflow-y-auto px-3 pb-3 pt-3">
               <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
                 {filteredProducts.map(product => (
-                    <ProductCard 
-                      key={product.id} 
-                      product={product} 
-                      onCustomize={() => setProductToCustomize(product)} 
-                    />
-                  ))}
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onCustomize={() => setProductToCustomize(product)}
+                  />
+                ))}
               </div>
             </div>
           </main>
 
-          {/* --- Column 3: Current Order --- */}
+          {/* Current Order */}
           <aside className="w-96 flex-shrink-0 rounded-3xl bg-white p-6 shadow-lg flex flex-col h-full">
             <h2 className="text-lg font-bold text-gray-800 mb-4 flex-shrink-0">CURRENT ORDER</h2>
-            
+
             <div className="flex-1 overflow-y-auto pr-2">
               <div className="flex flex-col gap-4">
                 {cart.map(item => (
-                  <OrderItem 
-                    key={item.cartItemId} 
-                    item={item} 
+                  <OrderItem
+                    key={item.cartItemId}
+                    item={item}
                     onIncrement={() => handleUpdateQuantity(item.cartItemId, 1)}
                     onDecrement={() => handleUpdateQuantity(item.cartItemId, -1)}
                   />
@@ -300,7 +332,7 @@ export default function OrderPage() {
                 <span>Item Discounts</span>
                 <span className="text-red-500">- php {totalItemDiscount.toFixed(2)}</span>
               </div>
-              
+
               <div className="flex justify-between items-center text-base text-gray-600">
                 <label htmlFor="orderDiscount" className="font-medium">Order Discount (%)</label>
                 <input
@@ -354,10 +386,15 @@ export default function OrderPage() {
   );
 }
 
-// --- Reusable Sub-Components ---
+// --- Sub-Components ---
 
-function DropdownItem({ icon, label, onClick }) {
-  const IconComponent = icon;
+interface DropdownItemProps {
+  icon: React.ElementType;
+  label: string;
+  onClick: () => void;
+}
+
+function DropdownItem({ icon: IconComponent, label, onClick }: DropdownItemProps) {
   return (
     <button
       onClick={onClick}
@@ -374,7 +411,12 @@ function DropdownItem({ icon, label, onClick }) {
   );
 }
 
-function ProductCard({ product, onCustomize }) {
+interface ProductCardProps {
+  product: Product;
+  onCustomize: () => void;
+}
+
+function ProductCard({ product, onCustomize }: ProductCardProps) {
   return (
     <div className="flex flex-col items-center rounded-2xl bg-white p-4 shadow-md transition-all hover:shadow-lg drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]">
       <Image
@@ -388,8 +430,8 @@ function ProductCard({ product, onCustomize }) {
       <h3 className="mt-4 text-lg font-bold text-gray-800">{product.name}</h3>
       <p className="text-md font-semibold text-gray-600">php {product.price.toFixed(2)}</p>
       <div className="mt-4 flex w-full">
-        <button 
-          onClick={onCustomize} 
+        <button
+          onClick={onCustomize}
           className="w-full flex items-center justify-center gap-2 rounded-lg bg-blue-100 p-2 text-blue-600 transition-all hover:bg-blue-200"
         >
           <Plus size={20} />
@@ -400,7 +442,13 @@ function ProductCard({ product, onCustomize }) {
   );
 }
 
-function OrderItem({ item, onIncrement, onDecrement }) {
+interface OrderItemProps {
+  item: CartItem;
+  onIncrement: () => void;
+  onDecrement: () => void;
+}
+
+function OrderItem({ item, onIncrement, onDecrement }: OrderItemProps) {
   const optionsDisplay = item.options.map(o => o.name).join(', ');
   const discountDisplay = item.discountPercent > 0 ? `(${item.discountPercent}% Off)` : '';
 
@@ -429,7 +477,13 @@ function OrderItem({ item, onIncrement, onDecrement }) {
   );
 }
 
-function PaymentButton({ children, active, onClick }) {
+interface PaymentButtonProps {
+  children: React.ReactNode;
+  active: boolean;
+  onClick: () => void;
+}
+
+function PaymentButton({ children, active, onClick }: PaymentButtonProps) {
   return (
     <button
       onClick={onClick}
@@ -437,8 +491,8 @@ function PaymentButton({ children, active, onClick }) {
         rounded-lg px-4 py-2 text-base font-bold capitalize
         transition-all
         drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]
-        ${active 
-          ? 'bg-[#1A1B41] text-white' 
+        ${active
+          ? 'bg-[#1A1B41] text-white'
           : 'bg-gray-100 text-gray-700'
         }
       `}
@@ -448,40 +502,46 @@ function PaymentButton({ children, active, onClick }) {
   );
 }
 
-function CustomizeProductModal({ product, onClose, onAddToCart }) {
+interface CustomizeProductModalProps {
+  product: Product;
+  onClose: () => void;
+  onAddToCart: (product: Product, options: Option[], notes: string, discountPercent: number) => void;
+}
+
+function CustomizeProductModal({ product, onClose, onAddToCart }: CustomizeProductModalProps) {
   const [size, setSize] = useState('regular');
   const [sugar, setSugar] = useState('100%');
   const [useOatmilk, setUseOatmilk] = useState(false);
   const [notes, setNotes] = useState('');
-  const [discountPercent, setDiscountPercent] = useState(0); 
+  const [discountPercent, setDiscountPercent] = useState(0);
 
-  const defaultOptions = [
+  const defaultOptions: Option[] = [
     { name: `Sugar: 100%`, price: 0 }
   ];
 
   const basePrice = product.price;
-  
+
   const sizeOption = { name: 'Upsize', price: size === 'upsized' ? 20 : 0 };
   const oatmilkOption = { name: 'Oatmilk', price: useOatmilk ? 10 : 0 };
   const sugarOption = { name: `Sugar: ${sugar}`, price: 0 };
-  
-  const allOptions = [
+
+  const allOptions: Option[] = [
     ...(size === 'upsized' ? [sizeOption] : []),
     ...(useOatmilk ? [oatmilkOption] : []),
-    sugarOption, 
+    sugarOption,
   ];
-  
+
   const optionsPrice = allOptions.reduce((acc, opt) => acc + opt.price, 0);
   const subtotal = basePrice + optionsPrice;
   const discountAmount = subtotal * (discountPercent / 100);
   const finalPrice = subtotal - discountAmount;
 
   const handleSubmit = () => {
-    onAddToCart(product, allOptions, notes, discountPercent); 
+    onAddToCart(product, allOptions, notes, discountPercent);
   };
 
   const handleSkip = () => {
-    onAddToCart(product, defaultOptions, '', discountPercent); 
+    onAddToCart(product, defaultOptions, '', discountPercent);
   };
 
   return (
@@ -495,7 +555,7 @@ function CustomizeProductModal({ product, onClose, onAddToCart }) {
         </div>
 
         <div className="mt-6 space-y-6">
-          
+          {/* Size Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-700">Size</label>
             <div className="mt-2 flex gap-4">
@@ -512,6 +572,7 @@ function CustomizeProductModal({ product, onClose, onAddToCart }) {
             </div>
           </div>
 
+          {/* Sugar Level */}
           <div>
             <label className="block text-sm font-medium text-gray-700">Sugar Level</label>
             <div className="mt-2 grid grid-cols-4 gap-2">
@@ -524,6 +585,7 @@ function CustomizeProductModal({ product, onClose, onAddToCart }) {
             </div>
           </div>
 
+          {/* Extras */}
           <div className="flex items-center">
             <input
               id="oatmilk"
@@ -537,6 +599,7 @@ function CustomizeProductModal({ product, onClose, onAddToCart }) {
             </label>
           </div>
 
+          {/* Notes */}
           <div>
             <label htmlFor="notes" className="block text-sm font-medium text-gray-700">
               Notes (e.g., "less ice")
@@ -551,6 +614,7 @@ function CustomizeProductModal({ product, onClose, onAddToCart }) {
             />
           </div>
 
+          {/* Item Discount */}
           <div>
             <label htmlFor="discount" className="block text-sm font-medium text-gray-700">
               Discount (%)
@@ -565,6 +629,7 @@ function CustomizeProductModal({ product, onClose, onAddToCart }) {
             />
           </div>
 
+          {/* Summary */}
           <div className="border-t pt-4 space-y-2">
             <div className="flex justify-between text-sm text-gray-600">
               <span>Base Price:</span>
@@ -588,6 +653,7 @@ function CustomizeProductModal({ product, onClose, onAddToCart }) {
             </div>
           </div>
 
+          {/* Actions */}
           <div className="mt-6 flex justify-between gap-4">
             <button
               type="button"
