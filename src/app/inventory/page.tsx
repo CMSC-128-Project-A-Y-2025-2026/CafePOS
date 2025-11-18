@@ -1,20 +1,34 @@
-// src/app/inventory/page.tsx
-
 "use client";
 
-import React, { useState, useEffect, useMemo } from 'react'; 
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Coffee,
-  ClipboardPen, 
+  ClipboardPen,
   PieChart,
   Boxes,
   X,
-  AlertTriangle, 
-  Search, 
+  AlertTriangle,
+  Search,
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Lato } from 'next/font/google';
 
-// --- Mock Data for the table ---
-const initialInventoryData = [
+const lato = Lato({ subsets: ['latin'], weight: ['400', '700'] });
+
+// --- Types ---
+
+interface InventoryItem {
+  id: number;
+  product: string;
+  category: string;
+  stock: number;
+  status: string;
+  cost: string;
+}
+
+// --- Mock Data ---
+
+const initialInventoryData: InventoryItem[] = [
   { id: 1, product: 'oatmilk', category: 'dairy', stock: 12, status: 'in stock', cost: 'PHP 95' },
   { id: 2, product: 'oatmilk', category: 'dairy', stock: 12, status: 'in stock', cost: 'PHP 95' },
   { id: 3, product: 'whole milk', category: 'dairy', stock: 24, status: 'in stock', cost: 'PHP 80' },
@@ -29,68 +43,23 @@ const initialInventoryData = [
   { id: 12, product: 'muffins', category: 'pastry', stock: 10, status: 'in stock', cost: 'PHP 60' },
 ];
 
-// --- Reusable Button components for this page ---
-function ActionButton({ children, className, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`
-        rounded-full px-6 py-3 text-sm font-bold
-        transition-all hover:scale-105
-        drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]
-        ${className}
-      `}
-    >
-      {children}
-    </button>
-  );
-}
+// --- Main Component ---
 
-function FilterPill({ children, className, onClick, active }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`
-        rounded-full px-5 py-2 text-sm font-bold text-white
-        transition-all
-        ${className}
-        ${active ? 'opacity-100 ring-2 ring-white ring-offset-2 ring-offset-gray-800' : 'opacity-70 hover:opacity-100'}
-      `}
-    >
-      {children}
-    </button>
-  );
-}
-
-function TableActionButton({ children, className, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`
-        rounded-md px-4 py-1.5 text-sm font-bold
-        transition-all hover:opacity-80
-        ${className}
-      `}
-    >
-      {children}
-    </button>
-  );
-}
-
-// --- Main Page Component ---
 export default function InventoryPage() {
+  const router = useRouter();
+
   // --- State ---
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false); 
-  const [productToEdit, setProductToEdit] = useState(null); 
-  const [productToDelete, setProductToDelete] = useState(null); 
-  const [inventoryData, setInventoryData] = useState(initialInventoryData);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [productToEdit, setProductToEdit] = useState<InventoryItem | null>(null);
+  const [productToDelete, setProductToDelete] = useState<InventoryItem | null>(null);
+  const [inventoryData, setInventoryData] = useState<InventoryItem[]>(initialInventoryData);
   const [activeStatusFilter, setActiveStatusFilter] = useState('all');
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(''); 
-  const [currentTime, setCurrentTime] = useState(new Date()); 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentTime, setCurrentTime] = useState(new Date());
 
-  // --- Clock Timer ---
+  // --- Effects ---
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
@@ -101,31 +70,29 @@ export default function InventoryPage() {
     minute: '2-digit',
     hour12: true,
   });
-  // ---------------------
 
   // --- Handlers ---
-  const handleLogoClick = () => { window.location.href = '/'; };
-  const handleOrderClick = () => { window.location.href = '/order'; };
-  const handleAnalyticsClick = () => { window.location.href = '/analytics'; };
-  const handleInventoryClick = () => { setIsDropdownOpen(false); };
+  const handleLogoClick = () => router.push('/');
+  const handleOrderClick = () => router.push('/order');
+  const handleAnalyticsClick = () => router.push('/analytics');
+  const handleInventoryClick = () => setIsDropdownOpen(false);
 
-  // --- CRUD Handlers ---
-  const handleAddProduct = (newProduct) => {
+  const handleAddProduct = (newProduct: Omit<InventoryItem, 'id'>) => {
     const productWithId = {
       ...newProduct,
-      id: inventoryData.length > 0 ? Math.max(...inventoryData.map(i => i.id)) + 1 : 1 
+      id: inventoryData.length > 0 ? Math.max(...inventoryData.map(i => i.id)) + 1 : 1
     };
-    setInventoryData(currentData => [productWithId, ...currentData]); 
-    setIsAddModalOpen(false); 
+    setInventoryData(currentData => [productWithId, ...currentData]);
+    setIsAddModalOpen(false);
   };
 
-  const handleEditProduct = (updatedProduct) => {
+  const handleEditProduct = (updatedProduct: InventoryItem) => {
     setInventoryData(currentData =>
       currentData.map(item =>
         item.id === updatedProduct.id ? updatedProduct : item
       )
     );
-    setProductToEdit(null); 
+    setProductToEdit(null);
   };
 
   const handleDeleteProduct = () => {
@@ -133,40 +100,34 @@ export default function InventoryPage() {
       setInventoryData(currentData =>
         currentData.filter(item => item.id !== productToDelete.id)
       );
-      setProductToDelete(null); 
+      setProductToDelete(null);
     }
   };
-  // ---------------------
 
-  // --- Filtered Data ---
   const filteredInventory = useMemo(() => {
     const lowerSearchTerm = searchTerm.toLowerCase();
-    
-    // Get the filtered results
+
     const filtered = inventoryData
-      .filter(item => { // First, filter by Status
+      .filter(item => {
         if (activeStatusFilter === 'all') return true;
         return item.status === activeStatusFilter;
       })
-      .filter(item => { // THEN, filter by Search Term
+      .filter(item => {
         return (
           item.product.toLowerCase().includes(lowerSearchTerm) ||
           item.category.toLowerCase().includes(lowerSearchTerm)
         );
       });
-    
-    // --- 1. SORT ALPHABETICALLY ---
-    // Sort the filtered results by product name
+
+    // Sort alphabetically
     filtered.sort((a, b) => a.product.localeCompare(b.product));
 
     return filtered;
-
-  }, [inventoryData, activeStatusFilter, searchTerm]); // Re-run if any of these change
-
+  }, [inventoryData, activeStatusFilter, searchTerm]);
 
   return (
     <>
-      {/* --- MODALS --- */}
+      {/* --- Modals --- */}
       {isAddModalOpen && (
         <InventoryProductModal
           title="Add New Product"
@@ -195,22 +156,18 @@ export default function InventoryPage() {
           onClose={() => setIsReportModalOpen(false)}
         />
       )}
-      {/* --- END MODALS --- */}
 
-      {/* *** THE FIX: Changed min-h-screen to h-screen *** */}
       <div className="flex h-screen flex-col bg-[#F9F1E9] p-6">
-        
-        {/* 1. Header (this is flex-shrink-0, it won't grow) */}
+        {/* Header */}
         <header className="flex w-full items-center justify-between relative z-30 flex-shrink-0">
           <div
             className="relative"
             onMouseEnter={() => setIsDropdownOpen(true)}
             onMouseLeave={() => setIsDropdownOpen(false)}
           >
-            {/* Logo and Title */}
             <div
               className="flex cursor-pointer items-center gap-5 drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]"
-              onClick={handleLogoClick} 
+              onClick={handleLogoClick}
             >
               <Coffee size={82} className="text-gray-900" />
               <span className="text-[64px] font-black text-gray-900">
@@ -218,16 +175,8 @@ export default function InventoryPage() {
               </span>
             </div>
 
-            {/* --- Dropdown Menu --- */}
             {isDropdownOpen && (
-              <div
-                className="
-                  absolute top-full left-0 z-10 w-64
-                  overflow-hidden rounded-lg bg-white
-                  shadow-xl ring-1 ring-black ring-opacity-5
-                  drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]
-                "
-              >
+              <div className="absolute top-full left-0 z-10 w-64 overflow-hidden rounded-lg bg-white shadow-xl ring-1 ring-black ring-opacity-5 drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]">
                 <div className="py-2">
                   <DropdownItem icon={ClipboardPen} label="Order" onClick={handleOrderClick} />
                   <DropdownItem icon={PieChart} label="Analytics" onClick={handleAnalyticsClick} />
@@ -236,30 +185,30 @@ export default function InventoryPage() {
               </div>
             )}
           </div>
-          
+
           <div className="text-[64px] font-black italic drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]">
             <span className="text-[#6290C3]">{formattedTime.split(' ')[0]}</span>
             <span className="text-gray-900"> {formattedTime.split(' ')[1]}</span>
           </div>
         </header>
 
-        {/* 2. Action Buttons Row (this is flex-shrink-0, it won't grow) */}
+        {/* Action Buttons */}
         <nav className="my-6 flex items-center justify-between flex-shrink-0">
           <div className="flex gap-4">
             <ActionButton
               className="bg-[#6290C3] text-[#F9F1E9]"
-              onClick={() => setIsAddModalOpen(true)} 
+              onClick={() => setIsAddModalOpen(true)}
             >
               + new product
             </ActionButton>
-            <ActionButton 
+            <ActionButton
               className="bg-[#D9D9D9] text-gray-800"
               onClick={() => setIsReportModalOpen(true)}
             >
               generate weekly report
             </ActionButton>
           </div>
-          
+
           <div className="flex gap-3">
             <FilterPill
               className="bg-[#333333] text-[#F9F1E9]"
@@ -292,8 +241,8 @@ export default function InventoryPage() {
           </div>
         </nav>
 
-        {/* 3. Search Bar (this is flex-shrink-0, it won't grow) */}
-        <div className="relative mb-4 drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)] flex-shrink-0"> 
+        {/* Search Bar */}
+        <div className="relative mb-4 drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)] flex-shrink-0">
           <input
             type="text"
             placeholder="Search by product or category..."
@@ -304,12 +253,9 @@ export default function InventoryPage() {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#C2E7DA]" size={30} />
         </div>
 
-        {/* 4. Main Table Content */}
-        {/* *** THE FIX: `flex-1` and `overflow-hidden` *** */}
-        {/* This <main> tag will now fill the *remaining* space and hide overflow */}
+        {/* Main Table Content */}
         <main className="flex-1 rounded-2xl bg-white p-8 shadow-lg flex flex-col overflow-hidden">
-          
-          {/* Table Header (This stays fixed) */}
+          {/* Table Header */}
           <div className="grid grid-cols-6 gap-4 rounded-lg bg-[#E5F1FB] px-6 py-4 flex-shrink-0">
             <div className="font-bold text-gray-600">Product</div>
             <div className="font-bold text-gray-600">Category</div>
@@ -320,7 +266,6 @@ export default function InventoryPage() {
           </div>
 
           {/* Table Body */}
-          {/* This div grows (`flex-1`) and scrolls (`overflow-y-auto`) */}
           <div className="mt-4 flex flex-col gap-4 flex-1 overflow-y-auto">
             {filteredInventory.map((item) => (
               <div key={item.id} className="grid grid-cols-6 items-center gap-4 border-b border-gray-100 px-6 py-4">
@@ -330,15 +275,15 @@ export default function InventoryPage() {
                 <div className="text-gray-700">{item.status}</div>
                 <div className="text-gray-700">{item.cost}</div>
                 <div className="flex gap-2">
-                  <TableActionButton 
+                  <TableActionButton
                     className="bg-[#D7EFE0] text-[#34A853]"
-                    onClick={() => setProductToEdit(item)} 
+                    onClick={() => setProductToEdit(item)}
                   >
                     edit
                   </TableActionButton>
-                  <TableActionButton 
+                  <TableActionButton
                     className="bg-[#FADADD] text-[#E53935]"
-                    onClick={() => setProductToDelete(item)} 
+                    onClick={() => setProductToDelete(item)}
                   >
                     del
                   </TableActionButton>
@@ -352,9 +297,81 @@ export default function InventoryPage() {
   );
 }
 
-// --- Reusable DropdownItem Component ---
-function DropdownItem({ icon, label, onClick }) {
-  const IconComponent = icon;
+// --- Reusable Components ---
+
+interface ActionButtonProps {
+  children: React.ReactNode;
+  className?: string;
+  onClick: () => void;
+}
+
+function ActionButton({ children, className, onClick }: ActionButtonProps) {
+  return (
+    <button
+      onClick={onClick}
+      className={`
+        rounded-full px-6 py-3 text-sm font-bold
+        transition-all hover:scale-105
+        drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)]
+        ${className}
+      `}
+    >
+      {children}
+    </button>
+  );
+}
+
+interface FilterPillProps {
+  children: React.ReactNode;
+  className?: string;
+  onClick: () => void;
+  active: boolean;
+}
+
+function FilterPill({ children, className, onClick, active }: FilterPillProps) {
+  return (
+    <button
+      onClick={onClick}
+      className={`
+        rounded-full px-5 py-2 text-sm font-bold text-white
+        transition-all
+        ${className}
+        ${active ? 'opacity-100 ring-2 ring-white ring-offset-2 ring-offset-gray-800' : 'opacity-70 hover:opacity-100'}
+      `}
+    >
+      {children}
+    </button>
+  );
+}
+
+interface TableActionButtonProps {
+  children: React.ReactNode;
+  className?: string;
+  onClick: () => void;
+}
+
+function TableActionButton({ children, className, onClick }: TableActionButtonProps) {
+  return (
+    <button
+      onClick={onClick}
+      className={`
+        rounded-md px-4 py-1.5 text-sm font-bold
+        transition-all hover:opacity-80
+        ${className}
+      `}
+    >
+      {children}
+    </button>
+  );
+}
+
+interface DropdownItemProps {
+  icon: React.ElementType;
+  label: string;
+  onClick: () => void;
+}
+
+function DropdownItem({ icon: IconComponent, label, onClick }: DropdownItemProps) {
   return (
     <button
       onClick={onClick}
@@ -362,6 +379,7 @@ function DropdownItem({ icon, label, onClick }) {
         flex w-full items-center gap-3 px-4 py-3 
         text-left text-lg font-medium text-gray-800 
         transition-colors hover:bg-gray-100
+        ${lato.className}
       `}
     >
       <IconComponent size={20} className="text-gray-600" />
@@ -370,21 +388,29 @@ function DropdownItem({ icon, label, onClick }) {
   );
 }
 
-// --- RENAMED & UPDATED MODAL COMPONENT ---
-function InventoryProductModal({ title, initialData, onClose, onSave }) {
+// --- Modal Components ---
+
+interface InventoryProductModalProps {
+  title: string;
+  initialData?: InventoryItem;
+  onClose: () => void;
+  onSave: (data: any) => void; // Using 'any' here for simplicity in handling both edit/add payload shapes
+}
+
+function InventoryProductModal({ title, initialData, onClose, onSave }: InventoryProductModalProps) {
   const [product, setProduct] = useState(initialData?.product || '');
   const [category, setCategory] = useState(initialData?.category || '');
-  const [stock, setStock] = useState(initialData?.stock || ''); 
-  const [status, setStatus] = useState(initialData?.status || 'in stock'); 
+  const [stock, setStock] = useState(initialData?.stock || '');
+  const [status, setStatus] = useState(initialData?.status || 'in stock');
   const [cost, setCost] = useState(initialData?.cost || '');
 
-  const handleSubmit = (e) => {
-    e.preventDefault(); 
-    
-    const productData = {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const productData: any = {
       product,
       category,
-      stock: Number(stock), 
+      stock: Number(stock),
       status,
       cost
     };
@@ -392,7 +418,7 @@ function InventoryProductModal({ title, initialData, onClose, onSave }) {
     if (initialData) {
       productData.id = initialData.id;
     }
-    
+
     onSave(productData);
   };
 
@@ -418,7 +444,7 @@ function InventoryProductModal({ title, initialData, onClose, onSave }) {
               id="product"
               value={product}
               onChange={(e) => setProduct(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900" 
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900"
               required
             />
           </div>
@@ -432,7 +458,7 @@ function InventoryProductModal({ title, initialData, onClose, onSave }) {
               id="category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900" 
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900"
               required
             />
           </div>
@@ -442,12 +468,12 @@ function InventoryProductModal({ title, initialData, onClose, onSave }) {
               Stock
             </label>
             <input
-              type="number" 
+              type="number"
               id="stock"
-              value={stock} 
-              onChange={(e) => setStock(e.target.value)} 
-              min="0" // <-- 2. ADDED THIS to prevent numbers below 0
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900" 
+              value={stock}
+              onChange={(e) => setStock(e.target.value)}
+              min="0"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900"
               required
             />
           </div>
@@ -460,7 +486,7 @@ function InventoryProductModal({ title, initialData, onClose, onSave }) {
               id="status"
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 transition-all hover:border-[#1A1B41] hover:ring-1 hover:ring-[#1A1B41]" 
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 transition-all hover:border-[#1A1B41] hover:ring-1 hover:ring-[#1A1B41]"
               required
             >
               <option value="in stock">In stock</option>
@@ -478,7 +504,7 @@ function InventoryProductModal({ title, initialData, onClose, onSave }) {
               id="cost"
               value={cost}
               onChange={(e) => setCost(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900" 
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900"
               required
             />
           </div>
@@ -504,8 +530,13 @@ function InventoryProductModal({ title, initialData, onClose, onSave }) {
   );
 }
 
-// --- NEW DELETE CONFIRMATION MODAL ---
-function DeleteConfirmationModal({ productName, onClose, onConfirm }) {
+interface DeleteConfirmationModalProps {
+  productName: string;
+  onClose: () => void;
+  onConfirm: () => void;
+}
+
+function DeleteConfirmationModal({ productName, onClose, onConfirm }: DeleteConfirmationModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
@@ -545,10 +576,12 @@ function DeleteConfirmationModal({ productName, onClose, onConfirm }) {
   );
 }
 
-// --- *** NEW WEEKLY REPORT MODAL *** ---
-function WeeklyReportModal({ inventory, onClose }) {
-  
-  // Filter the inventory to find items that need restocking
+interface WeeklyReportModalProps {
+  inventory: InventoryItem[];
+  onClose: () => void;
+}
+
+function WeeklyReportModal({ inventory, onClose }: WeeklyReportModalProps) {
   const outOfStock = inventory.filter(item => item.status === 'out of stock');
   const lowStock = inventory.filter(item => item.status === 'low stock');
 
