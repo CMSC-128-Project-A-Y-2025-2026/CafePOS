@@ -12,7 +12,7 @@ import {
   X,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { Montserrat } from 'next/font/google'; 
+import { Montserrat } from 'next/font/google';
 import Image from 'next/image';
 
 // Load Montserrat font
@@ -55,28 +55,107 @@ interface CartItem {
 
 // --- Mock Data ---
 
-const categories: Category[] = [
-  { id: 'all', label: 'ALL' },
-  { id: 'iced-coffee', label: 'iced coffee' },
-  { id: 'espresso', label: 'espresso' },
-  { id: 'milk-tea', label: 'milk tea' },
-  { id: 'food', label: 'food' },
+// Categories List 
+const newCategories: Category[] = [
+  { id: 'all', label: 'All' },
+  { id: 'signature', label: 'Signature' },
+  { id: 'coffee-based', label: 'Coffee Based' },
+  { id: 'frappe-based', label: 'Frappe Based' },
+  { id: 'non-coffee', label: 'Non-Coffee' },
+  { id: 'matcha-based', label: 'Matcha Based' },
+  { id: 'soda-based', label: 'Soda Based' },
+  { id: 'waffles', label: 'Waffles' },
+  { id: 'pasta-sandwich', label: 'Pasta & Sandwich' },
+  { id: 'pika-pika', label: 'Pika-Pika' },
 ];
 
 const products: Product[] = [
-  { id: 1, name: 'Spanish Latte', price: 60, image: 'https://placehold.co/150x150/F9F1E9/333?text=Spanish+Latte', category: 'iced-coffee' },
-  { id: 2, name: 'Hazelnut Latte', price: 60, image: 'https://placehold.co/150x150/F9F1E9/333?text=Hazelnut+Latte', category: 'iced-coffee' },
-  { id: 3, name: 'Caramel Macchiato', price: 75, image: 'https://placehold.co/150x150/F9F1E9/333?text=Caramel+Macchiato', category: 'iced-coffee' },
-  { id: 4, name: 'Classic Espresso', price: 40, image: 'https://placehold.co/150x150/F9F1E9/333?text=Espresso', category: 'espresso' },
-  { id: 5, name: 'Okinawa Milk Tea', price: 50, image: 'https://placehold.co/150x150/F9F1E9/333?text=Milk+Tea', category: 'milk-tea' },
-  { id: 6, name: 'Croissant', price: 45, image: 'https://placehold.co/150x150/F9F1E9/333?text=Croissant', category: 'food' },
-  { id: 7, name: 'Americano', price: 50, image: 'https://placehold.co/150x150/F9F1E9/333?text=Americano', category: 'espresso' },
-  { id: 8, name: 'Taro Milk Tea', price: 50, image: 'https://placehold.co/150x150/F9F1E9/333?text=Taro+Milk+Tea', category: 'milk-tea' },
-  { id: 9, name: 'Matcha Latte', price: 70, image: 'https://placehold.co/150x150/F9F1E9/333?text=Matcha+Latte', category: 'iced-coffee' },
-  { id: 10, name: 'Cheese Bread', price: 35, image: 'https://placehold.co/150x150/F9F1E9/333?text=Cheese+Bread', category: 'food' },
+  // --- SIGNATURE (All Hot/Iced prices used) ---
+  { id: 1, name: 'Americano', price: 99, image: 'https://placehold.co/150x150/F9F1E9/333?text=Americano', category: 'signature' },
+  { id: 2, name: 'Biscoff Latte', price: 189, image: 'https://placehold.co/150x150/F9F1E9/333?text=Biscoff+Latte', category: 'signature' },
+  { id: 3, name: 'Caramel Latte', price: 159, image: 'https://placehold.co/150x150/F9F1E9/333?text=Caramel+Latte', category: 'signature' },
+  { id: 4, name: 'Latte', price: 139, image: 'https://placehold.co/150x150/F9F1E9/333?text=Latte', category: 'signature' },
+  { id: 5, name: 'Kape Dulce', price: 159, image: 'https://placehold.co/150x150/F9F1E9/333?text=Kape+Dulce', category: 'signature' },
+  { id: 6, name: 'Sea Salt Latte', price: 189, image: 'https://placehold.co/150x150/F9F1E9/333?text=Sea+Salt+Latte', category: 'signature' },
+  { id: 7, name: 'Spanish Oat', price: 179, image: 'https://placehold.co/150x150/F9F1E9/333?text=Spanish+Oat', category: 'signature' },
+  { id: 8, name: 'Spanish Latte', price: 149, image: 'https://placehold.co/150x150/F9F1E9/333?text=Spanish+Latte', category: 'signature' },
+  { id: 9, name: 'Tiramisu', price: 189, image: 'https://placehold.co/150x150/F9F1E9/333?text=Tiramisu', category: 'signature' },
+  { id: 10, name: 'White Mocha', price: 159, image: 'https://placehold.co/150x150/F9F1E9/333?text=White+Mocha', category: 'signature' },
+
+  // --- COFFEE BASED (All Regular prices used) ---
+  { id: 11, name: 'Caramel Mac', price: 49, image: 'https://placehold.co/150x150/F9F1E9/333?text=Caramel+Mac', category: 'coffee-based' },
+  { id: 12, name: 'Cinnamon Latte', price: 69, image: 'https://placehold.co/150x150/F9F1E9/333?text=Cinnamon+Latte', category: 'coffee-based' },
+  { id: 13, name: 'Macchiato with Ice Cream', price: 69, image: 'https://placehold.co/150x150/F9F1E9/333?text=Macchiato+Ice+Cream', category: 'coffee-based' },
+  { id: 14, name: 'Mocha', price: 75, image: 'https://placehold.co/150x150/F9F1E9/333?text=Mocha', category: 'coffee-based' },
+  { id: 15, name: 'Spanish Latte (Regular)', price: 49, image: 'https://placehold.co/150x150/F9F1E9/333?text=Spanish+Latte', category: 'coffee-based' },
+  { id: 16, name: 'Salted Caramel', price: 65, image: 'https://placehold.co/150x150/F9F1E9/333?text=Salted+Caramel', category: 'coffee-based' },
+  { id: 17, name: 'Vanilla Latte', price: 65, image: 'https://placehold.co/150x150/F9F1E9/333?text=Vanilla+Latte', category: 'coffee-based' },
+
+  // --- FRAPPE BASED (All have the same price) ---
+  { id: 18, name: 'Caramel Mac Frappe', price: 159, image: 'https://placehold.co/150x150/F9F1E9/333?text=Caramel+Mac+Frappe', category: 'frappe-based' },
+  { id: 19, name: 'Biscoff Frappe', price: 159, image: 'https://placehold.co/150x150/F9F1E9/333?text=Biscoff+Frappe', category: 'frappe-based' },
+  { id: 20, name: 'Cookies N Cream', price: 159, image: 'https://placehold.co/150x150/F9F1E9/333?text=Cookies+N+Cream', category: 'frappe-based' },
+  { id: 21, name: 'Chocolate Frappe', price: 159, image: 'https://placehold.co/150x150/F9F1E9/333?text=Chocolate+Frappe', category: 'frappe-based' },
+  { id: 22, name: 'Ube Frappe', price: 159, image: 'https://placehold.co/150x150/F9F1E9/333?text=Ube+Frappe', category: 'frappe-based' },
+  { id: 23, name: 'Java Chips', price: 159, image: 'https://placehold.co/150x150/F9F1E9/333?text=Java+Chips', category: 'frappe-based' },
+  { id: 24, name: 'Matcha Frappe', price: 159, image: 'https://placehold.co/150x150/F9F1E9/333?text=Matcha+Frappe', category: 'frappe-based' },
+  { id: 25, name: 'Strawberry Frappe', price: 159, image: 'https://placehold.co/150x150/F9F1E9/333?text=Strawberry+Frappe', category: 'frappe-based' },
+  
+  // --- NON-COFFEE (All Regular prices used) ---
+  { id: 26, name: 'Cocoa Cloud', price: 89, image: 'https://placehold.co/150x150/F9F1E9/333?text=Cocoa+Cloud', category: 'non-coffee' },
+  { id: 27, name: 'Iced Cocoa', price: 69, image: 'https://placehold.co/150x150/F9F1E9/333?text=Iced+Cocoa', category: 'non-coffee' },
+  { id: 28, name: 'Milky Strawberry', price: 65, image: 'https://placehold.co/150x150/F9F1E9/333?text=Milky+Strawberry', category: 'non-coffee' },
+  { id: 29, name: 'Blueberry', price: 65, image: 'https://placehold.co/150x150/F9F1E9/333?text=Blueberry', category: 'non-coffee' },
+  { id: 30, name: 'Ubebabe', price: 55, image: 'https://placehold.co/150x150/F9F1E9/333?text=Ubebabe', category: 'non-coffee' },
+  { id: 31, name: 'Oreo Blast', price: 95, image: 'https://placehold.co/150x150/F9F1E9/333?text=Oreo+Blast', category: 'non-coffee' },
+
+  // --- MATCHA BASED (All Regular prices used) ---
+  { id: 32, name: 'Matcha', price: 79, image: 'https://placehold.co/150x150/F9F1E9/333?text=Matcha', category: 'matcha-based' },
+  { id: 33, name: 'Matcha Oat', price: 109, image: 'https://placehold.co/150x150/F9F1E9/333?text=Matcha+Oat', category: 'matcha-based' },
+  { id: 34, name: 'Matchaberry', price: 99, image: 'https://placehold.co/150x150/F9F1E9/333?text=Matchaberry', category: 'matcha-based' },
+  { id: 35, name: 'Matcha Pink Cream', price: 119, image: 'https://placehold.co/150x150/F9F1E9/333?text=Matcha+Pink+Cream', category: 'matcha-based' },
+  { id: 36, name: 'Sea Salt Matcha', price: 119, image: 'https://placehold.co/150x150/F9F1E9/333?text=Sea+Salt+Matcha', category: 'matcha-based' },
+  { id: 37, name: 'Dirty Matcha', price: 119, image: 'https://placehold.co/150x150/F9F1E9/333?text=Dirty+Matcha', category: 'matcha-based' },
+
+  // --- SODA BASED (All Regular prices used) ---
+  { id: 38, name: 'Apple Fizz', price: 65, image: 'https://placehold.co/150x150/F9F1E9/333?text=Apple+Fizz', category: 'soda-based' },
+  { id: 39, name: 'Green Apple with Yakult', price: 85, image: 'https://placehold.co/150x150/F9F1E9/333?text=Green+Apple+Yakult', category: 'soda-based' },
+  { id: 40, name: 'Yakulychee', price: 85, image: 'https://placehold.co/150x150/F9F1E9/333?text=Yakulychee', category: 'soda-based' },
+  { id: 41, name: 'Lychee', price: 65, image: 'https://placehold.co/150x150/F9F1E9/333?text=Lychee', category: 'soda-based' },
+  { id: 42, name: 'Honey Lemon', price: 65, image: 'https://placehold.co/150x150/F9F1E9/333?text=Honey+Lemon', category: 'soda-based' },
+  { id: 43, name: 'Honey Lemon with Yakult', price: 85, image: 'https://placehold.co/150x150/F9F1E9/333?text=Honey+Lemon+Yakult', category: 'soda-based' },
+  { id: 44, name: 'Strawberry Soda', price: 70, image: 'https://placehold.co/150x150/F9F1E9/333?text=Strawberry+Soda', category: 'soda-based' },
+  { id: 45, name: 'Yakult Berry', price: 90, image: 'https://placehold.co/150x150/F9F1E9/333?text=Yakult+Berry', category: 'soda-based' },
+
+  // --- WAFFLES ---
+  { id: 46, name: 'Classic Waffles', price: 65, image: 'https://placehold.co/150x150/F9F1E9/333?text=Classic+Waffles', category: 'waffles' },
+  { id: 47, name: 'Chocolate Waffles', price: 69, image: 'https://placehold.co/150x150/F9F1E9/333?text=Chocolate+Waffles', category: 'waffles' },
+  { id: 48, name: 'Caramel Waffles', price: 69, image: 'https://placehold.co/150x150/F9F1E9/333?text=Caramel+Waffles', category: 'waffles' },
+  { id: 49, name: 'Cheese Waffles', price: 75, image: 'https://placehold.co/150x150/F9F1E9/333?text=Cheese+Waffles', category: 'waffles' },
+  { id: 50, name: 'Biscoff Waffles', price: 99, image: 'https://placehold.co/150x150/F9F1E9/333?text=Biscoff+Waffles', category: 'waffles' },
+  { id: 51, name: 'Strawberry Waffles', price: 75, image: 'https://placehold.co/150x150/F9F1E9/333?text=Strawberry+Waffles', category: 'waffles' },
+  { id: 52, name: "S'mores Waffles", price: 89, image: 'https://placehold.co/150x150/F9F1E9/333?text=Smores+Waffles', category: 'waffles' },
+  
+  // --- PASTA & SANDWICH ---
+  { id: 53, name: 'Carbonara', price: 149, image: 'https://placehold.co/150x150/F9F1E9/333?text=Carbonara', category: 'pasta-sandwich' },
+  { id: 54, name: 'Spaghetti', price: 139, image: 'https://placehold.co/150x150/F9F1E9/333?text=Spaghetti', category: 'pasta-sandwich' },
+  { id: 55, name: 'Bacon Ham Sandwich', price: 109, image: 'https://placehold.co/150x150/F9F1E9/333?text=Bacon+Ham+Sandwich', category: 'pasta-sandwich' },
+  { id: 56, name: 'Egg Sandwich', price: 109, image: 'https://placehold.co/150x150/F9F1E9/333?text=Egg+Sandwich', category: 'pasta-sandwich' },
+  { id: 57, name: 'Hotdog Clubhouse', price: 109, image: 'https://placehold.co/150x150/F9F1E9/333?text=Hotdog+Clubhouse', category: 'pasta-sandwich' },
+
+  // --- PIKA - PIKA ---
+  { id: 58, name: 'Fries', price: 55, image: 'https://placehold.co/150x150/F9F1E9/333?text=Fries', category: 'pika-pika' },
+  { id: 59, name: 'Pres Kopee Mix', price: 99, image: 'https://placehold.co/150x150/F9F1E9/333?text=Pres+Kopee+Mix', category: 'pika-pika' },
+  { id: 60, name: 'Cheesy Bacon Overload', price: 159, image: 'https://placehold.co/150x150/F9F1E9/333?text=Cheesy+Bacon+Overload', category: 'pika-pika' },
+  { id: 61, name: 'Beef Nachos', price: 159, image: 'https://placehold.co/150x150/F9F1E9/333?text=Beef+Nachos', category: 'pika-pika' },
+  { id: 62, name: 'Cheesy Quesadilla', price: 89, image: 'https://placehold.co/150x150/F9F1E9/333?text=Cheesy+Quesadilla', category: 'pika-pika' },
+  { id: 63, name: 'Beef Quesadilla', price: 119, image: 'https://placehold.co/150x150/F9F1E9/333?text=Beef+Quesadilla', category: 'pika-pika' },
+  { id: 64, name: 'Ham N Cheese Quesadilla', price: 99, image: 'https://placehold.co/150x150/F9F1E9/333?text=Ham+N+Cheese+Quesadilla', category: 'pika-pika' },
+  { id: 65, name: "S'more Quesadilla", price: 89, image: 'https://placehold.co/150x150/F9F1E9/333?text=Smore+Quesadilla', category: 'pika-pika' },
+  { id: 66, name: 'Egg Wrap', price: 99, image: 'https://placehold.co/150x150/F9F1E9/333?text=Egg+Wrap', category: 'pika-pika' },
 ];
 
-// --- Sub-Components ---
+// --- Sub-Components (ProductCard, DropdownItem, OrderItem, PaymentButton, CategoryButton) ---
 
 interface DropdownItemProps {
   icon: React.ElementType;
@@ -89,9 +168,9 @@ function DropdownItem({ icon: IconComponent, label, onClick }: DropdownItemProps
     <button
       onClick={onClick}
       className={`
-        flex w-full items-center gap-3 px-4 py-3 
-        text-left text-lg font-medium text-gray-800 
-        transition-colors hover:bg-[#6290C3]/10 hover:text-[#6290C3] 
+        flex w-full items-center gap-3 px-4 py-3
+        text-left text-lg font-medium text-gray-800
+        transition-colors hover:bg-[#6290C3]/10 hover:text-[#6290C3]
         ${montserrat.className}
       `}
     >
@@ -108,20 +187,20 @@ interface ProductCardProps {
 
 function ProductCard({ product, onCustomize }: ProductCardProps) {
   return (
-    <div 
+    <div
       className="
-        group flex flex-col justify-between items-center rounded-2xl bg-white p-4 
-        shadow-md transition-all duration-200 
-        hover:shadow-xl hover:-translate-y-0.5 border border-gray-100 
+        group flex flex-col justify-between items-center rounded-2xl bg-white p-4
+        shadow-md transition-all duration-200
+        hover:shadow-xl hover:-translate-y-0.5 border border-gray-100
         cursor-pointer h-full min-h-[150px]
       "
       onClick={onCustomize}
     >
       <div className="flex flex-col items-center justify-center flex-grow text-center">
-          <h3 className="text-xl font-extrabold text-gray-900 leading-snug">{product.name}</h3>
-          <p className="text-lg font-bold text-[#6290C3] mt-1">PHP {product.price.toFixed(2)}</p>
+        <h3 className="text-xl font-extrabold text-gray-900 leading-snug">{product.name}</h3>
+        <p className="text-lg font-bold text-[#6290C3] mt-1">PHP {product.price.toFixed(2)}</p>
       </div>
-      
+
       <div className="mt-4 w-full flex-shrink-0">
         <div
           className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#E5F1FB] p-2 text-[#6290C3] font-semibold transition-all group-hover:bg-[#6290C3] group-hover:text-white"
@@ -149,35 +228,35 @@ function OrderItem({ item, onIncrement, onDecrement }: OrderItemProps) {
     <div className="flex items-start justify-between border-b border-gray-100 pb-3">
       <div className="pr-2">
         <h4 className="text-lg font-bold text-gray-900 leading-snug">
-            {item.name} 
-            <span className="text-xs text-red-600 font-semibold ml-1">{discountDisplay}</span>
+          {item.name}
+          <span className="text-xs text-red-600 font-semibold ml-1">{discountDisplay}</span>
         </h4>
         <div className='flex flex-col text-sm text-gray-600'>
-            {optionsDisplay && (
-                <p className='text-xs'>• {optionsDisplay}</p>
-            )}
-            {sugarDisplay && (
-                <p className='text-xs'>• {sugarDisplay}</p>
-            )}
+          {optionsDisplay && (
+            <p className='text-xs'>• {optionsDisplay}</p>
+          )}
+          {sugarDisplay && (
+            <p className='text-xs'>• {sugarDisplay}</p>
+          )}
         </div>
-        
+
         {item.notes && (
           <p className="text-xs text-gray-500 italic mt-1">Note: "{item.notes}"</p>
         )}
         <p className="text-base font-semibold text-gray-700 mt-1">PHP {(item.unitPrice * item.quantity).toFixed(2)}</p>
       </div>
-      
+
       <div className="flex items-center gap-0.5 rounded-lg bg-gray-100 p-0.5 flex-shrink-0 mt-1">
-        <button 
-            onClick={onDecrement} 
-            className="text-gray-600 hover:bg-red-200 p-1 rounded-md transition-colors"
+        <button
+          onClick={onDecrement}
+          className="text-gray-600 hover:bg-red-200 p-1 rounded-md transition-colors"
         >
           <Minus size={14} />
         </button>
         <span className="w-6 text-center text-base font-bold text-gray-900">{item.quantity}</span>
-        <button 
-            onClick={onIncrement} 
-            className="text-gray-600 hover:bg-green-200 p-1 rounded-md transition-colors"
+        <button
+          onClick={onIncrement}
+          className="text-gray-600 hover:bg-green-200 p-1 rounded-md transition-colors"
         >
           <Plus size={14} />
         </button>
@@ -197,7 +276,7 @@ function PaymentButton({ children, active, onClick }: PaymentButtonProps) {
     <button
       onClick={onClick}
       className={`
-        flex-1 rounded-xl px-4 py-3 text-base font-bold capitalize
+        flex-1 rounded-xl px-4 py-2 text-sm font-bold capitalize
         transition-all duration-200 hover:scale-[1.02]
         shadow-md
         ${active
@@ -212,24 +291,44 @@ function PaymentButton({ children, active, onClick }: PaymentButtonProps) {
 }
 
 function CategoryButton({ category, active, onClick }: { category: Category, active: boolean, onClick: () => void }) {
-    return (
-        <button
-            onClick={onClick}
-            className={`
-                flex flex-col items-center justify-center h-full px-2 text-sm font-extrabold capitalize w-full 
-                transition-all duration-200 rounded-xl hover:scale-[1.02]
-                shadow-md
-                ${active
-                    ? 'bg-[#1A1B41] text-white shadow-lg ring-2 ring-white transform scale-[1.05] border-2 border-[#6290C3]'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }
-            `}
-        >
-            <span className="text-lg leading-none">{category.label.split(' ')[0]}</span>
-            {category.label.split(' ')[1] && <span className="leading-none text-xs -mt-0.5">{category.label.split(' ')[1]}</span>}
-        </button>
-    );
+  const words = category.label.split(' ');
+  const firstLine = words[0];
+  const secondLine = words.slice(1).join(' ');
+
+  return (
+    <button
+      onClick={onClick}
+      className={`
+        flex flex-col items-center justify-center h-10 px-1 py-1 text-sm font-extrabold capitalize w-full
+        transition-all duration-200 rounded-xl hover:scale-[1.02]
+        shadow-md text-center flex-1 
+        ${active
+          ? 'bg-[#1A1B41] text-white shadow-lg ring-2 ring-white transform scale-[1.05] border-2 border-[#6290C3]'
+          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+        }
+      `}
+    >
+      <span className="text-xs leading-none">{firstLine}</span> 
+      {secondLine && <span className="text-[10px] leading-none">{secondLine}</span>}
+    </button>
+  );
 }
+
+// --- CONSTANTS for ADD-ONS (UPDATED) ---
+const ADD_ONS: Option[] = [
+  { name: 'Nata de Coco', price: 20 },
+  { name: 'Popping Boba', price: 25 },
+  { name: 'Milk', price: 20 }, // Regular Milk (P20)
+  { name: 'Oat Milk', price: 35 }, // Oat Milk (P35) 
+  { name: 'Ice Cream', price: 20 },
+  { name: 'Sweet', price: 15 },
+  { name: 'Caramel', price: 15 },
+  { name: 'Chocolate', price: 20 },
+  { name: 'Espresso', price: 35 },
+];
+
+
+// --- UPDATED CustomizeProductModal ---
 
 interface CustomizeProductModalProps {
   product: Product;
@@ -238,39 +337,68 @@ interface CustomizeProductModalProps {
 }
 
 function CustomizeProductModal({ product, onClose, onAddToCart }: CustomizeProductModalProps) {
-  const [size, setSize] = useState('regular');
+  const isDrink = ['signature', 'coffee-based', 'frappe-based', 'non-coffee', 'matcha-based', 'soda-based'].includes(product.category);
+
+  // States for customization
+  const [size, setSize] = useState('regular'); // 'regular', 'medium', 'large'
   const [sugar, setSugar] = useState('100%');
-  const [useOatmilk, setUseOatmilk] = useState(false);
+  const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
   const [notes, setNotes] = useState('');
   const [discountPercent, setDiscountPercent] = useState(0);
 
-  const defaultOptions: Option[] = [
-    { name: `Sugar: 100%`, price: 0 }
-  ];
-
   const basePrice = product.price;
 
-  const sizeOption = { name: 'Upsize', price: size === 'upsized' ? 20 : 0 };
-  const oatmilkOption = { name: 'Oatmilk', price: useOatmilk ? 10 : 0 };
-  const sugarOption = { name: `Sugar: ${sugar}`, price: 0 };
+  // --- Option Calculation ---
 
+  // 1. Size Option
+  const getSizePrice = () => {
+    if (size === 'medium') return 20;
+    if (size === 'large') return 40;
+    return 0;
+  };
+  const sizeOption: Option | null = isDrink && size !== 'regular' 
+    ? { name: `${size.charAt(0).toUpperCase() + size.slice(1)} (+P${getSizePrice().toFixed(2)})`, price: getSizePrice() } 
+    : isDrink ? { name: 'Regular Size', price: 0 } : null;
+
+  // 2. Sugar Option
+  const sugarOption: Option | null = isDrink ? { name: `Sugar: ${sugar}`, price: 0 } : null;
+
+  // 3. Add Ons
+  const addOnOptions: Option[] = ADD_ONS
+    .filter(ao => selectedAddOns.includes(ao.name))
+    .map(ao => ({ name: `Add-on: ${ao.name}`, price: ao.price }));
+    
+
+  // Combine all active options
+  // Filter only for paid options and the sugar level
   const allOptions: Option[] = [
-    ...(size === 'upsized' ? [sizeOption] : []),
-    ...(useOatmilk ? [oatmilkOption] : []),
-    sugarOption,
-  ];
+    ...(sizeOption ? [sizeOption] : []),
+    ...(sugarOption ? [sugarOption] : []),
+    ...addOnOptions,
+  ].filter(o => o.price > 0 || o.name.startsWith('Sugar:')); 
 
   const optionsPrice = allOptions.reduce((acc, opt) => acc + opt.price, 0);
   const subtotal = basePrice + optionsPrice;
   const discountAmount = subtotal * (discountPercent / 100);
   const finalPrice = subtotal - discountAmount;
 
+  // --- Handlers ---
+  const handleAddOnToggle = (name: string) => {
+    setSelectedAddOns(prev =>
+      prev.includes(name) ? prev.filter(n => n !== name) : [...prev, name]
+    );
+  };
+  
   const handleSubmit = () => {
     onAddToCart(product, allOptions, notes, discountPercent);
+    onClose();
   };
 
   const handleSkip = () => {
+    // If it's a drink, include default size and sugar, otherwise empty options.
+    const defaultOptions: Option[] = isDrink ? [{ name: 'Regular Size', price: 0 }, { name: 'Sugar: 100%', price: 0 }] : [];
     onAddToCart(product, defaultOptions, '', discountPercent);
+    onClose();
   };
 
   return (
@@ -285,52 +413,69 @@ function CustomizeProductModal({ product, onClose, onAddToCart }: CustomizeProdu
 
         <div className="mt-6 space-y-8">
           
-          {/* Size Selection */}
-          <div className='border-b pb-6'>
-            <label className="block text-lg font-bold text-gray-900 mb-3">Size</label>
-            <div className="mt-2 flex gap-4">
-              {['regular', 'upsized'].map(s => (
-                <label 
-                  key={s} 
-                  className={`flex-1 rounded-xl p-4 border-2 cursor-pointer transition-all hover:shadow-md ${s === size ? 'border-[#6290C3] bg-[#E5F1FB]' : 'border-gray-300 bg-white hover:bg-gray-50'}`}
-                >
-                  <input type="radio" name="size" value={s} checked={s === size} onChange={(e) => setSize(e.target.value)} className="sr-only" />
-                  <span className="block text-center text-base font-bold text-gray-900 capitalize">{s}</span>
-                  <span className="block text-center text-sm text-gray-500">(+ PHP {s === 'upsized' ? '20.00' : '0.00'})</span>
-                </label>
-              ))}
+          {/* Size Selection (Only for drinks) */}
+          {isDrink && (
+            <div className='border-b pb-6'>
+              <label className="block text-lg font-bold text-gray-900 mb-3">Size Selection</label>
+              <div className="mt-2 flex gap-3">
+                {['regular', 'medium', 'large'].map(s => (
+                  <label 
+                    key={s} 
+                    className={`flex-1 rounded-xl p-3 border-2 cursor-pointer transition-all hover:shadow-md ${s === size ? 'border-[#6290C3] bg-[#E5F1FB]' : 'border-gray-300 bg-white hover:bg-gray-50'}`}
+                  >
+                    <input type="radio" name="size" value={s} checked={s === size} onChange={(e) => setSize(e.target.value)} className="sr-only" />
+                    <span className="block text-center text-base font-bold text-gray-900 capitalize">{s}</span>
+                    <span className="block text-center text-sm text-gray-500">
+                      {s === 'medium' ? '(+ PHP 20.00)' : s === 'large' ? '(+ PHP 40.00)' : '(Base)'}
+                    </span>
+                  </label>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Sugar Level */}
-          <div className='border-b pb-6'>
-            <label className="block text-lg font-bold text-gray-900 mb-3">Sugar Level</label>
-            <div className="mt-2 grid grid-cols-4 gap-3">
-              {['0%', '25%', '50%', '100%'].map(level => (
-                <label 
-                  key={level} 
-                  className={`rounded-xl p-3 border-2 cursor-pointer transition-all hover:shadow-md ${sugar === level ? 'border-[#6290C3] bg-[#E5F1FB]' : 'border-gray-300 bg-white hover:bg-gray-50'}`}
-                >
-                  <input type="radio" name="sugar" value={level} checked={sugar === level} onChange={(e) => setSugar(e.target.value)} className="sr-only" />
-                  <span className="block text-center text-base font-bold text-gray-900">{level}</span>
-                </label>
-              ))}
+          {/* Sugar Level (Only for drinks) */}
+          {isDrink && (
+            <div className='border-b pb-6'>
+              <label className="block text-lg font-bold text-gray-900 mb-3">Sugar Level</label>
+              <div className="mt-2 grid grid-cols-4 gap-3">
+                {['0%', '25%', '50%', '100%'].map(level => (
+                  <label 
+                    key={level} 
+                    className={`rounded-xl p-3 border-2 cursor-pointer transition-all hover:shadow-md ${sugar === level ? 'border-[#6290C3] bg-[#E5F1FB]' : 'border-gray-300 bg-white hover:bg-gray-50'}`}
+                  >
+                    <input type="radio" name="sugar" value={level} checked={sugar === level} onChange={(e) => setSugar(e.target.value)} className="sr-only" />
+                    <span className="block text-center text-base font-bold text-gray-900">{level}</span>
+                  </label>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
+          
+          {/* Add-ons Section (Only for drinks - Food items skip this section) */}
+          {isDrink && (
+            <div className='border-b pb-6'>
+              <label className="block text-lg font-bold text-gray-900 mb-3">Add Ons</label>
+              <div className="mt-2 grid grid-cols-3 gap-3">
+                {ADD_ONS.map(ao => (
+                  <button
+                    key={ao.name}
+                    onClick={() => handleAddOnToggle(ao.name)}
+                    className={`
+                      rounded-xl p-3 border-2 cursor-pointer transition-all text-left
+                      ${selectedAddOns.includes(ao.name) ? 'border-[#6290C3] bg-[#E5F1FB]' : 'border-gray-300 bg-white hover:bg-gray-50'}
+                    `}
+                  >
+                    <span className="block text-sm font-bold text-gray-900 leading-tight">{ao.name}</span>
+                    <span className="block text-xs text-gray-500 mt-1">
+                      {`(+ PHP ${ao.price.toFixed(2)})`}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
-          {/* Extras */}
-          <div className="flex items-center border-b pb-6">
-            <input
-              id="oatmilk"
-              type="checkbox"
-              checked={useOatmilk}
-              onChange={(e) => setUseOatmilk(e.target.checked)}
-              className="h-5 w-5 rounded border-gray-300 text-[#6290C3] focus:ring-[#6290C3]"
-            />
-            <label htmlFor="oatmilk" className="ml-3 block text-base font-semibold text-gray-700 cursor-pointer">
-              Add Oatmilk <span className='text-sm text-gray-500'>(+ PHP 10.00)</span>
-            </label>
-          </div>
 
           {/* Notes */}
           <div className='border-b pb-6'>
@@ -340,7 +485,7 @@ function CustomizeProductModal({ product, onClose, onAddToCart }: CustomizeProdu
             <textarea
               id="notes" rows={3} value={notes} onChange={(e) => setNotes(e.target.value)}
               className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-3 focus:border-[#6290C3] focus:ring-[#6290C3] text-gray-900 transition-all"
-              placeholder="Customer requests (e.g., less ice, extra hot)..."
+              placeholder="Customer requests (e.g., iced, hot, less salt)..."
             />
           </div>
 
@@ -409,7 +554,8 @@ export default function OrderPage() {
   const router = useRouter();
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [currentTime, setCurrentTime] = useState<Date | null>(null); 
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
+  // Initial active category is 'all'
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [activePaymentMethod, setActivePaymentMethod] = useState('gcash');
@@ -418,34 +564,35 @@ export default function OrderPage() {
   const [cart, setCart] = useState<CartItem[]>([
     {
       cartItemId: 'uuid-1',
-      productId: 1,
+      productId: 8, 
       name: 'Spanish Latte',
-      basePrice: 60,
-      unitPrice: 70,
+      basePrice: 149,
+      unitPrice: 204, 
       quantity: 1,
       options: [
-        { name: 'Oatmilk', price: 10 },
+        { name: 'Medium (+P20.00)', price: 20 },
+        { name: 'Add-on: Oat Milk', price: 35 }, 
         { name: 'Sugar: 100%', price: 0 },
       ],
       notes: '',
+      baseSubtotal: 204,
       discountPercent: 0,
       discountAmount: 0,
-      baseSubtotal: 70,
     },
     {
       cartItemId: 'uuid-2',
-      productId: 2,
-      name: 'Hazelnut Latte',
-      basePrice: 60,
-      unitPrice: 60,
+      productId: 46, 
+      name: 'Classic Waffles',
+      basePrice: 65,
+      unitPrice: 85, 
       quantity: 2,
       options: [
-        { name: 'Sugar: 100%', price: 0 },
+        { name: 'Add-on: Ice Cream', price: 20 },
       ],
-      notes: '',
+      notes: 'Crispy',
+      baseSubtotal: 85,
       discountPercent: 0,
       discountAmount: 0,
-      baseSubtotal: 60,
     },
   ]);
 
@@ -478,8 +625,9 @@ export default function OrderPage() {
     const discountAmount = baseSubtotal * (discountPercent / 100);
     const finalUnitPrice = baseSubtotal - discountAmount;
 
-    const optionsString = options.map(o => o.name).sort().join(',');
-    const cartEntryId = `${product.id}-${optionsString}-${discountPercent}-${notes}`;
+    // Use JSON.stringify for a reliable options/notes string for cart entry ID
+    const optionsAndNotesString = JSON.stringify({ options: options.map(o => ({n: o.name, p: o.price})).sort(), notes: notes, discountPercent: discountPercent });
+    const cartEntryId = `${product.id}-${optionsAndNotesString}`;
 
     setCart(currentCart => {
       const existingItem = currentCart.find(item => item.cartEntryId === cartEntryId);
@@ -503,12 +651,14 @@ export default function OrderPage() {
           discountPercent: discountPercent,
           discountAmount: discountAmount,
         };
-        return [newCartItem, ...currentCart];
+        // Add new items to the top of the cart
+        return [newCartItem, ...currentCart]; 
       }
     });
 
     setProductToCustomize(null);
   };
+
 
   const handleUpdateQuantity = (cartItemId: string, change: number) => {
     setCart(currentCart => {
@@ -569,7 +719,7 @@ export default function OrderPage() {
                 Pres <span className="text-[#6290C3]">Kopee</span>
               </span>
             </div>
-            
+
             <div 
               className={`
                 absolute left-0 top-full w-64 overflow-hidden rounded-xl bg-white shadow-xl ring-1 ring-black ring-opacity-5 transition-all duration-200 ease-in-out
@@ -583,7 +733,7 @@ export default function OrderPage() {
               </div>
             </div>
           </div>
-          
+
           <div className="flex items-baseline gap-3 font-black italic tracking-tight drop-shadow-sm">
             <span className="text-[64px] text-[#6290C3]">
               {formattedTime.split(' ')[0]}
@@ -599,13 +749,13 @@ export default function OrderPage() {
           
           {/* Categories */}
           <nav className="flex-shrink-0 w-48 rounded-3xl bg-white p-4 shadow-xl flex flex-col h-full"> 
-            <div className="flex flex-1 flex-col justify-around gap-2">
-              {categories.map((category) => (
+            <div className="flex flex-1 flex-col justify-start gap-2"> 
+              {newCategories.map((category) => (
                 <CategoryButton 
-                    key={category.id}
-                    category={category}
-                    active={activeCategory === category.id}
-                    onClick={() => setActiveCategory(category.id)}
+                  key={category.id}
+                  category={category}
+                  active={activeCategory === category.id}
+                  onClick={() => setActiveCategory(category.id)}
                 />
               ))}
             </div>
@@ -637,10 +787,11 @@ export default function OrderPage() {
             </div>
           </main>
 
-          {/* Current Order */}
+          {/* Current Order (OPTIMIZED AREA) */}
           <aside className="w-96 flex-shrink-0 rounded-3xl bg-white p-6 shadow-xl flex flex-col h-full">
             <h2 className="text-xl font-extrabold text-gray-900 mb-4 flex-shrink-0 border-b pb-2">CURRENT ORDER</h2>
 
+            {/* Scrollable Order Items List (Gets more vertical space now) */}
             <div className="flex-1 overflow-y-auto pr-2">
               <div className="flex flex-col gap-4">
                 {cart.map(item => (
@@ -654,17 +805,20 @@ export default function OrderPage() {
               </div>
             </div>
 
-            <div className="mt-6 border-t-2 border-gray-200 pt-4 flex-shrink-0">
-              <div className="flex justify-between text-base text-gray-600 mb-1">
+            {/* Tighter Breakdown Section */}
+            <div className="mt-4 border-t-2 border-gray-200 pt-3 flex-shrink-0">
+              {/* Subtotal & Item Discounts */}
+              <div className="flex justify-between text-sm text-gray-600 mb-0.5">
                 <span>Subtotal</span>
                 <span>PHP {subtotal.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-base text-gray-600 mb-1">
+              <div className="flex justify-between text-sm text-gray-600 mb-2">
                 <span>Item Discounts</span>
                 <span className="text-red-600 font-semibold">- PHP {totalItemDiscount.toFixed(2)}</span>
               </div>
 
-              <div className="flex justify-between items-center text-base text-gray-600 mb-2 pt-1 border-t border-dashed border-gray-200">
+              {/* Order Discount Input */}
+              <div className="flex justify-between items-center text-sm text-gray-600 mb-1 pt-0.5 border-t border-dashed border-gray-200">
                 <label htmlFor="orderDiscount" className="font-bold">Order Discount (%)</label>
                 <input
                   type="number"
@@ -672,20 +826,22 @@ export default function OrderPage() {
                   placeholder="0"
                   value={totalOrderDiscountPercent === 0 ? '' : totalOrderDiscountPercent}
                   onChange={(e) => setTotalOrderDiscountPercent(Number(e.target.value) || 0)}
-                  className="w-20 rounded-md border border-gray-300 p-1 text-right shadow-sm focus:border-[#6290C3] focus:ring-[#6290C3] text-gray-900 text-sm transition-all"
+                  className="w-16 rounded-md border border-gray-300 p-0.5 text-right shadow-sm focus:border-[#6290C3] focus:ring-[#6290C3] text-gray-900 text-xs transition-all"
                 />
               </div>
-              <div className="flex justify-between text-base text-gray-600 mb-3">
+              <div className="flex justify-between text-sm text-gray-600 mb-3">
                 <span>Order Discount Amount</span>
                 <span className="text-red-600 font-semibold">- PHP {totalOrderDiscountAmount.toFixed(2)}</span>
               </div>
 
-              <div className="flex justify-between text-2xl font-black text-gray-900 mb-4 pt-2 border-t-2 border-gray-300">
+              {/* TOTAL */}
+              <div className="flex justify-between text-xl font-black text-gray-900 mb-3 pt-1 border-t-2 border-gray-300">
                 <span>TOTAL</span>
                 <span>PHP {total.toFixed(2)}</span>
               </div>
 
-              <div className="flex justify-between mb-4 gap-2">
+              {/* Payment Buttons */}
+              <div className="flex justify-between mb-3 gap-2">
                 <PaymentButton
                   active={activePaymentMethod === 'cash'}
                   onClick={() => setActivePaymentMethod('cash')}
@@ -706,7 +862,8 @@ export default function OrderPage() {
                 </PaymentButton>
               </div>
 
-              <button className="w-full rounded-xl bg-[#6290C3] py-4 text-xl font-black text-white transition-all hover:bg-[#1A1B41] shadow-lg hover:shadow-xl">
+              {/* CHECK OUT Button */}
+              <button className="w-full rounded-xl bg-[#6290C3] py-3 text-lg font-black text-white transition-all hover:bg-[#1A1B41] shadow-lg hover:shadow-xl">
                 CHECK OUT
               </button>
             </div>
