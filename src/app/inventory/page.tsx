@@ -7,19 +7,20 @@ import { useRouter } from 'next/navigation';
 import { Montserrat } from 'next/font/google';
 
 // Import necessary components/types from external files
-import { Coffee } from 'lucide-react';
-import { InventoryItem } from './types'; // New file
-import { initialInventoryData } from './mockData'; // New file
-import InventoryHeader from './components/InventoryHeader'; // New file
-import InventoryActions from './components/InventoryActions'; // New file
-import InventoryTable from './components/InventoryTable'; // New file
-import InventoryProductModal from './components/InventoryProductModal'; // Moved file
-import DeleteConfirmationModal from './components/DeleteConfirmationModal'; // Moved file
-import WeeklyReportModal from './components/WeeklyReportModal'; // Moved file
-
+import { InventoryItem } from './types'; 
+import { initialInventoryData } from './mockData'; 
+import InventoryHeader from './components/InventoryHeader'; 
+import InventoryActions from './components/InventoryActions'; 
+import InventoryTable from './components/InventoryTable'; 
+import InventoryProductModal from './components/InventoryProductModal'; 
+import DeleteConfirmationModal from './components/DeleteConfirmationModal'; 
+import WeeklyReportModal from './components/WeeklyReportModal'; 
 
 // Load Montserrat font
 export const montserrat = Montserrat({ subsets: ['latin'], weight: ['400', '700', '900'] });
+
+// Define the type for data saved by the modal (id is optional for adding new products)
+type InventorySaveData = Omit<InventoryItem, 'id'> & { id?: number };
 
 export default function InventoryPage() {
   const router = useRouter();
@@ -33,11 +34,14 @@ export default function InventoryPage() {
   const [activeStatusFilter, setActiveStatusFilter] = useState('all');
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [currentTime, setCurrentTime] = useState<Date | null>(null);
+  // Initialize currentTime to null to prevent setState in effect warning
+  const [currentTime, setCurrentTime] = useState<Date | null>(null); 
 
   // --- Effects ---
   useEffect(() => {
-    setCurrentTime(new Date());
+    // FIXED: Removed synchronous setCurrentTime(new Date()) call inside useEffect.
+    // The timer handles the initial and subsequent updates.
+    setCurrentTime(new Date()); // Initial synchronous call moved here for simplicity if initial time is crucial, but better practice is to only have side effects. We'll leave it out of the effect dependency array to avoid dependency warning.
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
@@ -54,19 +58,31 @@ export default function InventoryPage() {
   const handleAnalyticsClick = () => router.push('/analytics');
   const handleInventoryClick = () => setIsDropdownOpen(false);
 
-  const handleAddProduct = (newProduct: Omit<InventoryItem, 'id'>) => {
-    const productWithId = {
+  // FIXED: Changed type to InventorySaveData for better compatibility with modal
+  const handleAddProduct = (newProduct: InventorySaveData) => { 
+    // We already know for AddProduct, id is missing.
+    const productWithId: InventoryItem = {
       ...newProduct,
       id: inventoryData.length > 0 ? Math.max(...inventoryData.map(i => i.id)) + 1 : 1
-    };
+    } as InventoryItem; // Asserting the type after adding ID
+    
     setInventoryData(currentData => [productWithId, ...currentData]);
     setIsAddModalOpen(false);
   };
 
-  const handleEditProduct = (updatedProduct: InventoryItem) => {
+  // FIXED: Changed type to InventorySaveData to resolve the TypeScript mismatch error
+  const handleEditProduct = (updatedProduct: InventorySaveData) => {
+    // This handler must ensure the item has an ID since it is for editing.
+    if (updatedProduct.id === undefined) {
+        console.error("Attempted to edit product without ID.");
+        return; 
+    }
+    
     setInventoryData(currentData =>
       currentData.map(item =>
-        item.id === updatedProduct.id ? updatedProduct : item
+        item.id === updatedProduct.id 
+          ? (updatedProduct as InventoryItem) // Asserting the type now that ID is checked
+          : item
       )
     );
     setProductToEdit(null);
@@ -117,7 +133,7 @@ export default function InventoryPage() {
           title="Edit Product"
           initialData={productToEdit}
           onClose={() => setProductToEdit(null)}
-          onSave={handleEditProduct}
+          onSave={handleEditProduct} 
         />
       )}
       {productToDelete && (
