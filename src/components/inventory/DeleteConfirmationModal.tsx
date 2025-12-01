@@ -1,6 +1,6 @@
 // src/app/inventory/components/DeleteConfirmationModal.tsx
-import React from 'react';
-import { AlertTriangle } from 'lucide-react';
+import React from "react";
+import { AlertTriangle } from "lucide-react";
 
 interface DeleteConfirmationModalProps {
   productName: string;
@@ -8,13 +8,20 @@ interface DeleteConfirmationModalProps {
   onConfirm: () => void;
 }
 
-export default function DeleteConfirmationModal({ productName, onClose, onConfirm }: DeleteConfirmationModalProps) {
+export default function DeleteConfirmationModal({
+  productName,
+  onClose,
+  onConfirm,
+}: DeleteConfirmationModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
         <div className="flex items-start">
-          <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-            <AlertTriangle className="h-6 w-6 text-red-600" aria-hidden="true" />
+          <div className="mx-auto shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+            <AlertTriangle
+              className="h-6 w-6 text-red-600"
+              aria-hidden="true"
+            />
           </div>
           <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
             <h3 className="text-lg leading-6 font-medium text-gray-900">
@@ -22,7 +29,11 @@ export default function DeleteConfirmationModal({ productName, onClose, onConfir
             </h3>
             <div className="mt-2">
               <p className="text-sm text-gray-500">
-                Are you sure you want to delete <span className="font-semibold text-gray-700">"{productName}"</span>? This action cannot be undone.
+                Are you sure you want to delete{" "}
+                <span className="font-semibold text-gray-700">
+                  &quot;{productName}&quot;
+                </span>
+                ? This action cannot be undone.
               </p>
             </div>
           </div>

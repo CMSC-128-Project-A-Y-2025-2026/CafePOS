@@ -1,6 +1,6 @@
 // src/app/components/SelectionMenu/DropdownItem.tsx
-import React from 'react';
-import { montserrat } from '@/app/inventory/page'; // Import font from main page
+import React from "react";
+import { montserrat } from "@/app/inventory/page"; // Import font from main page
 
 interface DropdownItemProps {
   icon: React.ElementType;
@@ -8,7 +8,11 @@ interface DropdownItemProps {
   onClick: () => void;
 }
 
-export default function DropdownItem({ icon: IconComponent, label, onClick }: DropdownItemProps) {
+export default function DropdownItem({
+  icon: IconComponent,
+  label,
+  onClick,
+}: DropdownItemProps) {
   return (
     <button
       onClick={onClick}

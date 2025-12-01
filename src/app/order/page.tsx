@@ -2,23 +2,25 @@
 
 "use client";
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
-import { Montserrat } from 'next/font/google';
+import React, { useState, useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { Montserrat } from "next/font/google";
 
 // Import all definitions and data
-import { Product, Option, CartItem } from './types';
-import { products, newCategories, initialCart } from './mockData';
+import { Product, Option, CartItem } from "./types";
+import { products, initialCart } from "./mockData";
 
 // Import components
-import OrderHeader from './components/OrderHeader';
-import ProductList from './components/ProductList';
-import OrderSummary from './components/OrderSummary';
-import CustomizeProductModal from './components/CustomizeProductModal';
-
+import OrderHeader from "../../components/order/OrderHeader";
+import ProductList from "../../components/order/ProductList";
+import OrderSummary from "../../components/order/OrderSummary";
+import CustomizeProductModal from "../../components/order/CustomizeProductModal";
 
 // Load Montserrat font
-export const montserrat = Montserrat({ subsets: ['latin'], weight: ['400', '700', '900'] });
+export const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["400", "700", "900"],
+});
 
 // --- Main Order Page Component ---
 
@@ -27,39 +29,41 @@ export default function OrderPage() {
 
   // --- State ---
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [currentTime, setCurrentTime] = useState<Date | null>(null);
-  const [activeCategory, setActiveCategory] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activePaymentMethod, setActivePaymentMethod] = useState('gcash');
-  const [productToCustomize, setProductToCustomize] = useState<Product | null>(null);
+  const [currentTime, setCurrentTime] = useState<Date>(new Date());
+  const [activeCategory, setActiveCategory] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activePaymentMethod, setActivePaymentMethod] = useState("gcash");
+  const [productToCustomize, setProductToCustomize] = useState<Product | null>(
+    null,
+  );
   const [totalOrderDiscountPercent, setTotalOrderDiscountPercent] = useState(0);
   const [cart, setCart] = useState<CartItem[]>(initialCart);
 
   // --- Effects (Time) ---
   useEffect(() => {
-    setCurrentTime(new Date());
+    // Update time every second
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  const formattedTime = currentTime ? currentTime.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
+  const formattedTime = currentTime.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
     hour12: true,
-  }) : '--:-- --';
+  });
 
   // --- Router Handlers ---
-  const handleLogoClick = () => router.push('/');
+  const handleLogoClick = () => router.push("/");
   const handleOrderClick = () => setIsDropdownOpen(false);
-  const handleAnalyticsClick = () => router.push('/analytics');
-  const handleInventoryClick = () => router.push('/inventory');
+  const handleAnalyticsClick = () => router.push("/analytics");
+  const handleInventoryClick = () => router.push("/inventory");
 
   // --- Cart Handlers ---
   const handleAddToCart = (
     product: Product,
     options: Option[],
     notes: string,
-    discountPercent: number
+    discountPercent: number,
   ) => {
     const basePrice = product.price;
     const optionsPrice = options.reduce((acc, opt) => acc + opt.price, 0);
@@ -68,15 +72,23 @@ export default function OrderPage() {
     const finalUnitPrice = baseSubtotal - discountAmount;
 
     // Use JSON.stringify for a reliable options/notes string for cart entry ID
-    const optionsAndNotesString = JSON.stringify({ options: options.map(o => ({n: o.name, p: o.price})).sort(), notes: notes, discountPercent: discountPercent });
+    const optionsAndNotesString = JSON.stringify({
+      options: options.map((o) => ({ n: o.name, p: o.price })).sort(),
+      notes: notes,
+      discountPercent: discountPercent,
+    });
     const cartEntryId = `${product.id}-${optionsAndNotesString}`;
 
-    setCart(currentCart => {
-      const existingItem = currentCart.find(item => item.cartEntryId === cartEntryId);
+    setCart((currentCart) => {
+      const existingItem = currentCart.find(
+        (item) => item.cartEntryId === cartEntryId,
+      );
 
       if (existingItem) {
-        return currentCart.map(item =>
-          item.cartEntryId === cartEntryId ? { ...item, quantity: item.quantity + 1 } : item
+        return currentCart.map((item) =>
+          item.cartEntryId === cartEntryId
+            ? { ...item, quantity: item.quantity + 1 }
+            : item,
         );
       } else {
         const newCartItem: CartItem = {
@@ -101,19 +113,22 @@ export default function OrderPage() {
     setProductToCustomize(null);
   };
 
-
   const handleUpdateQuantity = (cartItemId: string, change: number) => {
-    setCart(currentCart => {
-      const targetItem = currentCart.find(item => item.cartItemId === cartItemId);
+    setCart((currentCart) => {
+      const targetItem = currentCart.find(
+        (item) => item.cartItemId === cartItemId,
+      );
       if (!targetItem) return currentCart;
 
       const newQuantity = targetItem.quantity + change;
 
       if (newQuantity <= 0) {
-        return currentCart.filter(item => item.cartItemId !== cartItemId);
+        return currentCart.filter((item) => item.cartItemId !== cartItemId);
       } else {
-        return currentCart.map(item =>
-          item.cartItemId === cartItemId ? { ...item, quantity: newQuantity } : item
+        return currentCart.map((item) =>
+          item.cartItemId === cartItemId
+            ? { ...item, quantity: newQuantity }
+            : item,
         );
       }
     });
@@ -122,22 +137,28 @@ export default function OrderPage() {
   // --- Memos (Calculations) ---
   const filteredProducts = useMemo(() => {
     return products
-      .filter(p => activeCategory === 'all' || p.category === activeCategory)
-      .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
+      .filter((p) => activeCategory === "all" || p.category === activeCategory)
+      .filter((p) => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
   }, [activeCategory, searchTerm]);
 
   const subtotal = useMemo(() => {
-    return cart.reduce((acc, item) => acc + (item.baseSubtotal * item.quantity), 0);
+    return cart.reduce(
+      (acc, item) => acc + item.baseSubtotal * item.quantity,
+      0,
+    );
   }, [cart]);
 
   const totalItemDiscount = useMemo(() => {
-    return cart.reduce((acc, item) => acc + (item.discountAmount * item.quantity), 0);
+    return cart.reduce(
+      (acc, item) => acc + item.discountAmount * item.quantity,
+      0,
+    );
   }, [cart]);
 
   const subtotalAfterItemDiscounts = subtotal - totalItemDiscount;
-  const totalOrderDiscountAmount = subtotalAfterItemDiscounts * (totalOrderDiscountPercent / 100);
+  const totalOrderDiscountAmount =
+    subtotalAfterItemDiscounts * (totalOrderDiscountPercent / 100);
   const total = subtotalAfterItemDiscounts - totalOrderDiscountAmount;
-
 
   return (
     <div className={montserrat.className}>
@@ -150,7 +171,6 @@ export default function OrderPage() {
       )}
 
       <div className="flex h-screen flex-col bg-[#F9F1E9] p-6">
-
         <OrderHeader
           formattedTime={formattedTime}
           isDropdownOpen={isDropdownOpen}

@@ -2,19 +2,22 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Montserrat } from 'next/font/google'; 
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Montserrat } from "next/font/google";
 
 // Import components
-import AnalyticsHeader from './components/AnalyticsHeader';
-import TabNavigation from './components/TabNavigation';
-import PerformanceTab from './components/PerformanceTab';
-import BestsellerTab from './components/BestsellerTab';
-import TrendTab from './components/TrendTab';
+import AnalyticsHeader from "../../components/analytics/AnalyticsHeader";
+import TabNavigation from "../../components/analytics/TabNavigation";
+import PerformanceTab from "../../components/analytics/PerformanceTab";
+import BestsellerTab from "../../components/analytics/BestsellerTab";
+import TrendTab from "../../components/analytics/TrendTab";
 
-// Load Montserrat font 
-export const montserrat = Montserrat({ subsets: ['latin'], weight: ['400', '700', '900'] });
+// Load Montserrat font
+export const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["400", "700", "900"],
+});
 
 // --- Main Component ---
 
@@ -24,8 +27,8 @@ export default function AnalyticsPage() {
   // --- State ---
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [activeMainTab, setActiveMainTab] = useState('performance');
-  const [activeTimeFilter, setActiveTimeFilter] = useState('week');
+  const [activeMainTab, setActiveMainTab] = useState("performance");
+  const [activeTimeFilter, setActiveTimeFilter] = useState("week");
 
   // --- Effects ---
   useEffect(() => {
@@ -33,21 +36,22 @@ export default function AnalyticsPage() {
     return () => clearInterval(timer);
   }, []);
 
-  const formattedTime = currentTime.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
+  const formattedTime = currentTime.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
     hour12: true,
   });
 
   // --- Handlers ---
-  const handleLogoClick = () => router.push('/');
-  const handleOrderClick = () => router.push('/order');
+  const handleLogoClick = () => router.push("/");
+  const handleOrderClick = () => router.push("/order");
   const handleAnalyticsClick = () => setIsDropdownOpen(false);
-  const handleInventoryClick = () => router.push('/inventory');
+  const handleInventoryClick = () => router.push("/inventory");
 
   return (
-    <div className={`flex min-h-screen flex-col bg-[#F9F1E9] p-5 ${montserrat.className}`}>
-      
+    <div
+      className={`flex min-h-screen flex-col bg-[#F9F1E9] p-5 ${montserrat.className}`}
+    >
       <AnalyticsHeader
         formattedTime={formattedTime}
         isDropdownOpen={isDropdownOpen}
@@ -68,9 +72,9 @@ export default function AnalyticsPage() {
 
       {/* Tab Content */}
       <main className="flex-1 rounded-2xl bg-white p-6 shadow-lg overflow-hidden drop-shadow-md">
-        {activeMainTab === 'performance' && <PerformanceTab />}
-        {activeMainTab === 'bestseller' && <BestsellerTab />}
-        {activeMainTab === 'trend' && <TrendTab />}
+        {activeMainTab === "performance" && <PerformanceTab />}
+        {activeMainTab === "bestseller" && <BestsellerTab />}
+        {activeMainTab === "trend" && <TrendTab />}
       </main>
     </div>
   );

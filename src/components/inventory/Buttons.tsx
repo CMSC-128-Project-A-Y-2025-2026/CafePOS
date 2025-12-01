@@ -1,5 +1,5 @@
 // src/app/inventory/components/Buttons.tsx
-import React from 'react';
+import React from "react";
 
 interface ActionButtonProps {
   children: React.ReactNode;
@@ -7,7 +7,11 @@ interface ActionButtonProps {
   onClick: () => void;
 }
 
-export function ActionButton({ children, className, onClick }: ActionButtonProps) {
+export function ActionButton({
+  children,
+  className,
+  onClick,
+}: ActionButtonProps) {
   return (
     <button
       onClick={onClick}
@@ -30,7 +34,12 @@ interface FilterPillProps {
   active: boolean;
 }
 
-export function FilterPill({ children, className, onClick, active }: FilterPillProps) {
+export function FilterPill({
+  children,
+  className,
+  onClick,
+  active,
+}: FilterPillProps) {
   return (
     <button
       onClick={onClick}
@@ -38,7 +47,7 @@ export function FilterPill({ children, className, onClick, active }: FilterPillP
         rounded-full px-5 py-2 text-sm font-bold
         transition-all duration-200
         ${className}
-        ${active ? 'opacity-100 shadow-md ring-2 ring-[#6290C3] ring-offset-2 ring-offset-[#F9F1E9]' : 'opacity-70 hover:opacity-100'}
+        ${active ? "opacity-100 shadow-md ring-2 ring-[#6290C3] ring-offset-2 ring-offset-[#F9F1E9]" : "opacity-70 hover:opacity-100"}
       `}
     >
       {children}
@@ -52,7 +61,11 @@ interface TableActionButtonProps {
   onClick: () => void;
 }
 
-export function TableActionButton({ children, className, onClick }: TableActionButtonProps) {
+export function TableActionButton({
+  children,
+  className,
+  onClick,
+}: TableActionButtonProps) {
   return (
     <button
       onClick={onClick}
