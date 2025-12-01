@@ -1,15 +1,17 @@
 // src/app/order/components/ProductCard.tsx
-import React from 'react';
-import Image from 'next/image';
-import { Plus } from 'lucide-react';
-import { Product } from '../types';
+import React from "react";
+import { Plus } from "lucide-react";
+import { Product } from "../../app/order/types";
 
 interface ProductCardProps {
   product: Product;
   onCustomize: () => void;
 }
 
-export default function ProductCard({ product, onCustomize }: ProductCardProps) {
+export default function ProductCard({
+  product,
+  onCustomize,
+}: ProductCardProps) {
   return (
     <div
       className="
@@ -22,15 +24,17 @@ export default function ProductCard({ product, onCustomize }: ProductCardProps) 
     >
       {/* Remove Image component as it was just a placeholder and might cause build errors */}
       {/* <Image src={product.image} alt={product.name} width={150} height={150} className="rounded-lg mb-2" /> */}
-      <div className="flex flex-col items-center justify-center flex-grow text-center">
-        <h3 className="text-xl font-extrabold text-gray-900 leading-snug">{product.name}</h3>
-        <p className="text-lg font-bold text-[#6290C3] mt-1">PHP {product.price.toFixed(2)}</p>
+      <div className="flex flex-col items-center justify-center grow text-center">
+        <h3 className="text-xl font-extrabold text-gray-900 leading-snug">
+          {product.name}
+        </h3>
+        <p className="text-lg font-bold text-[#6290C3] mt-1">
+          PHP {product.price.toFixed(2)}
+        </p>
       </div>
 
-      <div className="mt-4 w-full flex-shrink-0">
-        <div
-          className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#E5F1FB] p-2 text-[#6290C3] font-semibold transition-all group-hover:bg-[#6290C3] group-hover:text-white"
-        >
+      <div className="mt-4 w-full shrink-0">
+        <div className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#E5F1FB] p-2 text-[#6290C3] font-semibold transition-all group-hover:bg-[#6290C3] group-hover:text-white">
           <Plus size={18} />
           <span>Select</span>
         </div>

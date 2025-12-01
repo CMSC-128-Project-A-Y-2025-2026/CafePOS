@@ -1,6 +1,6 @@
 "use client";
-import React from 'react';
-import { ArrowRight } from 'lucide-react';
+import React from "react";
+import { ArrowRight } from "lucide-react";
 
 interface ChoiceCardProps {
   icon: React.ElementType;
@@ -8,9 +8,13 @@ interface ChoiceCardProps {
   onClick: () => void;
 }
 
-export default function ChoiceCard({ icon: IconComponent, label, onClick }: ChoiceCardProps) {
+export default function ChoiceCard({
+  icon: IconComponent,
+  label,
+  onClick,
+}: ChoiceCardProps) {
   return (
-    <div 
+    <div
       onClick={onClick}
       className="
         group relative flex flex-1 cursor-pointer flex-col items-center justify-between 

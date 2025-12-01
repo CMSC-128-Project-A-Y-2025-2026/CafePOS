@@ -1,7 +1,7 @@
 // src/app/inventory/components/InventoryTable.tsx
-import React from 'react';
-import { InventoryItem } from '@/app/inventory/types';
-import { TableActionButton } from './Buttons';
+import React from "react";
+import { InventoryItem } from "@/app/inventory/types";
+import { TableActionButton } from "./Buttons";
 
 interface InventoryTableProps {
   filteredInventory: InventoryItem[];
@@ -17,7 +17,7 @@ export default function InventoryTable({
   return (
     <main className="flex-1 rounded-2xl bg-white p-8 shadow-lg flex flex-col overflow-hidden">
       {/* Table Header */}
-      <div className="grid grid-cols-6 gap-4 rounded-lg bg-[#E5F1FB] px-6 py-4 flex-shrink-0">
+      <div className="grid grid-cols-6 gap-4 rounded-lg bg-[#E5F1FB] px-6 py-4 shrink-0">
         <div className="font-bold text-gray-700">Product</div>
         <div className="font-bold text-gray-700">Category</div>
         <div className="font-bold text-gray-700">Stock</div>
@@ -29,7 +29,10 @@ export default function InventoryTable({
       {/* Table Body */}
       <div className="mt-4 flex flex-col gap-4 flex-1 overflow-y-auto">
         {filteredInventory.map((item) => (
-          <div key={item.id} className="grid grid-cols-6 items-center gap-4 border-b border-gray-100 px-6 py-4">
+          <div
+            key={item.id}
+            className="grid grid-cols-6 items-center gap-4 border-b border-gray-100 px-6 py-4"
+          >
             <div className="font-medium text-gray-900">{item.product}</div>
             <div className="text-gray-700">{item.category}</div>
             <div className="text-gray-700">{item.stock}</div>

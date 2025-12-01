@@ -3,10 +3,10 @@ const config = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'placehold.co',
-        port: '',
-        pathname: '/**',
+        protocol: "https",
+        hostname: "placehold.co",
+        port: "",
+        pathname: "/**",
       },
     ],
     // --- ADDED THESE LINES ---
@@ -14,6 +14,6 @@ const config = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     // -----------------------
   },
-}
+};
 
-export default config
+export default config;
