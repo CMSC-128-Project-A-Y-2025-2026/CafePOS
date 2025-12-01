@@ -92,20 +92,26 @@ export default function InventoryProductModal({
             label="Product Name"
             id="product"
             value={product}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setProduct(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setProduct(e.target.value)
+            }
           />
           <InputField
             label="Category"
             id="category"
             value={category}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCategory(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setCategory(e.target.value)
+            }
           />
           <InputField
             label="Stock"
             id="stock"
             type="number"
             value={stock}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStock(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setStock(e.target.value)
+            }
             min="0"
           />
 
@@ -133,7 +139,9 @@ export default function InventoryProductModal({
             label="Cost (e.g., PHP 95)"
             id="cost"
             value={cost}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCost(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setCost(e.target.value)
+            }
           />
 
           <div className="mt-6 flex justify-end gap-4">
