@@ -16,9 +16,9 @@ export default function MenuTable({
   onDelete,
 }: MenuTableProps) {
   return (
-    // Outer container maintains flex-1 for layout
-    <div className="flex-1 rounded-2xl bg-white p-8 shadow-lg flex flex-col overflow-hidden">
-      {/* Table Header (Fixed Position) */}
+    // Outer container maintains flex-1 for layout (This is correct)
+    <div className="h-full min-h-0 rounded-2xl bg-white p-8 shadow-lg flex flex-col overflow-hidden">
+      {/* Table Header (Fixed Position - This is correct) */}
       <div className="grid grid-cols-5 gap-4 rounded-lg bg-[#E5F1FB] px-6 py-4 shrink-0">
         <div className="font-bold text-gray-700 col-span-2">Product Name</div>
         <div className="font-bold text-gray-700">Category</div>
@@ -27,10 +27,11 @@ export default function MenuTable({
       </div>
 
       {/* Table Body (Scrollable Area) */}
-      {/* Set an explicit height constraint (e.g., max-h-[70vh]) or use flex-1 and overflow-y-auto */}
+      {/* FIX: Removed the fixed 'maxHeight' style. 
+          The existing 'flex-1' and 'overflow-y-auto' now work correctly. */}
       <div
-        className="mt-4 flex flex-col gap-1 flex-1 overflow-y-auto"
-        style={{ maxHeight: "185px" }}
+        className="mt-4 flex flex-col gap-1 flex-1 h-full overflow-y-auto"
+        // REMOVE: style={{ maxHeight: "185px" }} 
       >
         {menuItems.map((item) => (
           <div
