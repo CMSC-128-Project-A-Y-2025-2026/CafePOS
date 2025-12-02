@@ -1,5 +1,3 @@
-// src/app/analytics/page.tsx
-
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -49,8 +47,9 @@ export default function AnalyticsPage() {
   const handleInventoryClick = () => router.push("/inventory");
 
   return (
+    // FIX 1: Changed 'min-h-screen' to 'h-screen' to enforce full height, and removed 'p-5'
     <div
-      className={`flex min-h-screen flex-col bg-[#F9F1E9] p-5 ${montserrat.className}`}
+      className={`flex h-screen flex-col bg-[#F9F1E9] ${montserrat.className}`}
     >
       <AnalyticsHeader
         formattedTime={formattedTime}
@@ -62,20 +61,28 @@ export default function AnalyticsPage() {
         handleInventoryClick={handleInventoryClick}
       />
 
-      {/* Tab Navigation */}
-      <TabNavigation
-        activeMainTab={activeMainTab}
-        setActiveMainTab={setActiveMainTab}
-        activeTimeFilter={activeTimeFilter}
-        setActiveTimeFilter={setActiveTimeFilter}
-      />
+      {/* NEW WRAPPER: This container takes the space below the header ('flex-1') 
+          and applies the page padding ('p-5'). */}
+      <div className="flex flex-col flex-1 p-5 overflow-hidden">
+        {/* Tab Navigation (Shrink-0 to keep fixed height) */}
+        <div className="shrink-0 mb-5">
+          <TabNavigation
+            activeMainTab={activeMainTab}
+            setActiveMainTab={setActiveMainTab}
+            activeTimeFilter={activeTimeFilter}
+            setActiveTimeFilter={setActiveTimeFilter}
+          />
+        </div>
 
-      {/* Tab Content */}
-      <main className="flex-1 rounded-2xl bg-white p-6 shadow-lg overflow-hidden drop-shadow-md">
-        {activeMainTab === "performance" && <PerformanceTab />}
-        {activeMainTab === "bestseller" && <BestsellerTab />}
-        {activeMainTab === "trend" && <TrendTab />}
-      </main>
+        {/* Tab Content: The 'main' tag now uses 'flex-1' and has 'h-full' implicitly 
+            from its parent, forcing it to fill the remaining height 
+            below the TabNavigation component. */}
+        <main className="flex-1 rounded-2xl bg-white p-6 shadow-lg overflow-hidden drop-shadow-md">
+          {activeMainTab === "performance" && <PerformanceTab />}
+          {activeMainTab === "bestseller" && <BestsellerTab />}
+          {activeMainTab === "trend" && <TrendTab />}
+        </main>
+      </div>
     </div>
   );
 }

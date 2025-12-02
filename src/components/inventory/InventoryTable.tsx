@@ -31,7 +31,7 @@ export default function InventoryTable({
         {filteredInventory.map((item) => (
           <div
             key={item.id}
-            className="grid grid-cols-6 items-center gap-4 border-b border-gray-100 px-6 py-4"
+            className="grid grid-cols-6 items-center gap-4 border-b border-gray-100 px-6 py-4 hover:bg-gray-50 transition-colors"
           >
             <div className="font-medium text-gray-900">{item.product}</div>
             <div className="text-gray-700">{item.category}</div>
