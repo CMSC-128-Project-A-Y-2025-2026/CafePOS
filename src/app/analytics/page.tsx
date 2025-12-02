@@ -64,15 +64,14 @@ export default function AnalyticsPage() {
       {/* NEW WRAPPER: This container takes the space below the header ('flex-1') 
           and applies the page padding ('p-5'). */}
       <div className="flex flex-col flex-1 p-5 overflow-hidden">
-        
         {/* Tab Navigation (Shrink-0 to keep fixed height) */}
         <div className="shrink-0 mb-5">
-            <TabNavigation
-                activeMainTab={activeMainTab}
-                setActiveMainTab={setActiveMainTab}
-                activeTimeFilter={activeTimeFilter}
-                setActiveTimeFilter={setActiveTimeFilter}
-            />
+          <TabNavigation
+            activeMainTab={activeMainTab}
+            setActiveMainTab={setActiveMainTab}
+            activeTimeFilter={activeTimeFilter}
+            setActiveTimeFilter={setActiveTimeFilter}
+          />
         </div>
 
         {/* Tab Content: The 'main' tag now uses 'flex-1' and has 'h-full' implicitly 

@@ -17,7 +17,6 @@ export default function PerformanceTab() {
   return (
     // Outer container takes full height of the parent tab content area
     <div className="flex h-full gap-4">
-      
       {/* Stats Column: Use h-full and justify-between to distribute content vertically */}
       <div className="flex w-64 flex-col justify-between gap-2 pt-2 h-full">
         <StatCard label="Total Revenue" value={`PHP 15,450.00`} color="green" />
