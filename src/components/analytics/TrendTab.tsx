@@ -1,4 +1,3 @@
-// src/app/analytics/components/TrendTab.tsx
 import React, { useState } from "react";
 import {
   Bar,
@@ -44,10 +43,12 @@ export default function TrendTab() {
         </div>
       </div>
 
-      {/* Chart container: FINAL COMPACT HEIGHT h-[370px] */}
+      {/* Chart container: FIX - Removed fixed height classes/styles (h-[370px], maxHeight) 
+          and added 'flex-1' to make it fill the remaining space. */}
       <div
-        className="h-[370px] bg-gray-50 p-3 rounded-xl shadow-inner border border-gray-200"
-        style={{ maxHeight: "380px" }}
+        className="flex-1 bg-gray-50 p-3 rounded-xl shadow-inner border border-gray-200"
+        // REMOVED: h-[370px]
+        // REMOVED: style={{ maxHeight: "380px" }}
       >
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
