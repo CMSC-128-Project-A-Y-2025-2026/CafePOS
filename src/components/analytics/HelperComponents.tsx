@@ -26,12 +26,14 @@ export function StatCard({
   };
 
   return (
-    // FIX 1: Added 'flex flex-col h-full' to ensure the card occupies the full height 
+    // FIX 1: Added 'flex flex-col h-full' to ensure the card occupies the full height
     // provided by its flex-1 wrapper in PerformanceTab.
     // FIX 2: Changed 'p-4' to 'p-3' to reduce internal padding and save vertical space.
-    <div className={`flex flex-col h-full rounded-2xl p-3 ${colorClasses[color]} drop-shadow-md`}>
+    <div
+      className={`flex flex-col h-full rounded-2xl p-3 ${colorClasses[color]} drop-shadow-md`}
+    >
       <span className="block text-base font-semibold">{label}</span>
-      
+
       {/* FIX 3: Removed mt-1 to reduce margin between label and value. */}
       {/* FINAL SIZING: text-2xl/text-lg */}
       <span
