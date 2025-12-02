@@ -12,11 +12,7 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
-<<<<<<< Updated upstream
     "@supabase/ssr": "^0.8.0",
-=======
-    "@supabase/supabase-js": "^2.86.0",
->>>>>>> Stashed changes
     "lucide-react": "^0.553.0",
     "next": "16.0.6",
     "prettier": "^3.7.3",
@@ -29,11 +25,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-<<<<<<< Updated upstream
     "autoprefixer": "^10.4.21",
-=======
-    "baseline-browser-mapping": "^2.8.32",
->>>>>>> Stashed changes
     "eslint": "^9",
     "eslint-config-prettier": "^10.1.1",
     "eslint-config-next": "16.0.6",
