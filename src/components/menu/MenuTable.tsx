@@ -31,7 +31,7 @@ export default function MenuTable({
           The existing 'flex-1' and 'overflow-y-auto' now work correctly. */}
       <div
         className="mt-4 flex flex-col gap-1 flex-1 h-full overflow-y-auto"
-        // REMOVE: style={{ maxHeight: "185px" }} 
+        // REMOVE: style={{ maxHeight: "185px" }}
       >
         {menuItems.map((item) => (
           <div
