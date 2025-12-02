@@ -49,7 +49,7 @@ export default function AnalyticsPage() {
   return (
     // FIX 1: Changed 'min-h-screen' to 'h-screen' to enforce full height, and removed 'p-5'
     <div
-      className={`flex h-screen flex-col bg-[#F9F1E9] ${montserrat.className}`}
+      className={`flex h-screen flex-col bg-[#F9F1E9] p-6 ${montserrat.className}`}
     >
       <AnalyticsHeader
         formattedTime={formattedTime}
@@ -63,7 +63,7 @@ export default function AnalyticsPage() {
 
       {/* NEW WRAPPER: This container takes the space below the header ('flex-1') 
           and applies the page padding ('p-5'). */}
-      <div className="flex flex-col flex-1 p-5 overflow-hidden">
+      <div className="flex flex-col flex-1 p-6 overflow-hidden">
         {/* Tab Navigation (Shrink-0 to keep fixed height) */}
         <div className="shrink-0 mb-5">
           <TabNavigation
