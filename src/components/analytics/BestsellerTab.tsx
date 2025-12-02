@@ -1,5 +1,3 @@
-// src/app/analytics/components/BestsellerTab.tsx
-
 import React, { useState, useMemo } from "react";
 import {
   allTopBestsellers,
@@ -32,7 +30,7 @@ export default function BestsellerTab() {
 
   return (
     <div className="flex h-full flex-col pt-1">
-      {/* Filters */}
+      {/* Filters (Shrink-0 is implied by flex-wrap, but explicitly adding for clarity) */}
       <div className="flex flex-wrap gap-2 mb-3 px-3 flex-shrink-0">
         {bestsellerCategories.map((cat) => (
           <BestsellerFilterPill
@@ -44,8 +42,10 @@ export default function BestsellerTab() {
         ))}
       </div>
 
-      {/* Scrollable Content Container (Fixed Height) */}
-      <div className="px-3 pb-3 overflow-y-auto" style={{ maxHeight: "380px" }}>
+      {/* Scrollable Content Container */}
+      {/* FIX: Removed fixed 'maxHeight' and added 'flex-1'. 
+          This forces the container to fill all remaining vertical space. */}
+      <div className="px-3 pb-3 overflow-y-auto flex-1">
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
           {rankedProducts.length > 0 ? (
             rankedProducts.map((product) => (

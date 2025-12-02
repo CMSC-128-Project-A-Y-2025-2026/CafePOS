@@ -1,4 +1,3 @@
-// src/app/analytics/components/HelperComponents.tsx
 import React from "react";
 import { TopSellerProduct } from "../../app/analytics/types";
 import { montserrat } from "../../app/page";
@@ -27,12 +26,16 @@ export function StatCard({
   };
 
   return (
-    // p-4 remains
-    <div className={`rounded-2xl p-4 ${colorClasses[color]} drop-shadow-md`}>
+    // FIX 1: Added 'flex flex-col h-full' to ensure the card occupies the full height 
+    // provided by its flex-1 wrapper in PerformanceTab.
+    // FIX 2: Changed 'p-4' to 'p-3' to reduce internal padding and save vertical space.
+    <div className={`flex flex-col h-full rounded-2xl p-3 ${colorClasses[color]} drop-shadow-md`}>
       <span className="block text-base font-semibold">{label}</span>
+      
+      {/* FIX 3: Removed mt-1 to reduce margin between label and value. */}
       {/* FINAL SIZING: text-2xl/text-lg */}
       <span
-        className={`block mt-1 ${smallText ? "text-lg" : "text-2xl"} font-bold`}
+        className={`block ${smallText ? "text-lg" : "text-2xl"} font-bold leading-none`}
       >
         {value}
       </span>
