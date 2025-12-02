@@ -1,6 +1,4 @@
-import { createClient } from '#/utils/supabase/client';
-import { NextResponse } from 'next/server';
+import { createClient } from "#/utils/supabase/client";
+import { NextResponse } from "next/server";
 
-export async function DELETE() {
-    
-}
+export async function DELETE() {}
