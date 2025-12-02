@@ -59,6 +59,7 @@ export default function InventoryPage() {
   });
 
   // --- Handlers  ---
+  const handleLogoClick = () => router.push("/");
   const handleOrderClick = () => router.push("/order");
   const handleAnalyticsClick = () => router.push("/analytics");
   const handleInventoryClick = () => setIsDropdownOpen(false);
