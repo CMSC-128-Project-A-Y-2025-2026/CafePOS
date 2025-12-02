@@ -17,7 +17,7 @@ export default function TabNavigation({
 }: TabNavigationProps) {
   return (
     // UPDATED: Reduced padding of the container from p-2 to p-1.5
-    <nav className="my-4 flex w-full max-w-4xl mx-auto items-center justify-between rounded-full bg-white p-1.5 shadow-lg drop-shadow-md">
+    <nav className="my-1 flex w-full max-w-4xl mx-auto items-center justify-between rounded-full bg-white p-1.5 shadow-lg drop-shadow-md">
       {/* Left: Main Tabs */}
       <div className="flex">
         <TabButton
