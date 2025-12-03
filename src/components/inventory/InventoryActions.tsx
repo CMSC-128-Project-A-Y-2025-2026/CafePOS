@@ -29,13 +29,13 @@ export default function InventoryActions({
             className="bg-[#6290C3] text-[#F9F1E9] hover:bg-[#1A1B41]"
             onClick={onAddProductClick}
           >
-            + new product
+            + New Product
           </ActionButton>
           <ActionButton
             className="bg-[#D9D9D9] text-gray-800 hover:bg-[#C0C0C0]"
             onClick={onGenerateReportClick}
           >
-            generate weekly report
+            Generate Weekly Report
           </ActionButton>
         </div>
 
@@ -46,28 +46,28 @@ export default function InventoryActions({
             active={activeStatusFilter === "all"}
             onClick={() => setActiveStatusFilter("all")}
           >
-            all
+            All
           </FilterPill>
           <FilterPill
             className="bg-[#7CB342] text-white"
             active={activeStatusFilter === "in stock"}
             onClick={() => setActiveStatusFilter("in stock")}
           >
-            in
+            In
           </FilterPill>
           <FilterPill
             className="bg-[#FBC02D] text-white"
             active={activeStatusFilter === "low stock"}
             onClick={() => setActiveStatusFilter("low stock")}
           >
-            low
+            Low
           </FilterPill>
           <FilterPill
             className="bg-[#E53935] text-white"
             active={activeStatusFilter === "out of stock"}
             onClick={() => setActiveStatusFilter("out of stock")}
           >
-            out
+            Out
           </FilterPill>
         </div>
       </nav>

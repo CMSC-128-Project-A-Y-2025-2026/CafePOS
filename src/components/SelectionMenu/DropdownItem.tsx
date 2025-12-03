@@ -1,6 +1,6 @@
 // src/app/components/SelectionMenu/DropdownItem.tsx
 import React from "react";
-import { montserrat } from "@/app/inventory/page"; // Import font from main page
+import { montserrat } from "@/lib/fonts"; // Import font from main page
 
 interface DropdownItemProps {
   icon: React.ElementType;

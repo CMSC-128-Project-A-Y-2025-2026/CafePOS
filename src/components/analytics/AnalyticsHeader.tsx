@@ -28,7 +28,10 @@ export default function AnalyticsHeader({
   const handleMenuClick = () => router.push("/menu"); // New handler for Menu link
 
   return (
-    <header className="flex w-full items-center justify-between px-6 py-6">
+    <header className="flex w-full items-center justify-between relative z-30 shrink-0">
+      <style>
+        {`@import url('https://fonts.googleapis.com/css2?family=Shrikhand&display=swap');`}
+      </style>
       <div
         className="relative z-50"
         onMouseEnter={() => setIsDropdownOpen(true)}
@@ -42,7 +45,7 @@ export default function AnalyticsHeader({
           <div className="drop-shadow-md">
             <Coffee size={72} className="text-gray-900" />
           </div>
-          <span className="text-[64px] font-black leading-tight text-gray-900 drop-shadow-sm">
+          <span className="text-[64px] font-black leading-tight text-gray-900 drop-shadow-sm"style={{ fontFamily: "'Shrikhand', cursive" }}>
             Sales Report <span className="text-[#6290C3]">Generation</span>
           </span>
         </div>
