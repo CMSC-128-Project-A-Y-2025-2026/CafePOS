@@ -15,6 +15,7 @@ export default function TabNavigation({
   activeTimeFilter,
   setActiveTimeFilter,
 }: TabNavigationProps) {
+  const [disabled, setDisabled] = React.useState(false);
   return (
     // UPDATED: Reduced padding of the container from p-2 to p-1.5
     <nav className="my-1 flex w-full max-w-4xl mx-auto items-center justify-between rounded-full bg-white p-1.5 shadow-lg drop-shadow-md">
@@ -23,17 +24,26 @@ export default function TabNavigation({
         <TabButton
           label="Performance"
           active={activeMainTab === "performance"}
-          onClick={() => setActiveMainTab("performance")}
+          onClick={() => {
+            setActiveMainTab("performance");
+            setDisabled(false);
+          }}
         />
         <TabButton
           label="Bestseller"
           active={activeMainTab === "bestseller"}
-          onClick={() => setActiveMainTab("bestseller")}
+          onClick={() => {
+            setActiveMainTab("bestseller");
+            setDisabled(false);
+          }}
         />
         <TabButton
           label="Trend"
           active={activeMainTab === "trend"}
-          onClick={() => setActiveMainTab("trend")}
+          onClick={() => {
+            setActiveMainTab("trend");
+            setDisabled(true);
+          }}
         />
       </div>
 
@@ -44,16 +54,19 @@ export default function TabNavigation({
           label="today"
           active={activeTimeFilter === "today"}
           onClick={() => setActiveTimeFilter("today")}
+          disabled={disabled}
         />
         <TimeFilterButton
           label="week"
           active={activeTimeFilter === "week"}
           onClick={() => setActiveTimeFilter("week")}
+          disabled={disabled}
         />
         <TimeFilterButton
           label="month"
           active={activeTimeFilter === "month"}
           onClick={() => setActiveTimeFilter("month")}
+          disabled={disabled}
         />
       </div>
     </nav>

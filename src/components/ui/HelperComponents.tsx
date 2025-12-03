@@ -106,14 +106,12 @@ interface TimeFilterButtonProps {
   label: string;
   active: boolean;
   onClick: () => void;
-  disabled: boolean;
 }
 
 export function TimeFilterButton({
   label,
   active,
   onClick,
-  disabled,
 }: TimeFilterButtonProps) {
   return (
     <button
@@ -125,9 +123,7 @@ export function TimeFilterButton({
             ? "bg-[#1A1B41] text-white shadow-md"
             : "bg-transparent text-gray-600 hover:bg-gray-200"
         }
-        ${disabled ? "opacity-50 cursor-not-allowed" : ""}
       `}
-      disabled={disabled}
     >
       {label}
     </button>
