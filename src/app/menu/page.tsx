@@ -34,7 +34,7 @@ export default function MenuManagementPage() {
   const [productToEdit, setProductToEdit] = useState<MenuItem | null>(null);
   const [productToDelete, setProductToDelete] = useState<MenuItem | null>(null);
   const [activeCategoryFilter, setActiveCategoryFilter] = useState("all");
-  
+
   // --- Handlers ---
   const handleSaveProduct = (newProduct: Omit<MenuItem, "id"> | MenuItem) => {
     if ("id" in newProduct) {

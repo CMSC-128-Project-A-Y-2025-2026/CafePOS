@@ -8,7 +8,6 @@ export const montserrat = Montserrat({
 });
 
 export default async function AnalyticsPage() {
-  
   return (
     <div
       className={`flex h-screen flex-col bg-[#F9F1E9] ${montserrat.className}`}

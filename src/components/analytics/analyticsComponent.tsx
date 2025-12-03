@@ -19,23 +19,23 @@ export default function AnalyticsComponent() {
   const [activeMainTab, setActiveMainTab] = useState("performance");
   const [activeTimeFilter, setActiveTimeFilter] = useState("week");
   return (
-      <div className="flex flex-col flex-1 p-5 overflow-hidden">
-        <div className="shrink-0 mb-5">
-          <TabNavigation
-            activeMainTab={activeMainTab}
-            setActiveMainTab={setActiveMainTab}
-            activeTimeFilter={activeTimeFilter}
-            setActiveTimeFilter={setActiveTimeFilter}
-          />
-        </div>
-
-        <main className="flex-1 rounded-2xl bg-white p-6 shadow-lg overflow-hidden drop-shadow-md">
-          {activeMainTab === "performance" && (
-            <PerformanceTab activeTimeFilter={activeTimeFilter} />
-          )}
-          {activeMainTab === "bestseller" && <BestsellerTab />}
-          {activeMainTab === "trend" && <TrendTab />}
-        </main>
+    <div className="flex flex-col flex-1 p-5 overflow-hidden">
+      <div className="shrink-0 mb-5">
+        <TabNavigation
+          activeMainTab={activeMainTab}
+          setActiveMainTab={setActiveMainTab}
+          activeTimeFilter={activeTimeFilter}
+          setActiveTimeFilter={setActiveTimeFilter}
+        />
       </div>
+
+      <main className="flex-1 rounded-2xl bg-white p-6 shadow-lg overflow-hidden drop-shadow-md">
+        {activeMainTab === "performance" && (
+          <PerformanceTab activeTimeFilter={activeTimeFilter} />
+        )}
+        {activeMainTab === "bestseller" && <BestsellerTab />}
+        {activeMainTab === "trend" && <TrendTab />}
+      </main>
+    </div>
   );
 }

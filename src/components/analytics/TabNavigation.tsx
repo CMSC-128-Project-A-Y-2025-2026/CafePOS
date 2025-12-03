@@ -24,17 +24,26 @@ export default function TabNavigation({
         <TabButton
           label="Performance"
           active={activeMainTab === "performance"}
-          onClick={() => { setActiveMainTab("performance"); setDisabled(false); }}
+          onClick={() => {
+            setActiveMainTab("performance");
+            setDisabled(false);
+          }}
         />
         <TabButton
           label="Bestseller"
           active={activeMainTab === "bestseller"}
-          onClick={() => { setActiveMainTab("bestseller"); setDisabled(false); }}
+          onClick={() => {
+            setActiveMainTab("bestseller");
+            setDisabled(false);
+          }}
         />
         <TabButton
           label="Trend"
           active={activeMainTab === "trend"}
-          onClick={() => { setActiveMainTab("trend"); setDisabled(true); }}
+          onClick={() => {
+            setActiveMainTab("trend");
+            setDisabled(true);
+          }}
         />
       </div>
 

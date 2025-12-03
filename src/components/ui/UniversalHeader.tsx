@@ -1,5 +1,5 @@
 // src/app/analytics/components/AnalyticsHeader.tsx
-'use client';
+"use client";
 import { useEffect, useState } from "react";
 import { Coffee, ClipboardPen, PieChart, Boxes, Menu } from "lucide-react";
 import { DropdownItem } from "#/src/components/ui/HelperComponents";
@@ -10,7 +10,10 @@ interface UniversalHeaderProps {
   pageName2: string;
 }
 
-export default function UniversalHeader({ pageName1, pageName2 }: UniversalHeaderProps) {
+export default function UniversalHeader({
+  pageName1,
+  pageName2,
+}: UniversalHeaderProps) {
   const router = useRouter();
 
   const handleMenuClick = () => router.push("/menu");
@@ -26,10 +29,10 @@ export default function UniversalHeader({ pageName1, pageName2 }: UniversalHeade
   const page_name_2 = pageName2;
 
   useEffect(() => {
-      const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-      return () => clearInterval(timer);
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
   }, []);
-  
+
   const formattedTime = currentTime.toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
@@ -79,7 +82,11 @@ export default function UniversalHeader({ pageName1, pageName2 }: UniversalHeade
               label="Inventory"
               onClick={handleInventoryClick}
             />
-            <DropdownItem icon={Menu} label="Menu" onClick={handleMenuClick} />{" "}
+            <DropdownItem
+              icon={Menu}
+              label="Menu"
+              onClick={handleMenuClick}
+            />{" "}
           </div>
         </div>
       </div>

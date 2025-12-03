@@ -22,7 +22,9 @@ interface SalesData {
   sales: number;
 }
 
-export default function PerformanceTab({ activeTimeFilter }: PerformanceTabProps) {
+export default function PerformanceTab({
+  activeTimeFilter,
+}: PerformanceTabProps) {
   const brandColor = "#6290C3";
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [chartData, setChartData] = React.useState<any[]>([]);
@@ -35,9 +37,10 @@ export default function PerformanceTab({ activeTimeFilter }: PerformanceTabProps
 
   const getSalesData = async () => {
     try {
-      const response = await fetch('/api/analytics/getSalesAnalytics');
+      const response = await fetch("/api/analytics/getSalesAnalytics");
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Failed to fetch analytics");
+      if (!response.ok)
+        throw new Error(data.error || "Failed to fetch analytics");
       return data;
     } catch (err) {
       console.error("Fetch error:", err);
@@ -69,22 +72,23 @@ export default function PerformanceTab({ activeTimeFilter }: PerformanceTabProps
       const hourlySales: { [key: string]: number } = {};
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       data.forEach((sale: any) => {
-          const saleDate = new Date(sale.created_at);
-          if (saleDate >= twentyFourHoursAgo) {
-              const hourKey = saleDate.toISOString().slice(0, 13);
-              hourlySales[hourKey] = (hourlySales[hourKey] || 0) + (sale.order_price || 0);
-          }
+        const saleDate = new Date(sale.created_at);
+        if (saleDate >= twentyFourHoursAgo) {
+          const hourKey = saleDate.toISOString().slice(0, 13);
+          hourlySales[hourKey] =
+            (hourlySales[hourKey] || 0) + (sale.order_price || 0);
+        }
       });
       const formattedData = [];
       for (let i = 23; i >= 0; i--) {
-          const date = new Date();
-          date.setHours(date.getHours() - i);
-          date.setMinutes(0, 0, 0);
-          const hourKey = date.toISOString().slice(0, 13);
-          formattedData.push({
-              hour: hourKey,
-              sales: hourlySales[hourKey] || 0
-          });
+        const date = new Date();
+        date.setHours(date.getHours() - i);
+        date.setMinutes(0, 0, 0);
+        const hourKey = date.toISOString().slice(0, 13);
+        formattedData.push({
+          hour: hourKey,
+          sales: hourlySales[hourKey] || 0,
+        });
       }
       return formattedData;
     }
@@ -95,21 +99,22 @@ export default function PerformanceTab({ activeTimeFilter }: PerformanceTabProps
       const dailySales: { [key: string]: number } = {};
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       data.forEach((sale: any) => {
-          const saleDate = new Date(sale.created_at).toISOString().split('T')[0];
-          if (new Date(saleDate) >= weekly) {
-              dailySales[saleDate] = (dailySales[saleDate] || 0) + (sale.order_price || 0);
-          }
+        const saleDate = new Date(sale.created_at).toISOString().split("T")[0];
+        if (new Date(saleDate) >= weekly) {
+          dailySales[saleDate] =
+            (dailySales[saleDate] || 0) + (sale.order_price || 0);
+        }
       });
-      
+
       const formattedData = [];
       for (let i = 6; i >= 0; i--) {
-          const date = new Date();
-          date.setDate(date.getDate() - i);
-          const dateStr = date.toISOString().split('T')[0];
-          formattedData.push({
-              date: dateStr,
-              sales: dailySales[dateStr] || 0
-          });
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const dateStr = date.toISOString().split("T")[0];
+        formattedData.push({
+          date: dateStr,
+          sales: dailySales[dateStr] || 0,
+        });
       }
       return formattedData;
     }
@@ -120,21 +125,22 @@ export default function PerformanceTab({ activeTimeFilter }: PerformanceTabProps
       const dailySales: { [key: string]: number } = {};
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       data.forEach((sale: any) => {
-          const saleDate = new Date(sale.created_at).toISOString().split('T')[0];
-          if (new Date(saleDate) >= monthly) {
-              dailySales[saleDate] = (dailySales[saleDate] || 0) + (sale.order_price || 0);
-          }
+        const saleDate = new Date(sale.created_at).toISOString().split("T")[0];
+        if (new Date(saleDate) >= monthly) {
+          dailySales[saleDate] =
+            (dailySales[saleDate] || 0) + (sale.order_price || 0);
+        }
       });
 
       const formattedData = [];
       for (let i = 29; i >= 0; i--) {
-          const date = new Date();
-          date.setDate(date.getDate() - i);
-          const dateStr = date.toISOString().split('T')[0];
-          formattedData.push({
-              date: dateStr,
-              sales: dailySales[dateStr] || 0
-          });
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const dateStr = date.toISOString().split("T")[0];
+        formattedData.push({
+          date: dateStr,
+          sales: dailySales[dateStr] || 0,
+        });
       }
       return formattedData;
     }
@@ -181,10 +187,22 @@ export default function PerformanceTab({ activeTimeFilter }: PerformanceTabProps
     <div className="flex h-full gap-4">
       {/* Stats Column: Use h-full and justify-between to distribute content vertically */}
       <div className="flex w-64 h-600 flex-col justify-between gap-2 pt-2 h-full">
-        <StatCard label="Total Revenue" value={`PHP ${totalRevenue.toFixed(2)}`} color="green" />
-        <StatCard label="Estimated Gross Profit (30% Profit Margin)" value={`PHP ${estimatedProfit.toFixed(2)}`} color="teal" />
+        <StatCard
+          label="Total Revenue"
+          value={`PHP ${totalRevenue.toFixed(2)}`}
+          color="green"
+        />
+        <StatCard
+          label="Estimated Gross Profit (30% Profit Margin)"
+          value={`PHP ${estimatedProfit.toFixed(2)}`}
+          color="teal"
+        />
         <StatCard label="Transactions" value={`${salesCount}`} color="blue" />
-        <StatCard label="Average Sale" value={`PHP ${averageSale.toFixed(2)}`} color="dark" />
+        <StatCard
+          label="Average Sale"
+          value={`PHP ${averageSale.toFixed(2)}`}
+          color="dark"
+        />
       </div>
 
       {/* Chart: Uses flex-1 to take remaining horizontal space and h-full for vertical stretch */}
