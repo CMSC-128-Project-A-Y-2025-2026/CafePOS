@@ -15,7 +15,7 @@
     "@supabase/ssr": "^0.8.0",
     "lucide-react": "^0.553.0",
     "next": "16.0.6",
-    "prettier": "^3.7.3",
+    "prettier": "^3.7.4",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "recharts": "^3.5.1"
@@ -31,6 +31,6 @@
     "eslint-config-next": "16.0.6",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "prettier": "^3.5.3"
+    "prettier": "^3.7.4"
   }
 }
