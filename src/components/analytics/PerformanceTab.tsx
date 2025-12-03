@@ -1,7 +1,7 @@
 // src/components/analytics/PerformanceTab.tsx
 "use client";
 
-import React, { use, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   Line,
   LineChart,
@@ -165,6 +165,7 @@ export default function PerformanceTab({ activeTimeFilter }: PerformanceTabProps
 
   useEffect(() => {
     let total = 0;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     salesAnalytics.forEach((sale: any) => {
       total += sale.order_price || 0;
     });

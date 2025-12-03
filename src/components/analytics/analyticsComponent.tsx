@@ -15,7 +15,6 @@ export const montserrat = Montserrat({
   weight: ["400", "700", "900"],
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function AnalyticsComponent() {
   const [activeMainTab, setActiveMainTab] = useState("performance");
   const [activeTimeFilter, setActiveTimeFilter] = useState("week");

@@ -2,7 +2,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import { Montserrat } from "next/font/google";
 import { Search, Plus } from "lucide-react";
 
@@ -28,7 +28,6 @@ const filterCategories = [
 
 export default function MenuManagementPage() {
   // --- State ---
-  const [currentTime, setCurrentTime] = useState<Date>(new Date());
   const [menuItems, setMenuItems] = useState<MenuItem[]>(initialMenuItems);
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);

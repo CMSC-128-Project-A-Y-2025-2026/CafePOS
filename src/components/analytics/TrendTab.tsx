@@ -10,7 +10,6 @@ import {
   YAxis,
   CartesianGrid,
 } from "recharts";
-import { salesByHourData, salesByDayData } from "../../app/analytics/mockData";
 import { TimeFilterButton } from "../ui/HelperComponents";
 
 interface SalesData {
@@ -22,6 +21,7 @@ interface SalesData {
 export default function TrendTab() {
   const [filter, setFilter] = React.useState<"hour" | "day">("day");
   const [salesAnalytics, setSalesAnalytics] = React.useState<SalesData[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [chartData, setChartData] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [chartTitle, setChartTitle] = React.useState<string>("");
