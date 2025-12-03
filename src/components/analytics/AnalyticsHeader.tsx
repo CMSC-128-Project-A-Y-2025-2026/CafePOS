@@ -28,7 +28,7 @@ export default function AnalyticsHeader({
   const handleMenuClick = () => router.push("/menu"); // New handler for Menu link
 
   return (
-    <header className="flex w-full items-center justify-between relative z-30 shrink-0">
+    <header className="flex w-full items-center justify-between px-6 py-6">
       <div
         className="relative z-50"
         onMouseEnter={() => setIsDropdownOpen(true)}

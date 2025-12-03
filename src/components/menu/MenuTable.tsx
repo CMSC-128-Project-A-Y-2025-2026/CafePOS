@@ -36,7 +36,7 @@ export default function MenuTable({
         {menuItems.map((item) => (
           <div
             key={item.id}
-            className="grid grid-cols-5 items-center gap-4 border-b border-gray-100 px-6 py-3 hover:bg-gray-50 transition-colors"
+            className="grid grid-cols-5 items-center gap-6 border-b border-gray-100 px-6 py-4 hover:bg-gray-50 transition-colors"
           >
             <div className="font-medium text-gray-900 col-span-2">
               {item.name}
