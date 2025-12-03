@@ -1,54 +1,40 @@
 // src/app/analytics/components/AnalyticsHeader.tsx
-import React from "react";
+'use client';
+import { useEffect, useState } from "react";
 import { Coffee, ClipboardPen, PieChart, Boxes, Menu } from "lucide-react";
-import { DropdownItem } from "./HelperComponents";
+import { DropdownItem } from "#/src/components/ui/HelperComponents";
 import { useRouter } from "next/navigation";
 
-interface AnalyticsHeaderProps {
-  formattedTime: string;
-  isDropdownOpen: boolean;
-  setIsDropdownOpen: (isOpen: boolean) => void;
-  handleLogoClick: () => void;
-  handleOrderClick: () => void;
-  handleAnalyticsClick: () => void;
-  handleInventoryClick: () => void;
+interface UniversalHeaderProps {
+  pageName1: string;
+  pageName2: string;
 }
 
-export default function AnalyticsHeader({
-  formattedTime,
-  isDropdownOpen,
-  setIsDropdownOpen,
-  handleLogoClick,
-  handleOrderClick,
-  handleAnalyticsClick,
-  handleInventoryClick,
-}: AnalyticsHeaderProps) {
-  const router = useRouter(); // Initialize router
-  const handleMenuClick = () => router.push("/menu"); // New handler for Menu link
-  const page_name_1 = "Sales Report";
-  const page_name_2 = "Generation";
-
+export default function UniversalHeader({ pageName1, pageName2 }: UniversalHeaderProps) {
   const router = useRouter();
+
+  const handleMenuClick = () => router.push("/menu");
+  const handleLogoClick = () => router.push("/");
+  const handleOrderClick = () => router.push("/order");
+  const handleAnalyticsClick = () => router.push("/analytics");
+  const handleInventoryClick = () => router.push("/inventory");
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [activeMainTab, setActiveMainTab] = useState("performance");
-  const [activeTimeFilter, setActiveTimeFilter] = useState("week");
-  
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
 
+  const page_name_1 = pageName1;
+  const page_name_2 = pageName2;
+
+  useEffect(() => {
+      const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+      return () => clearInterval(timer);
+  }, []);
+  
   const formattedTime = currentTime.toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
     hour12: true,
   });
-
-  const handleLogoClick = () => router.push("/");
-  const handleOrderClick = () => router.push("/order");
-  const handleAnalyticsClick = () => setIsDropdownOpen(false);
-  const handleInventoryClick = () => router.push("/inventory");
 
   return (
     <header className="flex w-full items-center justify-between px-6 py-6">
@@ -94,7 +80,6 @@ export default function AnalyticsHeader({
               onClick={handleInventoryClick}
             />
             <DropdownItem icon={Menu} label="Menu" onClick={handleMenuClick} />{" "}
-            {/* NEW LINK ADDED */}
           </div>
         </div>
       </div>

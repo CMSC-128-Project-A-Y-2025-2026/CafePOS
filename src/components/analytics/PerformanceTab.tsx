@@ -1,7 +1,7 @@
 // src/components/analytics/PerformanceTab.tsx
 "use client";
 
-import React, { useEffect } from "react";
+import React, { use, useEffect } from "react";
 import {
   Line,
   LineChart,
@@ -11,7 +11,6 @@ import {
   YAxis,
   CartesianGrid,
 } from "recharts";
-// import { cookies } from "next/headers";
 import { StatCard } from "../ui/HelperComponents"; // Assuming HelperComponents.tsx is correct
 interface PerformanceTabProps {
   activeTimeFilter: string;
@@ -29,44 +28,37 @@ export default function PerformanceTab({ activeTimeFilter }: PerformanceTabProps
   const [chartData, setChartData] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [salesAnalytics, setSalesAnalytics] = React.useState<SalesData[]>([]);
+  const [totalRevenue, setTotalRevenue] = React.useState<number>(0);
+  const [salesCount, setSalesCount] = React.useState<number>(0);
+  const [averageSale, setAverageSale] = React.useState<number>(0);
+  const [estimatedProfit, setEstimatedProfit] = React.useState<number>(0);
 
   const getSalesData = async () => {
-    try{
-      console.log("Fetching sales analytics data...");
+    try {
       const response = await fetch('/api/analytics/getSalesAnalytics');
       const data = await response.json();
-      console.log(data)
-      if(!response.ok) {
-        throw new Error(data.error || 'Failed to fetch sales analytics');
-      }
-    } catch (error) {
-      console.error('Error fetching sales analytics:', error);
+      if (!response.ok) throw new Error(data.error || "Failed to fetch analytics");
+      return data;
+    } catch (err) {
+      console.error("Fetch error:", err);
+      return [];
     }
   };
 
   useEffect(() => {
-    async function compareToCookies() {
-      const cookiesStore = await cookies();
-      const freshData = await getSalesData();
-
-      const cookie = cookiesStore.get('sales-analytics')
-      if (!cookie) {
-        cookiesStore.set('sales-analytics', JSON.stringify(salesAnalytics), { path: '/analytics' });
-        setSalesAnalytics(salesAnalytics);
-        return
+    async function loadData() {
+      const cached = localStorage.getItem("sales-analytics");
+      if (cached) setSalesAnalytics(JSON.parse(cached));
+      const fresh = await getSalesData();
+      if (!fresh) return;
+      if (JSON.stringify(fresh) !== JSON.stringify(cached)) {
+        localStorage.setItem("sales-analytics", JSON.stringify(fresh));
+        setSalesAnalytics(fresh);
       }
-
-      const cookieData = JSON.parse(cookie.value);
-      const freshJson = JSON.stringify(freshData);
-      const cookieJson = JSON.stringify(cookieData);
-
-      if (freshJson !== cookieJson) {
-        cookiesStore.set('sales-analytics', JSON.stringify(freshData), { path: '/analytics' });
-      } else setSalesAnalytics(cookieData);
     }
 
-    compareToCookies();
-  }, [salesAnalytics]);
+    loadData();
+  }, []);
 
   useEffect(() => {
     let formattedData: SalesData[] = [];
@@ -171,15 +163,27 @@ export default function PerformanceTab({ activeTimeFilter }: PerformanceTabProps
     formatData();
   }, [activeTimeFilter, salesAnalytics]);
 
+  useEffect(() => {
+    let total = 0;
+    salesAnalytics.forEach((sale: any) => {
+      total += sale.order_price || 0;
+    });
+    setTotalRevenue(total);
+    setSalesCount(salesAnalytics.length);
+
+    setAverageSale(salesAnalytics.length ? total / salesAnalytics.length : 0);
+    setEstimatedProfit(total * 0.3);
+  }, [salesAnalytics]);
+
   return (
     // Outer container takes full height of the parent tab content area
     <div className="flex h-full gap-4">
       {/* Stats Column: Use h-full and justify-between to distribute content vertically */}
       <div className="flex w-64 h-600 flex-col justify-between gap-2 pt-2 h-full">
-        <StatCard label="Total Revenue" value={`PHP 15,450.00`} color="green" />
-        <StatCard label="Gross Profit" value={`PHP 5,430.00`} color="teal" />
-        <StatCard label="Transactions" value="234" color="blue" />
-        <StatCard label="Average Sale" value={`PHP 450.00`} color="dark" />
+        <StatCard label="Total Revenue" value={`PHP ${totalRevenue.toFixed(2)}`} color="green" />
+        <StatCard label="Estimated Gross Profit (30% Profit Margin)" value={`PHP ${estimatedProfit.toFixed(2)}`} color="teal" />
+        <StatCard label="Transactions" value={`${salesCount}`} color="blue" />
+        <StatCard label="Average Sale" value={`PHP ${averageSale.toFixed(2)}`} color="dark" />
       </div>
 
       {/* Chart: Uses flex-1 to take remaining horizontal space and h-full for vertical stretch */}
@@ -238,7 +242,8 @@ export default function PerformanceTab({ activeTimeFilter }: PerformanceTabProps
                   stroke: "#fff",
                   strokeWidth: 2,
                 }}
-                isAnimationActive={false}
+                isAnimationActive={true}
+                animationDuration={600}
               />
             </LineChart>
           </ResponsiveContainer>

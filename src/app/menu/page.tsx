@@ -6,11 +6,11 @@ import React, { useState, useEffect } from "react";
 import { Montserrat } from "next/font/google";
 import { Search, Plus } from "lucide-react";
 
-import MenuHeader from "../../components/menu/MenuHeader";
-import MenuTable from "../../components/menu/MenuTable";
-import ProductFormModal from "../../components/menu/ProductFormModal";
-import DeleteConfirmationModal from "../../components/menu/DeleteConfirmationModal";
-import CategoryFilterPill from "../../components/menu/CategoryFilterPill";
+import Header from "#/src/components/ui/UniversalHeader";
+import MenuTable from "#/src/components/menu/MenuTable";
+import ProductFormModal from "#/src/components/menu/ProductFormModal";
+import DeleteConfirmationModal from "#/src/components/menu/DeleteConfirmationModal";
+import CategoryFilterPill from "#/src/components/menu/CategoryFilterPill";
 import { MenuItem } from "./types";
 import { initialMenuItems, menuCategories } from "./mockData";
 
@@ -35,20 +35,7 @@ export default function MenuManagementPage() {
   const [productToEdit, setProductToEdit] = useState<MenuItem | null>(null);
   const [productToDelete, setProductToDelete] = useState<MenuItem | null>(null);
   const [activeCategoryFilter, setActiveCategoryFilter] = useState("all");
-
-  // --- Effects ---
-  useEffect(() => {
-    // Update time every second
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const formattedTime = currentTime.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
-
+  
   // --- Handlers ---
   const handleSaveProduct = (newProduct: Omit<MenuItem, "id"> | MenuItem) => {
     if ("id" in newProduct) {
@@ -119,7 +106,7 @@ export default function MenuManagementPage() {
         />
       )}
 
-      <MenuHeader formattedTime={formattedTime} />
+      <Header pageName1="Menu" pageName2="Management" />
 
       {/* Main Content Area */}
       <div className="p-6 pt-0 flex flex-col flex-1 overflow-hidden">
