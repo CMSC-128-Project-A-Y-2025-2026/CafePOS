@@ -1,6 +1,6 @@
 // src/app/analytics/components/TabNavigation.tsx
 import React from "react";
-import { TabButton, TimeFilterButton } from "./HelperComponents";
+import { TabButton, TimeFilterButton } from "../ui/HelperComponents";
 
 interface TabNavigationProps {
   activeMainTab: string;

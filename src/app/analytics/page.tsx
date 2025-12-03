@@ -78,7 +78,9 @@ export default function AnalyticsPage() {
             from its parent, forcing it to fill the remaining height 
             below the TabNavigation component. */}
         <main className="flex-1 rounded-2xl bg-white p-6 shadow-lg overflow-hidden drop-shadow-md">
-          {activeMainTab === "performance" && <PerformanceTab />}
+          {activeMainTab === "performance" && (
+            <PerformanceTab activeTimeFilter={activeTimeFilter} />
+          )}
           {activeMainTab === "bestseller" && <BestsellerTab />}
           {activeMainTab === "trend" && <TrendTab />}
         </main>

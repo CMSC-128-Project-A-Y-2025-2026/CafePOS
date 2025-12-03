@@ -9,7 +9,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import { salesByHourData, salesByDayData } from "../../app/analytics/mockData";
-import { TimeFilterButton } from "./HelperComponents";
+import { TimeFilterButton } from "../ui/HelperComponents";
 
 export default function TrendTab() {
   const [filter, setFilter] = useState<"hour" | "day">("hour");

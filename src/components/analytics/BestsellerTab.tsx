@@ -6,7 +6,7 @@ import {
 import {
   BestsellerFilterPill,
   BestsellerProductCard,
-} from "./HelperComponents";
+} from "../ui/HelperComponents";
 import { TopSellerProduct } from "../../app/analytics/types";
 
 export default function BestsellerTab() {

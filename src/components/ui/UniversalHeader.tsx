@@ -1,9 +1,8 @@
 // src/app/analytics/components/AnalyticsHeader.tsx
 import React from "react";
-// IMPORT FIXED: Added CoffeeTogo icon and useRouter hook
 import { Coffee, ClipboardPen, PieChart, Boxes, Menu } from "lucide-react";
-import { DropdownItem } from "../ui/HelperComponents";
-import { useRouter } from "next/navigation"; // Must import useRouter
+import { DropdownItem } from "./HelperComponents";
+import { useRouter } from "next/navigation";
 
 interface AnalyticsHeaderProps {
   formattedTime: string;
@@ -26,6 +25,30 @@ export default function AnalyticsHeader({
 }: AnalyticsHeaderProps) {
   const router = useRouter(); // Initialize router
   const handleMenuClick = () => router.push("/menu"); // New handler for Menu link
+  const page_name_1 = "Sales Report";
+  const page_name_2 = "Generation";
+
+  const router = useRouter();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [activeMainTab, setActiveMainTab] = useState("performance");
+  const [activeTimeFilter, setActiveTimeFilter] = useState("week");
+  
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formattedTime = currentTime.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+  const handleLogoClick = () => router.push("/");
+  const handleOrderClick = () => router.push("/order");
+  const handleAnalyticsClick = () => setIsDropdownOpen(false);
+  const handleInventoryClick = () => router.push("/inventory");
 
   return (
     <header className="flex w-full items-center justify-between px-6 py-6">
@@ -43,7 +66,7 @@ export default function AnalyticsHeader({
             <Coffee size={72} className="text-gray-900" />
           </div>
           <span className="text-[64px] font-black leading-tight text-gray-900 drop-shadow-sm">
-            Sales Report <span className="text-[#6290C3]">Generation</span>
+            {page_name_1} <span className="text-[#6290C3]">{page_name_2}</span>
           </span>
         </div>
 
