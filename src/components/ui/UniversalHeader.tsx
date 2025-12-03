@@ -40,7 +40,10 @@ export default function UniversalHeader({
   });
 
   return (
-    <header className="flex w-full items-center justify-between px-6 py-6">
+    <header className="flex w-full items-center justify-between relative z-30 shrink-0">
+      <style>
+        {`@import url('https://fonts.googleapis.com/css2?family=Shrikhand&display=swap');`}
+      </style>
       <div
         className="relative z-50"
         onMouseEnter={() => setIsDropdownOpen(true)}
