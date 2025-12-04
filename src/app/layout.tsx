@@ -9,8 +9,8 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "CafePOS",
-  description: "Cafe Point of Sale System",
+  title: "Pres Kopee Café POS",
+  description: "Pres Kopee Cafe Point of Sale System",
 };
 
 export default function RootLayout({
