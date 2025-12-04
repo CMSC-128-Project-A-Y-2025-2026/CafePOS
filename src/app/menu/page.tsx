@@ -2,7 +2,7 @@
 
 import { Montserrat } from "next/font/google";
 
-import Header from "#/src/components/ui/UniversalHeader";
+import MenuHeader from "#/src/components/menu/MenuHeader";
 import MenuManagement from "../../components/menu/MenuManagement";
 
 // Load Montserrat font (Server Component loads the font, minimizing client bundle)
@@ -16,8 +16,8 @@ export default function MenuManagementPage() {
   const fontClassName = montserrat.className;
 
   return (
-    <div className={`flex h-screen flex-col bg-[#F9F1E9] p-6 ${fontClassName}`}>
-      <Header pageName1="Menu" pageName2="Management" />
+    <div className={`flex h-screen flex-col bg-[#F9F1E9] ${fontClassName}`}>
+      <MenuHeader pageName1="Menu" pageName2="Management" />
 
       {/* Renders the client-side interactivity */}
       <MenuManagement fontClassName={fontClassName} />
