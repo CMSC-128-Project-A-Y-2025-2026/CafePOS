@@ -1,23 +1,43 @@
-// src/app/menu/components/MenuHeader.tsx
-
-import React, { useState } from "react";
+// src/app/analytics/components/AnalyticsHeader.tsx
+"use client";
+import { useEffect, useState } from "react";
 import { Coffee, ClipboardPen, PieChart, Boxes, Menu } from "lucide-react";
-import DropdownItem from "@/components/SelectionMenu/DropdownItem";
+import { DropdownItem } from "#/src/components/ui/HelperComponents";
 import { useRouter } from "next/navigation";
 
-interface MenuHeaderProps {
-  formattedTime: string;
+interface UniversalHeaderProps {
+  pageName1: string;
+  pageName2: string;
 }
 
-export default function MenuHeader({ formattedTime }: MenuHeaderProps) {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+export default function UniversalHeader({
+  pageName1,
+  pageName2,
+}: UniversalHeaderProps) {
   const router = useRouter();
 
+  const handleMenuClick = () => router.push("/menu");
   const handleLogoClick = () => router.push("/");
   const handleOrderClick = () => router.push("/order");
   const handleAnalyticsClick = () => router.push("/analytics");
   const handleInventoryClick = () => router.push("/inventory");
-  const handleMenuClick = () => setIsDropdownOpen(false); // Current page
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  const page_name_1 = pageName1;
+  const page_name_2 = pageName2;
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formattedTime = currentTime.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
 
   return (
     <header className="flex w-full items-center justify-between relative z-30 flex-shrink-0 p-6">
@@ -29,6 +49,7 @@ export default function MenuHeader({ formattedTime }: MenuHeaderProps) {
         onMouseEnter={() => setIsDropdownOpen(true)}
         onMouseLeave={() => setIsDropdownOpen(false)}
       >
+        {/* Logo (Original large size maintained) */}
         <div
           className="flex cursor-pointer items-center gap-4 transition-opacity hover:opacity-80 pb-1"
           onClick={handleLogoClick}
@@ -40,15 +61,16 @@ export default function MenuHeader({ formattedTime }: MenuHeaderProps) {
             className="text-[64px] font-black leading-tight text-gray-900 drop-shadow-sm"
             style={{ fontFamily: "'Shrikhand', cursive" }}
           >
-            Menu <span className="text-[#6290C3]">Management</span>
+            {page_name_1} <span className="text-[#6290C3]">{page_name_2}</span>
           </span>
         </div>
 
+        {/* Dropdown Menu */}
         <div
           className={`
-          absolute left-0 top-full w-64 overflow-hidden rounded-xl bg-white shadow-xl ring-1 ring-black ring-opacity-5 transition-all duration-200 ease-in-out
-          ${isDropdownOpen ? "max-h-64 opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-2 pointer-events-none"}
-        `}
+            absolute left-0 top-full w-64 overflow-hidden rounded-xl bg-white shadow-xl ring-1 ring-black ring-opacity-5 transition-all duration-200 ease-in-out
+            ${isDropdownOpen ? "max-h-96 opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-2 pointer-events-none"} /* max-h adjusted */
+          `}
         >
           <div className="py-2">
             <DropdownItem
@@ -66,11 +88,16 @@ export default function MenuHeader({ formattedTime }: MenuHeaderProps) {
               label="Inventory"
               onClick={handleInventoryClick}
             />
-            <DropdownItem icon={Menu} label="Menu" onClick={handleMenuClick} />
+            <DropdownItem
+              icon={Menu}
+              label="Menu"
+              onClick={handleMenuClick}
+            />{" "}
           </div>
         </div>
       </div>
 
+      {/* Time (Original large size maintained) */}
       <div className="flex items-baseline gap-3 font-black italic tracking-tight drop-shadow-sm">
         <span className="text-[64px] text-[#6290C3]">
           {formattedTime.split(" ")[0]}
