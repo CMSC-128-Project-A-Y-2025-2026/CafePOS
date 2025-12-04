@@ -17,7 +17,11 @@ import CustomizeProductModal from "./CustomizeProductModal";
 // --- Main Order Terminal Component ---
 
 // Receives fontClassName from the Server Component
-export default function OrderTerminal({ fontClassName }: { fontClassName: string }) {
+export default function OrderTerminal({
+  fontClassName,
+}: {
+  fontClassName: string;
+}) {
   const router = useRouter();
 
   // --- State ---

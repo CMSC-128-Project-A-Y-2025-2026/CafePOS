@@ -18,7 +18,11 @@ const filterCategories = [
 ];
 
 // We pass the font class in from the Server Component to keep it out of the client bundle
-export default function MenuManagement({ fontClassName }: { fontClassName: string }) {
+export default function MenuManagement({
+  fontClassName,
+}: {
+  fontClassName: string;
+}) {
   // --- State ---
   const [menuItems, setMenuItems] = useState<MenuItem[]>(initialMenuItems);
   const [searchTerm, setSearchTerm] = useState("");
@@ -73,7 +77,6 @@ export default function MenuManagement({ fontClassName }: { fontClassName: strin
       )
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [menuItems, activeCategoryFilter, searchTerm]);
-
 
   return (
     <div className={`flex flex-col flex-1 overflow-hidden ${fontClassName}`}>
