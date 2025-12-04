@@ -2,7 +2,7 @@
 
 // Using the same structure as the POS product model
 export interface MenuItem {
-  id: number;
+  id: string; // UUID from database
   name: string;
   price: number;
   category: string;

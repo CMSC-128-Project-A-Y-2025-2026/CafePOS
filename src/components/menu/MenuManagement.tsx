@@ -1,7 +1,7 @@
 // src/components/menu/MenuManagement.tsx
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Search, Plus } from "lucide-react";
 
 import MenuTable from "#/src/components/menu/MenuTable";
@@ -9,7 +9,7 @@ import ProductFormModal from "#/src/components/menu/ProductFormModal";
 import DeleteConfirmationModal from "#/src/components/menu/DeleteConfirmationModal";
 import CategoryFilterPill from "#/src/components/menu/CategoryFilterPill";
 import { MenuItem } from "../../app/menu/types"; // Adjust import path
-import { initialMenuItems, menuCategories } from "../../app/menu/mockData"; // Adjust import path
+import { menuCategories } from "../../app/menu/mockData"; // Adjust import path
 
 // Define the categories list including 'all' here for use in filtering
 const filterCategories = [
@@ -24,41 +24,138 @@ export default function MenuManagement({
   fontClassName: string;
 }) {
   // --- State ---
-  const [menuItems, setMenuItems] = useState<MenuItem[]>(initialMenuItems);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [productToEdit, setProductToEdit] = useState<MenuItem | null>(null);
   const [productToDelete, setProductToDelete] = useState<MenuItem | null>(null);
   const [activeCategoryFilter, setActiveCategoryFilter] = useState("all");
+  const [isLoading, setIsLoading] = useState(true);
+
+  // --- Fetch products from database ---
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch("/api/products/addProduct");
+        if (!response.ok) throw new Error("Failed to fetch products");
+        
+        const result = await response.json();
+        
+        // Map database fields to MenuItem interface
+        const products: MenuItem[] = result.data.map((item: any) => {
+          console.log("Database item:", item);
+          console.log("ID type:", typeof item.id, "ID value:", item.id);
+          return {
+            id: String(item.id), // Ensure it's a string
+            name: item.product_name,
+            price: item.product_cost,
+            category: item.product_category,
+            image: "", // Placeholder for future use
+          };
+        });
+        
+        console.log("Mapped products:", products);
+        setMenuItems(products);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   // --- Handlers ---
-  const handleSaveProduct = (newProduct: Omit<MenuItem, "id"> | MenuItem) => {
-    if ("id" in newProduct) {
-      setMenuItems((currentItems) =>
-        currentItems.map((item) =>
-          item.id === newProduct.id ? newProduct : item,
-        ),
-      );
-      setProductToEdit(null);
-    } else {
-      const productWithId = {
-        ...newProduct,
-        id:
-          menuItems.length > 0
-            ? Math.max(...menuItems.map((i) => i.id)) + 1
-            : 1,
-      };
-      setMenuItems((currentItems) => [productWithId, ...currentItems]);
-      setIsAddModalOpen(false);
+  const handleSaveProduct = async (newProduct: Omit<MenuItem, "id"> | MenuItem) => {
+    try {
+      if ("id" in newProduct) {
+        // Edit existing product
+        const response = await fetch("/api/products/editProduct", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: newProduct.id,
+            product: newProduct.name,
+            category: newProduct.category,
+            price: newProduct.price,
+          }),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("API Error Response:", errorText);
+          try {
+            const errorData = JSON.parse(errorText);
+            console.error("API Error:", errorData);
+          } catch (e) {
+            console.error("Could not parse error as JSON:", errorText);
+          }
+          throw new Error("Failed to update product");
+        }
+
+        const result = await response.json();
+        console.log("Update success:", result);
+
+        setMenuItems((currentItems) =>
+          currentItems.map((item) =>
+            item.id === newProduct.id ? newProduct : item,
+          ),
+        );
+        setProductToEdit(null);
+      } else {
+        // Add new product
+        const response = await fetch("/api/products/addProduct", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            product: newProduct.name,
+            category: newProduct.category,
+            price: newProduct.price,
+          }),
+        });
+
+        if (!response.ok) throw new Error("Failed to add product");
+
+        const result = await response.json();
+        console.log("Add product result:", result);
+        const addedProduct: MenuItem = {
+          id: String(result.data[0].id),
+          name: result.data[0].product_name,
+          price: result.data[0].product_cost,
+          category: result.data[0].product_category,
+          image: "",
+        };
+
+        setMenuItems((currentItems) => [addedProduct, ...currentItems]);
+        setIsAddModalOpen(false);
+      }
+    } catch (error) {
+      console.error("Error saving product:", error);
+      alert("Failed to save product. Please try again.");
     }
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (productToDelete) {
-      setMenuItems((currentItems) =>
-        currentItems.filter((item) => item.id !== productToDelete.id),
-      );
-      setProductToDelete(null);
+      try {
+        const response = await fetch("/api/products/removeProduct", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: productToDelete.id }),
+        });
+
+        if (!response.ok) throw new Error("Failed to delete product");
+
+        setMenuItems((currentItems) =>
+          currentItems.filter((item) => item.id !== productToDelete.id),
+        );
+        setProductToDelete(null);
+      } catch (error) {
+        console.error("Error deleting product:", error);
+        alert("Failed to delete product. Please try again.");
+      }
     }
   };
 
@@ -146,11 +243,17 @@ export default function MenuManagement({
         </div>
 
         {/* Main Table (Uses internal scrolling) */}
-        <MenuTable
-          menuItems={filteredMenuItems}
-          onEdit={setProductToEdit}
-          onDelete={setProductToDelete}
-        />
+        {isLoading ? (
+          <div className="flex items-center justify-center flex-1">
+            <div className="text-lg text-gray-600">Loading products...</div>
+          </div>
+        ) : (
+          <MenuTable
+            menuItems={filteredMenuItems}
+            onEdit={setProductToEdit}
+            onDelete={setProductToDelete}
+          />
+        )}
       </div>
     </div>
   );
