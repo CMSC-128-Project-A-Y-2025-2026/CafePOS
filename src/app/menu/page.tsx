@@ -16,7 +16,7 @@ export default function MenuManagementPage() {
   const fontClassName = montserrat.className;
 
   return (
-    <div className={`flex h-screen flex-col bg-[#F9F1E9] ${fontClassName}`}>
+    <div className={`flex h-screen flex-col bg-[#F9F1E9] p-6 ${fontClassName}`}>
       <Header pageName1="Menu" pageName2="Management" />
 
       {/* Renders the client-side interactivity */}
