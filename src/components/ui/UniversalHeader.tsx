@@ -57,7 +57,10 @@ export default function UniversalHeader({
           <div className="drop-shadow-md">
             <Coffee size={72} className="text-gray-900" />
           </div>
-          <span className="text-[64px] font-black leading-tight text-gray-900 drop-shadow-sm"style={{ fontFamily: "'Shrikhand', cursive" }}>
+          <span
+            className="text-[64px] font-black leading-tight text-gray-900 drop-shadow-sm"
+            style={{ fontFamily: "'Shrikhand', cursive" }}
+          >
             {page_name_1} <span className="text-[#6290C3]">{page_name_2}</span>
           </span>
         </div>

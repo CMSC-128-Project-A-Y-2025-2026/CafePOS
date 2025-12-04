@@ -45,7 +45,10 @@ export default function InventoryHeader({
           <div className="drop-shadow-md">
             <Coffee size={72} className="text-gray-900" />
           </div>
-          <span className="text-[64px] font-black leading-tight text-gray-900 drop-shadow-sm"style={{ fontFamily: "'Shrikhand', cursive" }}>
+          <span
+            className="text-[64px] font-black leading-tight text-gray-900 drop-shadow-sm"
+            style={{ fontFamily: "'Shrikhand', cursive" }}
+          >
             Inventory <span className="text-[#6290C3]">Management</span>
           </span>
         </div>

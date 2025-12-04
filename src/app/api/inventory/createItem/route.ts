@@ -3,10 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient()
-    const body = await request.json()
+    const supabase = await createClient();
+    const body = await request.json();
 
-    const { product, category, stock, cost, status = "In stock" } = body
+    const { product, category, stock, cost, status = "In stock" } = body;
 
     // Validate required fields
     if (!product || !category || stock === undefined || !cost) {
@@ -24,10 +24,10 @@ export async function POST(request: NextRequest) {
           stock_status: status,
         },
       ])
-      .select()
+      .select();
 
     if (error) {
-       throw new Error(error.message || "Failed to create inventory item");
+      throw new Error(error.message || "Failed to create inventory item");
     }
 
     return NextResponse.json(
@@ -36,9 +36,12 @@ export async function POST(request: NextRequest) {
         data: data,
       },
       { status: 201 },
-    )
+    );
   } catch (error) {
-    console.error("[Inventory POST Error]", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    console.error("[Inventory POST Error]", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
