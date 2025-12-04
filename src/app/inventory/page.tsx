@@ -16,6 +16,7 @@ async function getInventory(): Promise<InventoryItem[]> {
     const data = await response.json()
 
     // Transform Supabase data to frontend format
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const transformed = data.map((item: any) => ({
       id: item.item_id,
       product: item.item_name,

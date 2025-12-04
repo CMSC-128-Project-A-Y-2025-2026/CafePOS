@@ -1,6 +1,7 @@
 import { createClient } from "#/utils/supabase/client";
 import { NextRequest, NextResponse } from "next/server";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient()
@@ -9,7 +10,7 @@ export async function GET(request: NextRequest) {
     const { data, error } = await supabase.from("inventory").select("*").order("created_at", { ascending: false })
 
     if (error) {
-      return NextResponse.json({ error: error.message || "Failed to fetch inventory" }, { status: 500 })
+      throw new Error(error.message || "Failed to fetch inventory items");
     }
 
     return NextResponse.json(data, { status: 200 })

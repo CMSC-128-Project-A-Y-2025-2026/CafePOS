@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!product || !category || stock === undefined || !cost) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+      throw new Error("Missing required fields");
     }
 
     const { data, error } = await supabase
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       .select()
 
     if (error) {
-      return NextResponse.json({ error: error.message || "Failed to create inventory item" }, { status: 500 })
+       throw new Error(error.message || "Failed to create inventory item");
     }
 
     return NextResponse.json(

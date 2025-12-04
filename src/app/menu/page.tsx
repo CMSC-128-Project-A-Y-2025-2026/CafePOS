@@ -82,7 +82,7 @@ export default function MenuManagementPage() {
 
   return (
     <div
-      className={`flex h-screen flex-col bg-[#F9F1E9] ${montserrat.className}`}
+      className={`flex h-screen flex-col bg-[#F9F1E9] p-6 ${montserrat.className}`}
     >
       {/* Modals remain the same */}
       {(isAddModalOpen || productToEdit) && (

@@ -12,7 +12,7 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: "Item ID is required" }, { status: 400 })
     }
 
-    // Build update object with only provided fields
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateData: Record<string, any> = {}
     if (product !== undefined) updateData.item_name = product
     if (category !== undefined) updateData.item_category = category
@@ -27,11 +27,11 @@ export async function PATCH(request: NextRequest) {
     const { data, error } = await supabase.from("inventory").update(updateData).eq("item_id", id).select()
 
     if (error) {
-      return NextResponse.json({ error: error.message || "Failed to update inventory item" }, { status: 500 })
+      throw new Error(error.message || "Failed to update inventory item");
     }
 
     if (!data || data.length === 0) {
-      return NextResponse.json({ error: "Item not found" }, { status: 404 })
+      throw new Error("Item not found");
     }
 
     return NextResponse.json(

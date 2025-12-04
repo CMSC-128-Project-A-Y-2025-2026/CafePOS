@@ -9,13 +9,13 @@ export async function DELETE(request: NextRequest) {
     const { id } = body
 
     if (!id) {
-      return NextResponse.json({ error: "Item ID is required" }, { status: 400 })
+      throw new Error("Item ID is required");
     }
 
     const { error } = await supabase.from("inventory").delete().eq("item_id", id)
 
     if (error) {
-      return NextResponse.json({ error: error.message || "Failed to delete inventory item" }, { status: 500 })
+      throw new Error(error.message || "Failed to delete inventory item");
     }
 
     return NextResponse.json(
