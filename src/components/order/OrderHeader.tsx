@@ -29,6 +29,9 @@ export default function OrderHeader({
 
   return (
     <header className="flex w-full items-center justify-between shrink-0 relative z-30">
+      <style>
+        {`@import url('https://fonts.googleapis.com/css2?family=Shrikhand&display=swap');`}
+      </style>
       <div
         className="relative z-50"
         onMouseEnter={() => setIsDropdownOpen(true)}
@@ -41,7 +44,10 @@ export default function OrderHeader({
           <div className="drop-shadow-md">
             <Coffee size={72} className="text-gray-900" />
           </div>
-          <span className="text-[64px] font-black leading-tight text-gray-900 drop-shadow-sm">
+          <span
+            className="text-[64px] font-black leading-tight text-gray-900 drop-shadow-sm"
+            style={{ fontFamily: "'Shrikhand', cursive" }}
+          >
             Pres <span className="text-[#6290C3]">Kopee</span>
           </span>
         </div>

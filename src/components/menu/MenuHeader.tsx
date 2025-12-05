@@ -1,34 +1,46 @@
-// src/app/inventory/components/InventoryHeader.tsx
-import React from "react";
-// IMPORT FIXED: Added CoffeeTogo icon for Menu, and router dependency
+// src/app/analytics/components/AnalyticsHeader.tsx
+"use client";
+import { useEffect, useState } from "react";
 import { Coffee, ClipboardPen, PieChart, Boxes, Menu } from "lucide-react";
-import DropdownItem from "@/components/SelectionMenu/DropdownItem";
-import { useRouter } from "next/navigation"; // Must import useRouter
+import { DropdownItem } from "#/src/components/ui/HelperComponents";
+import { useRouter } from "next/navigation";
 
-interface InventoryHeaderProps {
-  formattedTime: string;
-  isDropdownOpen: boolean;
-  setIsDropdownOpen: (isOpen: boolean) => void;
-  handleLogoClick: () => void;
-  handleOrderClick: () => void;
-  handleAnalyticsClick: () => void;
-  handleInventoryClick: () => void;
+interface UniversalHeaderProps {
+  pageName1: string;
+  pageName2: string;
 }
 
-export default function InventoryHeader({
-  formattedTime,
-  isDropdownOpen,
-  setIsDropdownOpen,
-  handleLogoClick,
-  handleOrderClick,
-  handleAnalyticsClick,
-  handleInventoryClick,
-}: InventoryHeaderProps) {
-  const router = useRouter(); // Initialize router inside the component
-  const handleMenuClick = () => router.push("/menu"); // New handler for Menu link
+export default function UniversalHeader({
+  pageName1,
+  pageName2,
+}: UniversalHeaderProps) {
+  const router = useRouter();
+
+  const handleMenuClick = () => router.push("/menu");
+  const handleLogoClick = () => router.push("/");
+  const handleOrderClick = () => router.push("/order");
+  const handleAnalyticsClick = () => router.push("/analytics");
+  const handleInventoryClick = () => router.push("/inventory");
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  const page_name_1 = pageName1;
+  const page_name_2 = pageName2;
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formattedTime = currentTime.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
 
   return (
-    <header className="flex w-full items-center justify-between relative z-30 shrink-0">
+    <header className="flex w-full items-center justify-between relative z-30 flex-shrink-0 p-6">
       <style>
         {`@import url('https://fonts.googleapis.com/css2?family=Shrikhand&display=swap');`}
       </style>
@@ -37,7 +49,7 @@ export default function InventoryHeader({
         onMouseEnter={() => setIsDropdownOpen(true)}
         onMouseLeave={() => setIsDropdownOpen(false)}
       >
-        {/* Logo */}
+        {/* Logo (Original large size maintained) */}
         <div
           className="flex cursor-pointer items-center gap-4 transition-opacity hover:opacity-80 pb-1"
           onClick={handleLogoClick}
@@ -49,7 +61,7 @@ export default function InventoryHeader({
             className="text-[64px] font-black leading-tight text-gray-900 drop-shadow-sm"
             style={{ fontFamily: "'Shrikhand', cursive" }}
           >
-            Inventory <span className="text-[#6290C3]">Management</span>
+            {page_name_1} <span className="text-[#6290C3]">{page_name_2}</span>
           </span>
         </div>
 
@@ -76,13 +88,16 @@ export default function InventoryHeader({
               label="Inventory"
               onClick={handleInventoryClick}
             />
-            <DropdownItem icon={Menu} label="Menu" onClick={handleMenuClick} />{" "}
-            {/* NEW LINK ADDED */}
+            <DropdownItem
+              icon={Menu}
+              label="Menu"
+              onClick={handleMenuClick}
+            />{" "}
           </div>
         </div>
       </div>
 
-      {/* Time */}
+      {/* Time (Original large size maintained) */}
       <div className="flex items-baseline gap-3 font-black italic tracking-tight drop-shadow-sm">
         <span className="text-[64px] text-[#6290C3]">
           {formattedTime.split(" ")[0]}

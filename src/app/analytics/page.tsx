@@ -10,7 +10,7 @@ export const montserrat = Montserrat({
 export default async function AnalyticsPage() {
   return (
     <div
-      className={`flex h-screen flex-col bg-[#F9F1E9] ${montserrat.className}`}
+      className={`flex h-screen flex-col bg-[#F9F1E9] p-6 ${montserrat.className}`}
     >
       <Header pageName1="Sales Report" pageName2="Generation" />
       <AnalyticsComponent />
