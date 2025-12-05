@@ -85,7 +85,10 @@ export default function MenuManagement({
     newProduct: Omit<MenuItem, "id"> | MenuItem,
   ) => {
     try {
+      let savedProductId: string;
+
       if ("id" in newProduct) {
+        // EDIT
         const response = await fetch("/api/products/editProduct", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -98,11 +101,14 @@ export default function MenuManagement({
         });
 
         if (!response.ok) throw new Error();
+
+        savedProductId = newProduct.id;
         setMenuItems((items) =>
           items.map((i) => (i.id === newProduct.id ? newProduct : i)),
         );
         setProductToEdit(null);
       } else {
+        // CREATE
         const response = await fetch("/api/products/addProduct", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -123,10 +129,28 @@ export default function MenuManagement({
           category: result.data[0].product_category,
         };
 
+        savedProductId = addedProduct.id;
+
         setMenuItems((items) => [addedProduct, ...items]);
         setIsAddModalOpen(false);
       }
-    } catch {
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const ing = (newProduct as any).ingredients ?? [];
+      console.log(ing);
+
+      for (const ingredient of ing) {
+        await fetch(`/api/products/${savedProductId}/ingredients`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            item: ingredient.inventory_id,
+            quantity: ingredient.quantity,
+          }),
+        });
+      }
+    } catch (err) {
+      console.error(err);
       alert("Failed to save product. Please try again.");
     }
   };

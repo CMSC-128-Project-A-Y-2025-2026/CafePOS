@@ -122,7 +122,7 @@ export default function ProductFormModal({
       category,
       price: Number(price),
       ingredients: ingredients.map((i) => ({
-        inventory_id: Number(i.inventory_id),
+        inventory_id: String(i.inventory_id),
         quantity: Number(i.quantity),
       })),
     };
@@ -245,13 +245,10 @@ export default function ProductFormModal({
                   key={item.uid}
                   className="flex flex-col gap-2 border p-3 rounded-md"
                 >
-                  {/* Select full width */}
-                  {/* Combobox ingredient selector */}
-                  {/* shadcn/ui Combobox */}
                   {(() => {
                     const selectedLabel =
                       normalizedInventory.find(
-                        (inv) => inv.optionValue === item.inventory_id,
+                        (inv) => String(inv.id) === item.inventory_id,
                       )?.label || "Select ingredient";
 
                     return (
@@ -277,7 +274,7 @@ export default function ProductFormModal({
                                     updateIngredient(
                                       item.uid,
                                       "inventory_id",
-                                      inv.optionValue,
+                                      String(inv.id),
                                     )
                                   }
                                 >
