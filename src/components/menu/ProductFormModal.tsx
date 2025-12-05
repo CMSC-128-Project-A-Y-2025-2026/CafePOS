@@ -8,7 +8,7 @@ interface ProductFormModalProps {
   title: string;
   initialData?: MenuItem;
   onClose: () => void;
-  onSave: (data: MenuItem) => void;
+  onSave: (data: Omit<MenuItem, "id"> | MenuItem) => void;
 }
 
 export default function ProductFormModal({
@@ -18,33 +18,36 @@ export default function ProductFormModal({
   onSave,
 }: ProductFormModalProps) {
   const [name, setName] = useState(initialData?.name || "");
-  // Initialize category to the first category if adding, or the existing one if editing
   const [category, setCategory] = useState(
     initialData?.category || menuCategories[0] || "",
   );
   const [price, setPrice] = useState(initialData?.price.toString() || "");
 
-  // Removed image state and field
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const productData: MenuItem = {
-      id: initialData?.id || Math.floor(Date.now() / 1000),
-      name,
-      category,
-      price: Number(price),
-      // Automatically generate a placeholder image URL, as the field was removed
-      image:
-        initialData?.image ||
-        `https://placehold.co/150x150/F9F1E9/333?text=${name}`,
-    };
-
     if (initialData) {
-      productData.id = initialData.id;
+      // Edit mode - include the ID
+      const productData: MenuItem = {
+        id: initialData.id,
+        name,
+        category,
+        price: Number(price),
+        image:
+          initialData.image ||
+          `https://placehold.co/150x150/F9F1E9/333?text=${name}`,
+      };
+      onSave(productData);
+    } else {
+      // Add mode - don't include ID, let the database generate it
+      const productData: Omit<MenuItem, "id"> = {
+        name,
+        category,
+        price: Number(price),
+        image: `https://placehold.co/150x150/F9F1E9/333?text=${name}`,
+      };
+      onSave(productData);
     }
-
-    onSave(productData);
   };
 
   const isEditMode = initialData !== undefined;
