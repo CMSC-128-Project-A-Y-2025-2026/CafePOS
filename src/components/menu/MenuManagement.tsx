@@ -43,6 +43,7 @@ export default function MenuManagement({
         const result = await response.json();
         
         // Map database fields to MenuItem interface
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const products: MenuItem[] = result.data.map((item: any) => {
           console.log("Database item:", item);
           console.log("ID type:", typeof item.id, "ID value:", item.id);
@@ -89,7 +90,7 @@ export default function MenuManagement({
           try {
             const errorData = JSON.parse(errorText);
             console.error("API Error:", errorData);
-          } catch (e) {
+          } catch {
             console.error("Could not parse error as JSON:", errorText);
           }
           throw new Error("Failed to update product");
