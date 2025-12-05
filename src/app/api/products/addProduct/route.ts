@@ -13,7 +13,10 @@ export async function GET() {
 
     return NextResponse.json({ data });
   } catch {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
 
@@ -26,7 +29,7 @@ export async function POST(request: NextRequest) {
     if (!product || !category || price == null) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -48,7 +51,7 @@ export async function POST(request: NextRequest) {
     console.error("Product POST Error", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -6,19 +6,28 @@ export async function PUT(request: NextRequest) {
     const supabase = await createClient();
     const body = await request.json();
     console.log("PUT Request body:", body);
-    
+
     const { id, product, category, price } = body;
 
     if (!id || !product || !category || price == null) {
-      console.log("Missing fields - id:", id, "product:", product, "category:", category, "price:", price);
+      console.log(
+        "Missing fields - id:",
+        id,
+        "product:",
+        product,
+        "category:",
+        category,
+        "price:",
+        price,
+      );
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     console.log("Updating product:", { id, product, category, price });
-    
+
     const { data, error } = await supabase
       .from("products")
       .update({
@@ -34,16 +43,16 @@ export async function PUT(request: NextRequest) {
         message: error.message,
         details: error.details,
         hint: error.hint,
-        code: error.code
+        code: error.code,
       });
       return NextResponse.json(
-        { 
-          error: "Database error", 
+        {
+          error: "Database error",
           message: error.message,
           details: error.details,
-          hint: error.hint
+          hint: error.hint,
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -55,7 +64,7 @@ export async function PUT(request: NextRequest) {
     console.error("Error message:", errorMessage);
     return NextResponse.json(
       { error: "Internal server error", message: errorMessage },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

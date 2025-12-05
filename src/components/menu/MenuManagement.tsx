@@ -39,9 +39,9 @@ export default function MenuManagement({
         setIsLoading(true);
         const response = await fetch("/api/products/addProduct");
         if (!response.ok) throw new Error("Failed to fetch products");
-        
+
         const result = await response.json();
-        
+
         // Map database fields to MenuItem interface
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const products: MenuItem[] = result.data.map((item: any) => {
@@ -55,7 +55,7 @@ export default function MenuManagement({
             image: "", // Placeholder for future use
           };
         });
-        
+
         console.log("Mapped products:", products);
         setMenuItems(products);
       } catch (error) {
@@ -69,7 +69,9 @@ export default function MenuManagement({
   }, []);
 
   // --- Handlers ---
-  const handleSaveProduct = async (newProduct: Omit<MenuItem, "id"> | MenuItem) => {
+  const handleSaveProduct = async (
+    newProduct: Omit<MenuItem, "id"> | MenuItem,
+  ) => {
     try {
       if ("id" in newProduct) {
         // Edit existing product

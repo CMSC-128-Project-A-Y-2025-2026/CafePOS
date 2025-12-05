@@ -18,7 +18,9 @@ export default function ProductFormModal({
   onSave,
 }: ProductFormModalProps) {
   const [name, setName] = useState(initialData?.name || "");
-  const [category, setCategory] = useState(initialData?.category || menuCategories[0] || "");
+  const [category, setCategory] = useState(
+    initialData?.category || menuCategories[0] || "",
+  );
   const [price, setPrice] = useState(initialData?.price.toString() || "");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -31,7 +33,9 @@ export default function ProductFormModal({
         name,
         category,
         price: Number(price),
-        image: initialData.image || `https://placehold.co/150x150/F9F1E9/333?text=${name}`,
+        image:
+          initialData.image ||
+          `https://placehold.co/150x150/F9F1E9/333?text=${name}`,
       };
       onSave(productData);
     } else {
