@@ -90,10 +90,10 @@ export default function ProductFormModal({
 }: ProductFormModalProps) {
   const [name, setName] = useState(initialData?.name ?? "");
   const [category, setCategory] = useState(
-    initialData?.category ?? menuCategories[0] ?? ""
+    initialData?.category ?? menuCategories[0] ?? "",
   );
   const [price, setPrice] = useState(
-    initialData?.price != null ? String(initialData.price) : ""
+    initialData?.price != null ? String(initialData.price) : "",
   );
   const [ingredients, setIngredients] = useState<IngredientRow[]>([]);
 
@@ -185,9 +185,13 @@ export default function ProductFormModal({
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function updateIngredient(uid: string, field: keyof Omit<IngredientRow, "uid">, value: any) {
+  function updateIngredient(
+    uid: string,
+    field: keyof Omit<IngredientRow, "uid">,
+    value: any,
+  ) {
     setIngredients((prev) =>
-      prev.map((it) => (it.uid === uid ? { ...it, [field]: value } : it))
+      prev.map((it) => (it.uid === uid ? { ...it, [field]: value } : it)),
     );
   }
 
@@ -196,7 +200,7 @@ export default function ProductFormModal({
   }
 
   const normalizedInventory = (inventoryItems ?? []).map((inv, idx) =>
-    normalizeInventoryItem(inv, idx)
+    normalizeInventoryItem(inv, idx),
   );
 
   return (
@@ -215,7 +219,10 @@ export default function ProductFormModal({
             </SheetDescription>
           </SheetHeader>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-5 flex-1 min-h-0">
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-5 flex-1 min-h-0"
+          >
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium">Product Name</label>
               <input
@@ -265,15 +272,19 @@ export default function ProductFormModal({
 
               <div className="mt-3 space-y-3 overflow-y-auto pr-1">
                 {ingredients.map((item) => (
-                  <div key={item.uid} className="flex flex-col gap-2 border p-3 rounded-md">
+                  <div
+                    key={item.uid}
+                    className="flex flex-col gap-2 border p-3 rounded-md"
+                  >
                     <Popover>
                       <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-full justify-between">
-                          {
-                            normalizedInventory.find(
-                              (inv) => String(inv.id) === item.inventory_id
-                            )?.label ?? "Select ingredient"
-                          }
+                        <Button
+                          variant="outline"
+                          className="w-full justify-between"
+                        >
+                          {normalizedInventory.find(
+                            (inv) => String(inv.id) === item.inventory_id,
+                          )?.label ?? "Select ingredient"}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="p-0 w-[300px]">
@@ -285,7 +296,11 @@ export default function ProductFormModal({
                                 key={inv.optionKey}
                                 value={inv.name}
                                 onSelect={() =>
-                                  updateIngredient(item.uid, "inventory_id", String(inv.id))
+                                  updateIngredient(
+                                    item.uid,
+                                    "inventory_id",
+                                    String(inv.id),
+                                  )
                                 }
                               >
                                 {inv.label}
@@ -301,12 +316,14 @@ export default function ProductFormModal({
                         type="number"
                         className="flex-1 rounded-md border p-2"
                         min="0"
-                        value={item.quantity === "" ? "" : String(item.quantity)}
+                        value={
+                          item.quantity === "" ? "" : String(item.quantity)
+                        }
                         onChange={(e) =>
                           updateIngredient(
                             item.uid,
                             "quantity",
-                            e.target.value === "" ? "" : Number(e.target.value)
+                            e.target.value === "" ? "" : Number(e.target.value),
                           )
                         }
                         required
@@ -326,7 +343,11 @@ export default function ProductFormModal({
             </div>
 
             <SheetFooter className="pt-4 flex gap-3 justify-end border-t">
-              <Button variant="outline" onClick={() => handleSheetOpenChange(false)} type="button">
+              <Button
+                variant="outline"
+                onClick={() => handleSheetOpenChange(false)}
+                type="button"
+              >
                 Cancel
               </Button>
               <Button type="submit" className="bg-[#6290C3] hover:bg-[#1A1B41]">
@@ -341,12 +362,18 @@ export default function ProductFormModal({
         <AlertDialogContent>
           <AlertDialogTitle>Discard product?</AlertDialogTitle>
           <AlertDialogDescription>
-            You have unsaved changes. If you close this form, all entered data will be lost.
+            You have unsaved changes. If you close this form, all entered data
+            will be lost.
           </AlertDialogDescription>
 
           <div className="flex justify-end gap-3 mt-4">
-            <AlertDialogCancel onClick={cancelDiscard}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDiscard} className="bg-red-600 text-white">
+            <AlertDialogCancel onClick={cancelDiscard}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDiscard}
+              className="bg-red-600 text-white"
+            >
               Discard
             </AlertDialogAction>
           </div>
