@@ -1,16 +1,15 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { useRouter } from "next/navigation";
 
 import type { InventoryItem } from "@/lib/types";
-import InventoryHeader from "@/components/inventory/InventoryHeader";
 import InventoryActions from "@/components/inventory/InventoryActions";
 import InventoryTable from "@/components/inventory/InventoryTable";
 import InventoryProductModal from "@/components/inventory/InventoryProductModal";
 import DeleteConfirmationModal from "@/components/inventory/DeleteConfirmationModal";
 import WeeklyReportModal from "@/components/inventory/WeeklyReportModal";
 import { SpinnerDemo } from "../ui/spinnerLoader";
+import UniversalHeader from "../ui/UniversalHeader";
 
 type InventorySaveData = Omit<InventoryItem, "id"> & { id?: string };
 
@@ -26,26 +25,7 @@ function formatInventoryItem(raw: any): InventoryItem {
   };
 }
 
-function useClock() {
-  const [time, setTime] = useState(new Date());
-
-  useEffect(() => {
-    const timer = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  return time.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
-}
-
 export default function InventoryClient() {
-  const router = useRouter();
-  const formattedTime = useClock();
-
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [productToEdit, setProductToEdit] = useState<InventoryItem | null>(
     null,
@@ -208,15 +188,7 @@ export default function InventoryClient() {
       )}
 
       {/* Header */}
-      <InventoryHeader
-        formattedTime={formattedTime}
-        isDropdownOpen={isDropdownOpen}
-        setIsDropdownOpen={setIsDropdownOpen}
-        handleLogoClick={() => router.push("/")}
-        handleOrderClick={() => router.push("/order")}
-        handleAnalyticsClick={() => router.push("/analytics")}
-        handleInventoryClick={() => setIsDropdownOpen(false)}
-      />
+      <UniversalHeader pageName1="Inventory" pageName2="Management"/>
 
       {/* Filters + Actions */}
       <InventoryActions
