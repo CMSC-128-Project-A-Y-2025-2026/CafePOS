@@ -252,7 +252,7 @@ export default function MenuManagement({
         {isLoading ? (
           <div className="flex items-center justify-center flex-1">
             <div className="text-lg text-gray-600">
-              <SpinnerDemo name={"products"}/>
+              <SpinnerDemo name={"products"} />
             </div>
           </div>
         ) : (

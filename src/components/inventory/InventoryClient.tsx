@@ -47,8 +47,12 @@ export default function InventoryClient() {
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [productToEdit, setProductToEdit] = useState<InventoryItem | null>(null);
-  const [productToDelete, setProductToDelete] = useState<InventoryItem | null>(null);
+  const [productToEdit, setProductToEdit] = useState<InventoryItem | null>(
+    null,
+  );
+  const [productToDelete, setProductToDelete] = useState<InventoryItem | null>(
+    null,
+  );
   const [inventoryData, setInventoryData] = useState<InventoryItem[]>([]);
   const [activeStatusFilter, setActiveStatusFilter] = useState("all");
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
@@ -58,7 +62,9 @@ export default function InventoryClient() {
   const loadInventory = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/inventory/getItem", { cache: "no-store" });
+      const response = await fetch("/api/inventory/getItem", {
+        cache: "no-store",
+      });
       if (!response.ok) throw new Error("Failed to fetch items");
       const json = await response.json();
 
@@ -76,7 +82,8 @@ export default function InventoryClient() {
 
   const handleAddProduct = async (newProduct: InventorySaveData) => {
     try {
-      const costValue = Number(newProduct.cost?.toString().replace("PHP ", "")) || 0;
+      const costValue =
+        Number(newProduct.cost?.toString().replace("PHP ", "")) || 0;
 
       const response = await fetch("/api/inventory/createItem", {
         method: "POST",
@@ -87,7 +94,10 @@ export default function InventoryClient() {
       if (!response.ok) throw new Error("Failed to create product");
 
       const result = await response.json();
-      setInventoryData((prev) => [formatInventoryItem(result.data[0]), ...prev]);
+      setInventoryData((prev) => [
+        formatInventoryItem(result.data[0]),
+        ...prev,
+      ]);
       setIsAddModalOpen(false);
     } catch (err) {
       console.error("[Add Product Error]", err);
@@ -114,7 +124,7 @@ export default function InventoryClient() {
       const updatedItem = formatInventoryItem(result.data[0]);
 
       setInventoryData((prev) =>
-        prev.map((item) => (item.id === updated.id ? updatedItem : item))
+        prev.map((item) => (item.id === updated.id ? updatedItem : item)),
       );
 
       setProductToEdit(null);
@@ -136,7 +146,7 @@ export default function InventoryClient() {
       if (!response.ok) throw new Error("Failed to delete");
 
       setInventoryData((prev) =>
-        prev.filter((item) => item.id !== productToDelete.id)
+        prev.filter((item) => item.id !== productToDelete.id),
       );
 
       setProductToDelete(null);
@@ -150,11 +160,14 @@ export default function InventoryClient() {
 
     return inventoryData
       .filter((item) =>
-        activeStatusFilter === "all" ? true : item.status === activeStatusFilter
+        activeStatusFilter === "all"
+          ? true
+          : item.status === activeStatusFilter,
       )
-      .filter((item) =>
-        item.product.toLowerCase().includes(query) ||
-        item.category.toLowerCase().includes(query)
+      .filter(
+        (item) =>
+          item.product.toLowerCase().includes(query) ||
+          item.category.toLowerCase().includes(query),
       )
       .sort((a, b) => a.product.localeCompare(b.product));
   }, [inventoryData, activeStatusFilter, searchTerm]);
@@ -219,7 +232,7 @@ export default function InventoryClient() {
       {loading ? (
         <div className="flex items-center justify-center flex-1">
           <div className="text-lg text-gray-600">
-            <SpinnerDemo name={"inventory"}/>
+            <SpinnerDemo name={"inventory"} />
           </div>
         </div>
       ) : (
