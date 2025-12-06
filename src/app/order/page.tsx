@@ -1,6 +1,6 @@
 // src/app/order/page.tsx
 import { Montserrat } from "next/font/google";
-import OrderTerminal from "#/src/components/order/OrderTerminal";
+import OrderTerminal from "@/components/order/OrderTerminal";
 
 export const montserrat = Montserrat({
   subsets: ["latin"],

@@ -1,6 +1,6 @@
 // src/app/order/components/OrderSummary.tsx
 import React from "react";
-import { CartItem } from "../../app/order/types";
+import { CartItem } from "@/lib/types";
 import OrderItem from "./OrderItem";
 import PaymentButton from "./PaymentButton";
 

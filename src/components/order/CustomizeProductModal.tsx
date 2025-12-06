@@ -1,7 +1,7 @@
 // src/app/order/components/CustomizeProductModal.tsx
 import React, { useState } from "react";
 import { X } from "lucide-react";
-import { Product, Option } from "../../app/order/types";
+import { Product, Option } from "@/lib/types";
 import { ADD_ONS } from "../../app/order/mockData";
 
 interface CustomizeProductModalProps {

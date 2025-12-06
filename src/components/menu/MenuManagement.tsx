@@ -7,9 +7,9 @@ import MenuTable from "#/src/components/menu/MenuTable";
 import ProductFormModal from "#/src/components/menu/ProductFormModal";
 import DeleteConfirmationModal from "#/src/components/menu/DeleteConfirmationModal";
 import CategoryFilterPill from "#/src/components/menu/CategoryFilterPill";
-import { MenuItem } from "../../app/menu/types";
+import { MenuItem } from "@/lib/types";
 import { InventoryItem } from "@/lib/types";
-import { menuCategories } from "../../app/menu/mockData";
+import { menuCategories } from "@/lib/arrays";
 import { SpinnerDemo } from "../ui/spinnerLoader";
 
 const filterCategories = [
@@ -252,7 +252,7 @@ export default function MenuManagement({
         {isLoading ? (
           <div className="flex items-center justify-center flex-1">
             <div className="text-lg text-gray-600">
-              <SpinnerDemo />
+              <SpinnerDemo name={"products"} />
             </div>
           </div>
         ) : (

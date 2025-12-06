@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { MenuItem } from "../../app/menu/types";
+import { MenuItem } from "@/lib/types";
 import { InventoryItem } from "@/lib/types";
-import { menuCategories } from "../../app/menu/mockData";
+import { menuCategories } from "@/lib/arrays";
 import { Plus } from "lucide-react";
 
 import {

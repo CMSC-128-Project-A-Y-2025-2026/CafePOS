@@ -1,7 +1,7 @@
 // src/app/order/components/ProductCard.tsx
 import React from "react";
 import { Plus } from "lucide-react";
-import { Product } from "../../app/order/types";
+import { Product } from "@/lib/types";
 
 interface ProductCardProps {
   product: Product;

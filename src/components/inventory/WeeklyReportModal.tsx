@@ -1,7 +1,7 @@
 // src/app/inventory/components/WeeklyReportModal.tsx
 import React from "react";
 import { X } from "lucide-react";
-import { InventoryItem } from "@/app/inventory/types";
+import { InventoryItem } from "@/lib/types";
 
 interface WeeklyReportModalProps {
   inventory: InventoryItem[];

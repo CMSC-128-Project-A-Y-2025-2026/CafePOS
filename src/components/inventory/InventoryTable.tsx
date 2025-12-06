@@ -1,6 +1,6 @@
 // src/app/inventory/components/InventoryTable.tsx
 import React from "react";
-import { InventoryItem } from "@/app/inventory/types";
+import { InventoryItem } from "@/lib/types";
 import { TableActionButton } from "./Buttons";
 
 interface InventoryTableProps {

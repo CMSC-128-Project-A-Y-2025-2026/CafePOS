@@ -1,6 +1,6 @@
 // src/app/analytics/mockData.ts
 
-import { SalesItem, TopSellerProduct } from "./types";
+import { SalesItem, TopSellerProduct } from "@/lib/types";
 
 export const salesByHourData: SalesItem[] = [
   { hour: "11 AM", sales: 720 },
