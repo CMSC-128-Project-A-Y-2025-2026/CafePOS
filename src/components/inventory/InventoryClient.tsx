@@ -20,6 +20,7 @@ function formatInventoryItem(raw: any): InventoryItem {
     product: raw.item_name,
     category: raw.item_category,
     stock: raw.stock,
+    item_threshold: raw.item_threshold,
     status: raw.stock_status,
     cost: `PHP ${raw.item_cost}`,
   };
@@ -71,7 +72,11 @@ export default function InventoryClient() {
         body: JSON.stringify({ ...newProduct, cost: costValue }),
       });
 
-      if (!response.ok) throw new Error("Failed to create product");
+      if (!response.ok) {
+        const errText = await response.text();
+        console.error("Create item error response:", errText);
+        throw new Error("Failed to create product");
+      }
 
       const result = await response.json();
       setInventoryData((prev) => [
