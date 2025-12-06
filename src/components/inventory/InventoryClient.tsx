@@ -188,7 +188,7 @@ export default function InventoryClient() {
       )}
 
       {/* Header */}
-      <UniversalHeader pageName1="Inventory" pageName2="Management"/>
+      <UniversalHeader pageName1="Inventory" pageName2="Management" />
 
       {/* Filters + Actions */}
       <InventoryActions
