@@ -43,7 +43,13 @@ export default function UniversalHeader({
   const page_name_1 = pageName1;
   const page_name_2 = pageName2;
   return (
-    <header className={page_name_1 == "Menu" ? "flex w-full items-center justify-between relative z-30 shrink-0 p-6" : "flex w-full items-center justify-between relative z-30 shrink-0"}>
+    <header
+      className={
+        page_name_1 == "Menu"
+          ? "flex w-full items-center justify-between relative z-30 shrink-0 p-6"
+          : "flex w-full items-center justify-between relative z-30 shrink-0"
+      }
+    >
       <style>
         {`@import url('https://fonts.googleapis.com/css2?family=Shrikhand&display=swap');`}
       </style>

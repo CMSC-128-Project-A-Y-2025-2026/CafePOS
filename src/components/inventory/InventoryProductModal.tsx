@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
 import { InventoryItem } from "@/lib/types";
+// Import the structured categories array
+import { inventoryCategories } from "@/lib/arrays";
 
 interface InventoryProductModalProps {
   title: string;
@@ -96,14 +98,38 @@ export default function InventoryProductModal({
               setProduct(e.target.value)
             }
           />
-          <InputField
-            label="Category"
-            id="category"
-            value={category}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setCategory(e.target.value)
-            }
-          />
+
+          {/* New Category Dropdown - Replaces the old InputField */}
+          <div>
+            <label
+              htmlFor="category"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Category
+            </label>
+            <select
+              id="category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-[#6290C3] focus:ring-[#6290C3] text-gray-900 transition-all"
+              required
+            >
+              <option value="" disabled>
+                Select an Inventory Category
+              </option>
+              {inventoryCategories.map((mainCategory) => (
+                <optgroup key={mainCategory.value} label={mainCategory.label}>
+                  {mainCategory.subcategories.map((subCategory) => (
+                    <option key={subCategory.value} value={subCategory.label}>
+                      {subCategory.label}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          </div>
+          {/* End of New Category Dropdown */}
+
           <InputField
             label="Stock"
             id="stock"
