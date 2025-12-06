@@ -28,15 +28,14 @@ export async function PATCH(request: NextRequest) {
       .single();
 
     if (fetchError || !existing) {
-      return NextResponse.json(
-        { error: "Item not found" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: "Item not found" }, { status: 404 });
     }
 
     const newStock = stock !== undefined ? Number(stock) : existing.stock;
     const newThreshold =
-      item_threshold !== undefined ? Number(item_threshold) : existing.item_threshold;
+      item_threshold !== undefined
+        ? Number(item_threshold)
+        : existing.item_threshold;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateData: Record<string, any> = {
