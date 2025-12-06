@@ -1,32 +1,21 @@
 // src/components/order/OrderTerminal.tsx
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useMemo } from "react";
 
-// Import all definitions and data (Adjusted paths for new file location)
 import { Product, Option, CartItem } from "#/src/app/order/types";
 import { products, initialCart } from "#/src/app/order/mockData";
 
-// Import components (Adjusted paths for new file location)
-import OrderHeader from "./OrderHeader";
 import ProductList from "./ProductList";
 import OrderSummary from "./OrderSummary";
 import CustomizeProductModal from "./CustomizeProductModal";
+import UniversalHeader from "../ui/UniversalHeader";
 
-// --- Main Order Terminal Component ---
-
-// Receives fontClassName from the Server Component
 export default function OrderTerminal({
   fontClassName,
 }: {
   fontClassName: string;
 }) {
-  const router = useRouter();
-
-  // --- State ---
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [currentTime, setCurrentTime] = useState<Date>(new Date());
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [activePaymentMethod, setActivePaymentMethod] = useState("gcash");
@@ -35,25 +24,6 @@ export default function OrderTerminal({
   );
   const [totalOrderDiscountPercent, setTotalOrderDiscountPercent] = useState(0);
   const [cart, setCart] = useState<CartItem[]>(initialCart);
-
-  // --- Effects (Time) ---
-  useEffect(() => {
-    // Update time every second
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const formattedTime = currentTime.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
-
-  // --- Router Handlers ---
-  const handleLogoClick = () => router.push("/");
-  const handleOrderClick = () => setIsDropdownOpen(false);
-  const handleAnalyticsClick = () => router.push("/analytics");
-  const handleInventoryClick = () => router.push("/inventory");
 
   // --- Cart Handlers ---
   const handleAddToCart = (
@@ -131,7 +101,6 @@ export default function OrderTerminal({
     });
   };
 
-  // --- Memos (Calculations) ---
   const filteredProducts = useMemo(() => {
     return products
       .filter((p) => activeCategory === "all" || p.category === activeCategory)
@@ -168,17 +137,8 @@ export default function OrderTerminal({
       )}
 
       <div className="flex h-screen flex-col bg-[#F9F1E9] p-6">
-        <OrderHeader
-          formattedTime={formattedTime}
-          isDropdownOpen={isDropdownOpen}
-          setIsDropdownOpen={setIsDropdownOpen}
-          handleLogoClick={handleLogoClick}
-          handleOrderClick={handleOrderClick}
-          handleAnalyticsClick={handleAnalyticsClick}
-          handleInventoryClick={handleInventoryClick}
-        />
+        <UniversalHeader pageName1="Pres" pageName2="Kopee" />
 
-        {/* Main Layout */}
         <div className="mt-6 flex flex-1 gap-6 overflow-hidden p-4 pb-6 pt-1">
           <ProductList
             filteredProducts={filteredProducts}

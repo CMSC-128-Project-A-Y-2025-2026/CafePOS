@@ -40,7 +40,7 @@ export default function UniversalHeader({
   });
 
   return (
-    <header className="flex w-full items-center justify-between relative z-30 flex-shrink-0 p-6">
+    <header className="flex w-full items-center justify-between relative z-30 shrink-0 p-6">
       <style>
         {`@import url('https://fonts.googleapis.com/css2?family=Shrikhand&display=swap');`}
       </style>

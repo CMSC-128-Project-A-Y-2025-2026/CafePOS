@@ -3,28 +3,27 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { Search, Plus } from "lucide-react";
-
 import MenuTable from "#/src/components/menu/MenuTable";
 import ProductFormModal from "#/src/components/menu/ProductFormModal";
 import DeleteConfirmationModal from "#/src/components/menu/DeleteConfirmationModal";
 import CategoryFilterPill from "#/src/components/menu/CategoryFilterPill";
-import { MenuItem } from "../../app/menu/types"; // Adjust import path
-import { menuCategories } from "../../app/menu/mockData"; // Adjust import path
+import { MenuItem } from "../../app/menu/types";
+import { InventoryItem } from "@/lib/types";
+import { menuCategories } from "../../app/menu/mockData";
+import { SpinnerDemo } from "../ui/spinnerLoader";
 
-// Define the categories list including 'all' here for use in filtering
 const filterCategories = [
   { key: "all", label: "all" },
   ...menuCategories.map((c) => ({ key: c, label: c })),
 ];
 
-// We pass the font class in from the Server Component to keep it out of the client bundle
 export default function MenuManagement({
   fontClassName,
 }: {
   fontClassName: string;
 }) {
-  // --- State ---
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [productToEdit, setProductToEdit] = useState<MenuItem | null>(null);
@@ -32,34 +31,24 @@ export default function MenuManagement({
   const [activeCategoryFilter, setActiveCategoryFilter] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
 
-  // --- Fetch products from database ---
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setIsLoading(true);
         const response = await fetch("/api/products/addProduct");
-        if (!response.ok) throw new Error("Failed to fetch products");
-
+        if (!response.ok) throw new Error();
         const result = await response.json();
 
-        // Map database fields to MenuItem interface
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const products: MenuItem[] = result.data.map((item: any) => {
-          console.log("Database item:", item);
-          console.log("ID type:", typeof item.id, "ID value:", item.id);
-          return {
-            id: String(item.id), // Ensure it's a string
-            name: item.product_name,
-            price: item.product_cost,
-            category: item.product_category,
-            image: "", // Placeholder for future use
-          };
-        });
+        const products: MenuItem[] = result.data.map((item: any) => ({
+          id: String(item.id),
+          name: item.product_name,
+          price: item.product_cost,
+          category: item.product_category,
+        }));
 
-        console.log("Mapped products:", products);
         setMenuItems(products);
-      } catch (error) {
-        console.error("Error fetching products:", error);
+      } catch {
       } finally {
         setIsLoading(false);
       }
@@ -68,13 +57,38 @@ export default function MenuManagement({
     fetchProducts();
   }, []);
 
-  // --- Handlers ---
+  useEffect(() => {
+    const fetchInventory = async () => {
+      try {
+        const response = await fetch("/api/inventory/getItem");
+        if (!response.ok) throw new Error();
+        const result = await response.json();
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const inventory: InventoryItem[] = result.map((item: any) => ({
+          id: String(item.item_id),
+          product: item.item_name,
+          category: item.item_category,
+          stock: item.stock,
+          status: item.stock_status,
+          cost: item.item_cost,
+        }));
+
+        setInventoryItems(inventory);
+      } catch {}
+    };
+
+    fetchInventory();
+  }, []);
+
   const handleSaveProduct = async (
     newProduct: Omit<MenuItem, "id"> | MenuItem,
   ) => {
     try {
+      let savedProductId: string;
+
       if ("id" in newProduct) {
-        // Edit existing product
+        // EDIT
         const response = await fetch("/api/products/editProduct", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -86,29 +100,15 @@ export default function MenuManagement({
           }),
         });
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error("API Error Response:", errorText);
-          try {
-            const errorData = JSON.parse(errorText);
-            console.error("API Error:", errorData);
-          } catch {
-            console.error("Could not parse error as JSON:", errorText);
-          }
-          throw new Error("Failed to update product");
-        }
+        if (!response.ok) throw new Error();
 
-        const result = await response.json();
-        console.log("Update success:", result);
-
-        setMenuItems((currentItems) =>
-          currentItems.map((item) =>
-            item.id === newProduct.id ? newProduct : item,
-          ),
+        savedProductId = newProduct.id;
+        setMenuItems((items) =>
+          items.map((i) => (i.id === newProduct.id ? newProduct : i)),
         );
         setProductToEdit(null);
       } else {
-        // Add new product
+        // CREATE
         const response = await fetch("/api/products/addProduct", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -119,79 +119,88 @@ export default function MenuManagement({
           }),
         });
 
-        if (!response.ok) throw new Error("Failed to add product");
-
+        if (!response.ok) throw new Error();
         const result = await response.json();
-        console.log("Add product result:", result);
+
         const addedProduct: MenuItem = {
           id: String(result.data[0].id),
           name: result.data[0].product_name,
           price: result.data[0].product_cost,
           category: result.data[0].product_category,
-          image: "",
         };
 
-        setMenuItems((currentItems) => [addedProduct, ...currentItems]);
+        savedProductId = addedProduct.id;
+
+        setMenuItems((items) => [addedProduct, ...items]);
         setIsAddModalOpen(false);
       }
-    } catch (error) {
-      console.error("Error saving product:", error);
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const ing = (newProduct as any).ingredients ?? [];
+      console.log(ing);
+
+      for (const ingredient of ing) {
+        await fetch(`/api/products/${savedProductId}/ingredients`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            item: ingredient.inventory_id,
+            quantity: ingredient.quantity,
+          }),
+        });
+      }
+    } catch (err) {
+      console.error(err);
       alert("Failed to save product. Please try again.");
     }
   };
 
   const handleConfirmDelete = async () => {
-    if (productToDelete) {
-      try {
-        const response = await fetch("/api/products/removeProduct", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: productToDelete.id }),
-        });
+    if (!productToDelete) return;
 
-        if (!response.ok) throw new Error("Failed to delete product");
+    try {
+      const response = await fetch("/api/products/removeProduct", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: productToDelete.id }),
+      });
 
-        setMenuItems((currentItems) =>
-          currentItems.filter((item) => item.id !== productToDelete.id),
-        );
-        setProductToDelete(null);
-      } catch (error) {
-        console.error("Error deleting product:", error);
-        alert("Failed to delete product. Please try again.");
-      }
+      if (!response.ok) throw new Error();
+
+      setMenuItems((items) => items.filter((i) => i.id !== productToDelete.id));
+      setProductToDelete(null);
+    } catch {
+      alert("Failed to delete product. Please try again.");
     }
   };
 
-  // --- Filtered List (Memoized for performance) ---
   const filteredMenuItems = useMemo(() => {
     return menuItems
       .filter(
-        (item) =>
-          activeCategoryFilter === "all" ||
-          item.category === activeCategoryFilter,
+        (i) =>
+          activeCategoryFilter === "all" || i.category === activeCategoryFilter,
       )
       .filter(
-        (item) =>
-          item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.category.toLowerCase().includes(searchTerm.toLowerCase()),
+        (i) =>
+          i.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          i.category.toLowerCase().includes(searchTerm.toLowerCase()),
       )
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [menuItems, activeCategoryFilter, searchTerm]);
 
   return (
     <div className={`flex flex-col flex-1 overflow-hidden ${fontClassName}`}>
-      {/* Modals */}
-      {(isAddModalOpen || productToEdit) && (
-        <ProductFormModal
-          title={productToEdit ? "Edit Menu Item" : "Add New Menu Item"}
-          initialData={productToEdit || undefined}
-          onClose={() => {
-            setIsAddModalOpen(false);
-            setProductToEdit(null);
-          }}
-          onSave={handleSaveProduct}
-        />
-      )}
+      <ProductFormModal
+        title={productToEdit ? "Edit Menu Item" : "Add New Menu Item"}
+        initialData={productToEdit || undefined}
+        onClose={() => {
+          setIsAddModalOpen(false);
+          setProductToEdit(null);
+        }}
+        onSave={handleSaveProduct}
+        open={isAddModalOpen || !!productToEdit}
+        inventoryItems={inventoryItems}
+      />
 
       {productToDelete && (
         <DeleteConfirmationModal
@@ -201,11 +210,8 @@ export default function MenuManagement({
         />
       )}
 
-      {/* Main Content Area */}
       <div className="p-6 pt-0 flex flex-col flex-1 overflow-hidden">
-        {/* CONSOLIDATED ACTION BLOCK: Button and Filters stacked vertically */}
         <nav className="mb-4 flex flex-col shrink-0">
-          {/* Row 1: Action Button */}
           <div className="shrink-0 mb-5">
             <button
               onClick={() => setIsAddModalOpen(true)}
@@ -216,7 +222,6 @@ export default function MenuManagement({
             </button>
           </div>
 
-          {/* Row 2: Category Filters */}
           <div className="flex flex-wrap gap-3 pb-1">
             {filterCategories.map((cat) => (
               <CategoryFilterPill
@@ -230,7 +235,6 @@ export default function MenuManagement({
           </div>
         </nav>
 
-        {/* SEARCH BAR (Long and Wide) */}
         <div className="relative mb-6 drop-shadow-[0px_2px_4px_rgba(0,0,0,0.25)] shrink-0">
           <input
             type="text"
@@ -245,10 +249,11 @@ export default function MenuManagement({
           />
         </div>
 
-        {/* Main Table (Uses internal scrolling) */}
         {isLoading ? (
           <div className="flex items-center justify-center flex-1">
-            <div className="text-lg text-gray-600">Loading products...</div>
+            <div className="text-lg text-gray-600">
+              <SpinnerDemo />
+            </div>
           </div>
         ) : (
           <MenuTable
