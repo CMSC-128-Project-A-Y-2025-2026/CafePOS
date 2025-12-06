@@ -11,7 +11,6 @@ import InventoryProductModal from "@/components/inventory/InventoryProductModal"
 import DeleteConfirmationModal from "@/components/inventory/DeleteConfirmationModal";
 import WeeklyReportModal from "@/components/inventory/WeeklyReportModal";
 import { SpinnerDemo } from "../ui/spinnerLoader";
-import { setLazyProp } from "next/dist/server/api-utils";
 
 type InventorySaveData = Omit<InventoryItem, "id"> & { id?: string };
 
