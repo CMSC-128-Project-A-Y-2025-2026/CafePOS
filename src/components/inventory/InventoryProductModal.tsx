@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
 import { InventoryItem } from "@/lib/types";
+// Import the structured categories array
+import { inventoryCategories } from "@/lib/arrays";
 
 interface InventoryProductModalProps {
   title: string;
@@ -54,7 +56,9 @@ export default function InventoryProductModal({
   const [product, setProduct] = useState(initialData?.product || "");
   const [category, setCategory] = useState(initialData?.category || "");
   const [stock, setStock] = useState(initialData?.stock.toString() || "");
-  const [status, setStatus] = useState(initialData?.status || "in stock");
+  const [itemThreshold, setItemThreshold] = useState(
+    initialData?.item_threshold?.toString() || "",
+  );
   const [cost, setCost] = useState(initialData?.cost || "");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -65,7 +69,8 @@ export default function InventoryProductModal({
       product,
       category,
       stock: Number(stock),
-      status,
+      item_threshold: Number(itemThreshold),
+      status: initialData?.status || "in stock", // status will be auto-set server-side
       cost,
     };
 
@@ -96,14 +101,38 @@ export default function InventoryProductModal({
               setProduct(e.target.value)
             }
           />
-          <InputField
-            label="Category"
-            id="category"
-            value={category}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setCategory(e.target.value)
-            }
-          />
+
+          {/* New Category Dropdown - Replaces the old InputField */}
+          <div>
+            <label
+              htmlFor="category"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Category
+            </label>
+            <select
+              id="category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-[#6290C3] focus:ring-[#6290C3] text-gray-900 transition-all"
+              required
+            >
+              <option value="" disabled>
+                Select an Inventory Category
+              </option>
+              {inventoryCategories.map((mainCategory) => (
+                <optgroup key={mainCategory.value} label={mainCategory.label}>
+                  {mainCategory.subcategories.map((subCategory) => (
+                    <option key={subCategory.value} value={subCategory.label}>
+                      {subCategory.label}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          </div>
+          {/* End of New Category Dropdown */}
+
           <InputField
             label="Stock"
             id="stock"
@@ -115,25 +144,16 @@ export default function InventoryProductModal({
             min="0"
           />
 
-          <div>
-            <label
-              htmlFor="status"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Status
-            </label>
-            <select
-              id="status"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-[#6290C3] focus:ring-[#6290C3] text-gray-900 transition-all"
-              required
-            >
-              <option value="in stock">In stock</option>
-              <option value="low stock">Low stock</option>
-              <option value="out of stock">Out of stock</option>
-            </select>
-          </div>
+          <InputField
+            label="Low Stock Threshold"
+            id="item_threshold"
+            type="number"
+            value={itemThreshold}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setItemThreshold(e.target.value)
+            }
+            min="0"
+          />
 
           <InputField
             label="Cost (e.g., PHP 95)"

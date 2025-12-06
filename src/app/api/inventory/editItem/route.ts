@@ -1,12 +1,18 @@
-import { createClient } from "#/utils/supabase/client";
+import { createClient } from "#/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
+
+const getStatus = (stock: number, threshold: number) => {
+  if (stock <= 0) return "out of stock";
+  if (stock <= threshold) return "low stock";
+  return "in stock";
+};
 
 export async function PATCH(request: NextRequest) {
   try {
     const supabase = await createClient();
     const body = await request.json();
 
-    const { id, product, category, stock, cost, status } = body;
+    const { id, product, category, stock, cost, item_threshold } = body;
 
     if (!id) {
       return NextResponse.json(
@@ -15,20 +21,31 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    const { data: existing, error: fetchError } = await supabase
+      .from("inventory")
+      .select("item_id, stock, item_threshold")
+      .eq("item_id", id)
+      .single();
+
+    if (fetchError || !existing) {
+      return NextResponse.json({ error: "Item not found" }, { status: 404 });
+    }
+
+    const newStock = stock !== undefined ? Number(stock) : existing.stock;
+    const newThreshold =
+      item_threshold !== undefined
+        ? Number(item_threshold)
+        : existing.item_threshold;
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const updateData: Record<string, any> = {};
+    const updateData: Record<string, any> = {
+      stock_status: getStatus(newStock, newThreshold),
+    };
     if (product !== undefined) updateData.item_name = product;
     if (category !== undefined) updateData.item_category = category;
-    if (stock !== undefined) updateData.stock = stock;
+    if (stock !== undefined) updateData.stock = newStock;
     if (cost !== undefined) updateData.item_cost = cost;
-    if (status !== undefined) updateData.stock_status = status;
-
-    if (Object.keys(updateData).length === 0) {
-      return NextResponse.json(
-        { error: "No fields to update" },
-        { status: 400 },
-      );
-    }
+    if (item_threshold !== undefined) updateData.item_threshold = newThreshold;
 
     const { data, error } = await supabase
       .from("inventory")

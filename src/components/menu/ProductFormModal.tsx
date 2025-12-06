@@ -16,6 +16,15 @@ import {
 } from "@/components/ui/sheet";
 
 import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
+
+import {
   Command,
   CommandInput,
   CommandItem,
@@ -55,9 +64,7 @@ function makeUid() {
     ) {
       return crypto.randomUUID();
     }
-  } catch {
-    /* ignore */
-  }
+  } catch {}
   return Math.random().toString(36).slice(2);
 }
 
@@ -90,6 +97,8 @@ export default function ProductFormModal({
   );
   const [ingredients, setIngredients] = useState<IngredientRow[]>([]);
 
+  const [showDiscard, setShowDiscard] = useState(false);
+
   const isEditMode = !!initialData;
 
   useEffect(() => {
@@ -114,6 +123,39 @@ export default function ProductFormModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialData?.id]);
 
+  function hasUnsavedChanges() {
+    if (!name && !price && ingredients.length === 0) return false;
+    return true;
+  }
+
+  function resetForm() {
+    setName("");
+    setCategory(menuCategories[0] ?? "");
+    setPrice("");
+    setIngredients([]);
+  }
+
+  function handleSheetOpenChange(next: boolean) {
+    if (next === false) {
+      if (hasUnsavedChanges()) {
+        setShowDiscard(true);
+        return;
+      }
+      resetForm();
+      onClose();
+    }
+  }
+
+  function confirmDiscard() {
+    resetForm();
+    setShowDiscard(false);
+    onClose();
+  }
+
+  function cancelDiscard() {
+    setShowDiscard(false);
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -132,23 +174,21 @@ export default function ProductFormModal({
     } else {
       onSave(payload);
     }
+    resetForm();
   };
 
   function addIngredient() {
     setIngredients((prev) => [
       ...prev,
-      {
-        uid: makeUid(),
-        inventory_id: "",
-        quantity: "",
-      },
+      { uid: makeUid(), inventory_id: "", quantity: "" },
     ]);
   }
 
   function updateIngredient(
     uid: string,
     field: keyof Omit<IngredientRow, "uid">,
-    value: string | number | "",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    value: any,
   ) {
     setIngredients((prev) =>
       prev.map((it) => (it.uid === uid ? { ...it, [field]: value } : it)),
@@ -164,171 +204,181 @@ export default function ProductFormModal({
   );
 
   return (
-    <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
-      <SheetContent side="right" className="w-[920px] space-y-6">
-        <SheetHeader>
-          <div className="flex items-start justify-between">
-            <div>
-              <SheetTitle>{title}</SheetTitle>
-              <SheetDescription>
-                {isEditMode
-                  ? "Modify the details of this product."
-                  : "Add a new item to your menu."}
-              </SheetDescription>
+    <>
+      <Sheet open={open} onOpenChange={handleSheetOpenChange}>
+        <SheetContent
+          side="right"
+          className="w-[920px] flex flex-col max-h-screen"
+        >
+          <SheetHeader>
+            <SheetTitle>{title}</SheetTitle>
+            <SheetDescription>
+              {isEditMode
+                ? "Modify the details of this product."
+                : "Add a new item to your menu."}
+            </SheetDescription>
+          </SheetHeader>
+
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-5 flex-1 min-h-0"
+          >
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium">Product Name</label>
+              <input
+                type="text"
+                value={name}
+                required
+                onChange={(e) => setName(e.target.value)}
+                className="border rounded-md p-2"
+              />
             </div>
-          </div>
-        </SheetHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Product Name */}
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium">Product Name</label>
-            <input
-              type="text"
-              value={name}
-              required
-              onChange={(e) => setName(e.target.value)}
-              className="border rounded-md p-2 text-gray-900 focus:border-[#6290C3] focus:ring-[#6290C3]"
-            />
-          </div>
-
-          {/* Category */}
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium">Category</label>
-            <select
-              value={category}
-              required
-              onChange={(e) => setCategory(e.target.value)}
-              className="border rounded-md p-2 text-gray-900 focus:border-[#6290C3] focus:ring-[#6290C3]"
-            >
-              {menuCategories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat
-                    .split("-")
-                    .map((w) => w[0].toUpperCase() + w.slice(1))
-                    .join(" ")}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Price */}
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium">Price (PHP)</label>
-            <input
-              type="number"
-              min="0"
-              value={price}
-              required
-              onChange={(e) => setPrice(e.target.value)}
-              className="border rounded-md p-2 text-gray-900 focus:border-[#6290C3] focus:ring-[#6290C3]"
-            />
-          </div>
-
-          {/* Ingredients */}
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium">Ingredients</label>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={addIngredient}
-                className="flex items-center gap-2"
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium">Category</label>
+              <select
+                value={category}
+                required
+                onChange={(e) => setCategory(e.target.value)}
+                className="border rounded-md p-2"
               >
-                <Plus size={14} /> Add
-              </Button>
+                {menuCategories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                  </option>
+                ))}
+              </select>
             </div>
 
-            <div className="mt-3 space-y-3">
-              {ingredients.map((item) => (
-                <div
-                  key={item.uid}
-                  className="flex flex-col gap-2 border p-3 rounded-md"
-                >
-                  {(() => {
-                    const selectedLabel =
-                      normalizedInventory.find(
-                        (inv) => String(inv.id) === item.inventory_id,
-                      )?.label || "Select ingredient";
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium">Price (PHP)</label>
+              <input
+                type="number"
+                min="0"
+                value={price}
+                required
+                onChange={(e) => setPrice(e.target.value)}
+                className="border rounded-md p-2"
+              />
+            </div>
 
-                    return (
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            className="w-full justify-between"
-                          >
-                            {selectedLabel}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="p-0 w-[300px]">
-                          <Command>
-                            <CommandInput placeholder="Search ingredient..." />
-                            <CommandList>
-                              {normalizedInventory.map((inv) => (
-                                <CommandItem
-                                  key={inv.optionKey}
-                                  value={inv.name}
-                                  onSelect={() =>
-                                    updateIngredient(
-                                      item.uid,
-                                      "inventory_id",
-                                      String(inv.id),
-                                    )
-                                  }
-                                >
-                                  {inv.label}
-                                </CommandItem>
-                              ))}
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                    );
-                  })()}
+            <div className="flex flex-col gap-2 flex-1 min-h-0">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium">Ingredients</label>
+                <Button type="button" variant="outline" onClick={addIngredient}>
+                  <Plus size={14} /> Add
+                </Button>
+              </div>
 
-                  {/* Quantity + Remove button row */}
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="number"
-                      className="flex-1 rounded-md border border-gray-300 p-2 shadow-sm"
-                      min="0"
-                      value={item.quantity === "" ? "" : String(item.quantity)}
-                      onChange={(e) => {
-                        const v = e.target.value;
-                        updateIngredient(
-                          item.uid,
-                          "quantity",
-                          v === "" ? "" : Number(v),
-                        );
-                      }}
-                      required
-                    />
+              <div className="mt-3 space-y-3 overflow-y-auto pr-1">
+                {ingredients.map((item) => (
+                  <div
+                    key={item.uid}
+                    className="flex flex-col gap-2 border p-3 rounded-md"
+                  >
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-between"
+                        >
+                          {normalizedInventory.find(
+                            (inv) => String(inv.id) === item.inventory_id,
+                          )?.label ?? "Select ingredient"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="p-0 w-[300px]">
+                        <Command>
+                          <CommandInput placeholder="Search ingredient..." />
+                          <CommandList>
+                            {normalizedInventory.map((inv) => (
+                              <CommandItem
+                                key={inv.optionKey}
+                                value={inv.name}
+                                onSelect={() =>
+                                  updateIngredient(
+                                    item.uid,
+                                    "inventory_id",
+                                    String(inv.id),
+                                  )
+                                }
+                              >
+                                {inv.label}
+                              </CommandItem>
+                            ))}
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
 
-                    <button
-                      type="button"
-                      onClick={() => removeIngredient(item.uid)}
-                      className="text-xs px-2 py-1 rounded bg-red-100 text-red-700 whitespace-nowrap"
-                    >
-                      Remove
-                    </button>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="number"
+                        className="flex-1 rounded-md border p-2"
+                        min="0"
+                        value={
+                          item.quantity === "" ? "" : String(item.quantity)
+                        }
+                        onChange={(e) =>
+                          updateIngredient(
+                            item.uid,
+                            "quantity",
+                            e.target.value === "" ? "" : Number(e.target.value),
+                          )
+                        }
+                        required
+                      />
+
+                      <button
+                        type="button"
+                        className="text-xs px-2 py-1 rounded bg-red-200 text-red-700"
+                        onClick={() => removeIngredient(item.uid)}
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
 
-          <SheetFooter className="pt-4 flex gap-3 justify-end">
-            <Button variant="outline" onClick={onClose} type="button">
+            <SheetFooter className="pt-4 flex gap-3 justify-end border-t">
+              <Button
+                variant="outline"
+                onClick={() => handleSheetOpenChange(false)}
+                type="button"
+              >
+                Cancel
+              </Button>
+              <Button type="submit" className="bg-[#6290C3] hover:bg-[#1A1B41]">
+                {isEditMode ? "Save Changes" : "Add Product"}
+              </Button>
+            </SheetFooter>
+          </form>
+        </SheetContent>
+      </Sheet>
+
+      <AlertDialog open={showDiscard}>
+        <AlertDialogContent>
+          <AlertDialogTitle>Discard product?</AlertDialogTitle>
+          <AlertDialogDescription>
+            You have unsaved changes. If you close this form, all entered data
+            will be lost.
+          </AlertDialogDescription>
+
+          <div className="flex justify-end gap-3 mt-4">
+            <AlertDialogCancel onClick={cancelDiscard}>
               Cancel
-            </Button>
-            <Button type="submit" className="bg-[#6290C3] hover:bg-[#1A1B41]">
-              {isEditMode ? "Save Changes" : "Add Product"}
-            </Button>
-          </SheetFooter>
-        </form>
-      </SheetContent>
-    </Sheet>
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDiscard}
+              className="bg-red-600 text-white"
+            >
+              Discard
+            </AlertDialogAction>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
