@@ -23,7 +23,7 @@ export default function SelectionHeader({
   const handleMenuClick = () => router.push("/menu");
 
   return (
-    <header className="flex w-full items-center justify-between px-8 py-6">
+    <header className="flex w-full items-center justify-between px-6 py-6">
       <style>
         {`@import url('https://fonts.googleapis.com/css2?family=Shrikhand&display=swap');`}
       </style>

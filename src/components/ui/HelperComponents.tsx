@@ -1,5 +1,5 @@
 import React from "react";
-import { TopSellerProduct } from "../../app/analytics/types";
+import { TopSellerProduct } from "@/lib/types";
 import { montserrat } from "../../app/page";
 // import { Coffee } from 'lucide-react';
 

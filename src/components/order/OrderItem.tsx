@@ -1,7 +1,7 @@
 // src/app/order/components/OrderItem.tsx
 import React from "react";
 import { Plus, Minus } from "lucide-react";
-import { CartItem } from "../../app/order/types";
+import { CartItem } from "@/lib/types";
 
 interface OrderItemProps {
   item: CartItem;

@@ -10,11 +10,27 @@ interface UniversalHeaderProps {
   pageName2: string;
 }
 
+function useClock() {
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return time.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
+
 export default function UniversalHeader({
   pageName1,
   pageName2,
 }: UniversalHeaderProps) {
   const router = useRouter();
+  const formattedTime = useClock();
 
   const handleMenuClick = () => router.push("/menu");
   const handleLogoClick = () => router.push("/");
@@ -23,24 +39,11 @@ export default function UniversalHeader({
   const handleInventoryClick = () => router.push("/inventory");
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [currentTime, setCurrentTime] = useState(new Date());
 
   const page_name_1 = pageName1;
   const page_name_2 = pageName2;
-
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const formattedTime = currentTime.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
-
   return (
-    <header className="flex w-full items-center justify-between relative z-30 shrink-0">
+    <header className={page_name_1 == "Menu" ? "flex w-full items-center justify-between relative z-30 shrink-0 p-6" : "flex w-full items-center justify-between relative z-30 shrink-0"}>
       <style>
         {`@import url('https://fonts.googleapis.com/css2?family=Shrikhand&display=swap');`}
       </style>
@@ -49,7 +52,6 @@ export default function UniversalHeader({
         onMouseEnter={() => setIsDropdownOpen(true)}
         onMouseLeave={() => setIsDropdownOpen(false)}
       >
-        {/* Logo (Original large size maintained) */}
         <div
           className="flex cursor-pointer items-center gap-4 transition-opacity hover:opacity-80 pb-1"
           onClick={handleLogoClick}
@@ -65,7 +67,6 @@ export default function UniversalHeader({
           </span>
         </div>
 
-        {/* Dropdown Menu */}
         <div
           className={`
             absolute left-0 top-full w-64 overflow-hidden rounded-xl bg-white shadow-xl ring-1 ring-black ring-opacity-5 transition-all duration-200 ease-in-out

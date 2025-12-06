@@ -1,7 +1,7 @@
 // src/app/menu/components/MenuTable.tsx
 
 import React from "react";
-import { MenuItem } from "../../app/menu/types";
+import { MenuItem } from "@/lib/types";
 import { Trash2, Pencil } from "lucide-react";
 
 interface MenuTableProps {
@@ -16,9 +16,7 @@ export default function MenuTable({
   onDelete,
 }: MenuTableProps) {
   return (
-    // Outer container maintains flex-1 for layout (This is correct)
     <div className="h-full min-h-0 rounded-2xl bg-white p-8 shadow-lg flex flex-col overflow-hidden">
-      {/* Table Header (Fixed Position - This is correct) */}
       <div className="grid grid-cols-5 gap-4 rounded-lg bg-[#E5F1FB] px-6 py-4 shrink-0">
         <div className="font-bold text-gray-700 col-span-2">Product Name</div>
         <div className="font-bold text-gray-700">Category</div>
@@ -26,13 +24,7 @@ export default function MenuTable({
         <div className="font-bold text-gray-700">Actions</div>
       </div>
 
-      {/* Table Body (Scrollable Area) */}
-      {/* FIX: Removed the fixed 'maxHeight' style. 
-          The existing 'flex-1' and 'overflow-y-auto' now work correctly. */}
-      <div
-        className="mt-4 flex flex-col gap-1 flex-1 h-full overflow-y-auto"
-        // REMOVE: style={{ maxHeight: "185px" }}
-      >
+      <div className="mt-4 flex flex-col gap-1 flex-1 h-full overflow-y-auto">
         {menuItems.map((item) => (
           <div
             key={item.id}

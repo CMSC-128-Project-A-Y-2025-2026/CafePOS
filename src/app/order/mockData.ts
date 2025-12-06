@@ -1,6 +1,6 @@
 // src/app/order/mockData.ts
 
-import { Category, Product, Option, CartItem } from "./types";
+import { Category, Product, Option, CartItem } from "@/lib/types";
 
 // Categories List
 export const newCategories: Category[] = [

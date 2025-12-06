@@ -1,6 +1,6 @@
 // src/app/order/components/CategoryButton.tsx
 import React from "react";
-import { Category } from "../../app/order/types";
+import { Category } from "@/lib/types";
 
 interface CategoryButtonProps {
   category: Category;

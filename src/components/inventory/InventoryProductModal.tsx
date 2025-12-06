@@ -1,7 +1,7 @@
 // src/app/inventory/components/InventoryProductModal.tsx
 import React, { useState } from "react";
 import { X } from "lucide-react";
-import { InventoryItem } from "@/app/inventory/types";
+import { InventoryItem } from "@/lib/types";
 
 interface InventoryProductModalProps {
   title: string;
@@ -61,7 +61,7 @@ export default function InventoryProductModal({
     e.preventDefault();
 
     const productData: InventoryItem = {
-      id: initialData?.id || Math.floor(Date.now() / 1000),
+      id: String(initialData?.id) || String(Math.floor(Date.now() / 1000)),
       product,
       category,
       stock: Number(stock),
