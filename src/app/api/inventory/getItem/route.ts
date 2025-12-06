@@ -1,4 +1,6 @@
-import { createClient } from "#/utils/supabase/client";
+// src/app/api/inventory/getItem/route.ts
+
+import { createClient } from "#/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

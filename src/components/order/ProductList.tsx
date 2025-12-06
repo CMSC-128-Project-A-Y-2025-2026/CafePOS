@@ -1,10 +1,10 @@
 // src/app/order/components/ProductList.tsx
 import React from "react";
 import { Search } from "lucide-react";
-import { Product } from "../../app/order/types";
+import { Product } from "@/lib/types";
 import ProductCard from "./ProductCard";
 import CategoryButton from "./CategoryButton";
-import { newCategories } from "../../app/order/mockData"; // Import data
+import { newCategories } from "@/app/order/mockData"; // Import data
 
 interface ProductListProps {
   filteredProducts: Product[];

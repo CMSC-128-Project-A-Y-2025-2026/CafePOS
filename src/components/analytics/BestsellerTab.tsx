@@ -7,7 +7,7 @@ import {
   BestsellerFilterPill,
   BestsellerProductCard,
 } from "../ui/HelperComponents";
-import { TopSellerProduct } from "../../app/analytics/types";
+import { TopSellerProduct } from "@/lib/types";
 
 export default function BestsellerTab() {
   const [filter, setFilter] = useState("all");
@@ -31,7 +31,7 @@ export default function BestsellerTab() {
   return (
     <div className="flex h-full flex-col pt-1">
       {/* Filters (Shrink-0 is implied by flex-wrap, but explicitly adding for clarity) */}
-      <div className="flex flex-wrap gap-2 mb-3 px-3 flex-shrink-0">
+      <div className="flex flex-wrap gap-2 mb-3 px-3 shrink-0">
         {bestsellerCategories.map((cat) => (
           <BestsellerFilterPill
             key={cat.id}

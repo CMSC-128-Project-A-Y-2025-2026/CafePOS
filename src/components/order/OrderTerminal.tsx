@@ -3,7 +3,7 @@
 
 import { useState, useMemo } from "react";
 
-import { Product, Option, CartItem } from "#/src/app/order/types";
+import { Product, Option, CartItem } from "@/lib/types";
 import { products, initialCart } from "#/src/app/order/mockData";
 
 import ProductList from "./ProductList";
