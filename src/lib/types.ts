@@ -5,6 +5,7 @@ export interface InventoryItem {
   product: string;
   category: string;
   stock: number;
+  item_threshold: number;
   status: string;
   cost: string;
 }
@@ -13,6 +14,7 @@ export interface CreateInventoryInput {
   product: string;
   category: string;
   stock: number;
+  item_threshold: number;
   cost: number;
   status?: string;
 }
@@ -22,6 +24,7 @@ export interface UpdateInventoryInput {
   product?: string;
   category?: string;
   stock?: number;
+  item_threshold?: number;
   cost?: number;
   status?: string;
 }
