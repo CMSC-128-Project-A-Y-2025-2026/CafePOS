@@ -184,10 +184,10 @@ export default function ProductFormModal({
     ]);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function updateIngredient(
     uid: string,
     field: keyof Omit<IngredientRow, "uid">,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     value: any,
   ) {
     setIngredients((prev) =>
