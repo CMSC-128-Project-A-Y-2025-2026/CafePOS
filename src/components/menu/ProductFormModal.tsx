@@ -5,7 +5,6 @@ import { MenuItem } from "@/lib/types";
 import { InventoryItem } from "@/lib/types";
 import { menuCategories } from "@/lib/arrays";
 import { Plus } from "lucide-react";
-// 1. Import Sonner toast
 import { toast } from "sonner";
 
 import {
@@ -70,11 +69,11 @@ function makeUid() {
   return Math.random().toString(36).slice(2);
 }
 
-function normalizeInventoryItem(inv: any, idx: number) {
+// Fixed 'any' type to unknown record for ESLint
+function normalizeInventoryItem(inv: Record<string, unknown>, idx: number) {
   const id = inv?.id ?? inv?.item_id ?? inv?.itemId ?? null;
-  const name = inv?.item_name ?? inv?.itemName ?? inv?.product ?? `Item ${idx}`;
-  const category =
-    inv?.item_category ?? inv?.category ?? inv?.itemCategory ?? "";
+  const name = (inv?.item_name as string) ?? (inv?.itemName as string) ?? (inv?.product as string) ?? `Item ${idx}`;
+  const category = (inv?.item_category as string) ?? (inv?.category as string) ?? (inv?.itemCategory as string) ?? "";
   const optionKey = id != null ? String(id) : `${name}-${category}-${idx}`;
   const optionValue = id != null ? String(id) : `${name}-${idx}`;
   const label = category ? `${name} (${category})` : name;
@@ -89,43 +88,42 @@ export default function ProductFormModal({
   open,
   inventoryItems,
 }: ProductFormModalProps) {
-  const [name, setName] = useState(initialData?.name ?? "");
-  const [category, setCategory] = useState(
-    initialData?.category ?? menuCategories[0] ?? "",
-  );
-  const [price, setPrice] = useState(
-    initialData?.price != null ? String(initialData.price) : "",
-  );
-  const [ingredients, setIngredients] = useState<IngredientRow[]>([]);
+  // Initialization pattern ensures state is set during mount, avoiding cascaded re-renders
+  const [name, setName] = useState(() => initialData?.name ?? "");
+  const [category, setCategory] = useState(() => initialData?.category ?? menuCategories[0] ?? "");
+  const [price, setPrice] = useState(() => initialData?.price != null ? String(initialData.price) : "");
+  const [ingredients, setIngredients] = useState<IngredientRow[]>(() => {
+    if (initialData?.ingredients && Array.isArray(initialData.ingredients)) {
+      return initialData.ingredients.map((ing) => ({
+        uid: makeUid(),
+        inventory_id: ing.inventory_id != null ? String(ing.inventory_id) : "",
+        quantity: typeof ing.quantity === "number" ? ing.quantity : "",
+      }));
+    }
+    return [];
+  });
 
   const [showDiscard, setShowDiscard] = useState(false);
-
   const isEditMode = !!initialData;
 
+  // Sync state only when open status or initialData changes
   useEffect(() => {
-    if (initialData?.ingredients && Array.isArray(initialData.ingredients)) {
+    if (open) {
+      setName(initialData?.name ?? "");
+      setCategory(initialData?.category ?? menuCategories[0] ?? "");
+      setPrice(initialData?.price != null ? String(initialData.price) : "");
       setIngredients(
-        initialData.ingredients.map((ing) => ({
+        initialData?.ingredients?.map((ing) => ({
           uid: makeUid(),
-          inventory_id:
-            ing.inventory_id != null ? String(ing.inventory_id) : "",
+          inventory_id: ing.inventory_id != null ? String(ing.inventory_id) : "",
           quantity: typeof ing.quantity === "number" ? ing.quantity : "",
-        })),
+        })) ?? []
       );
-    } else {
-      if (!initialData) {
-        setIngredients([]);
-      }
     }
-
-    setName(initialData?.name ?? "");
-    setCategory(initialData?.category ?? menuCategories[0] ?? "");
-    setPrice(initialData?.price != null ? String(initialData.price) : "");
-  }, [initialData?.id]);
+  }, [open, initialData]); 
 
   function hasUnsavedChanges() {
-    if (!name && !price && ingredients.length === 0) return false;
-    return true;
+    return name || price || ingredients.length > 0;
   }
 
   function resetForm() {
@@ -156,11 +154,9 @@ export default function ProductFormModal({
     setShowDiscard(false);
   }
 
-  // 2. Modified handleSubmit to trigger toasts
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validation: Ensure ingredients are selected
     if (ingredients.length === 0) {
       toast.warning("Incomplete Recipe", {
         description: "Please add at least one ingredient to save this product.",
@@ -188,12 +184,12 @@ export default function ProductFormModal({
     if (isEditMode) {
       onSave({ id: initialData!.id, ...payload });
       toast.success("Product Updated", {
-        description: `${name} has been successfully modified in the menu.`,
+        description: `${name} has been successfully modified.`,
       });
     } else {
       onSave(payload);
       toast.success("Product Created", {
-        description: `${name} is now available in your store menu.`,
+        description: `${name} is now available in your menu.`,
       });
     }
     resetForm();
@@ -210,7 +206,7 @@ export default function ProductFormModal({
   function updateIngredient(
     uid: string,
     field: keyof Omit<IngredientRow, "uid">,
-    value: any,
+    value: string | number, 
   ) {
     setIngredients((prev) =>
       prev.map((it) => (it.uid === uid ? { ...it, [field]: value } : it)),
@@ -222,7 +218,7 @@ export default function ProductFormModal({
   }
 
   const normalizedInventory = (inventoryItems ?? []).map((inv, idx) =>
-    normalizeInventoryItem(inv, idx),
+    normalizeInventoryItem(inv as unknown as Record<string, unknown>, idx),
   );
 
   return (
