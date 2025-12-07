@@ -201,7 +201,6 @@ export default function MenuManagement({
           body: JSON.stringify({ product_id: savedProductId }),
         });
 
-
         for (const ingredient of ingredients) {
           await fetch(`/api/products/${savedProductId}/ingredients`, {
             method: "POST",
