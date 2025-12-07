@@ -1,15 +1,18 @@
-import { createClient } from "#/utils/supabase/server"
-import { NextResponse, type NextRequest } from "next/server"
+import { createClient } from "#/utils/supabase/server";
+import { NextResponse, type NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient()
-    const body = await request.json()
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { items, subtotal, discount, total, paymentMethod } = body
+    const supabase = await createClient();
+    const body = await request.json();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { items, subtotal, discount, total, paymentMethod } = body;
 
     if (!items || items.length === 0 || total == null) {
-      return NextResponse.json({ error: "Missing required order fields" }, { status: 400 })
+      return NextResponse.json(
+        { error: "Missing required order fields" },
+        { status: 400 },
+      );
     }
 
     const { data: saleData, error: saleError } = await supabase
@@ -20,9 +23,9 @@ export async function POST(request: NextRequest) {
           payment_method: paymentMethod,
         },
       ])
-      .select()
+      .select();
 
-    if (saleError) throw saleError
+    if (saleError) throw saleError;
 
     for (const item of items) {
       const { error: analyticsError } = await supabase
@@ -33,7 +36,7 @@ export async function POST(request: NextRequest) {
             increment_value: item.quantity,
           }),
         })
-        .eq("product_id", item.productId)
+        .eq("product_id", item.productId);
 
       // If no existing record, insert one
       if (analyticsError) {
@@ -42,7 +45,7 @@ export async function POST(request: NextRequest) {
             product_id: item.productId,
             total_sold: item.quantity,
           },
-        ])
+        ]);
       }
     }
 
@@ -53,9 +56,12 @@ export async function POST(request: NextRequest) {
         orderId: saleData?.[0]?.id,
       },
       { status: 201 },
-    )
+    );
   } catch (error) {
-    console.error("Order POST Error", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    console.error("Order POST Error", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

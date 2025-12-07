@@ -1,22 +1,22 @@
 // src/app/order/components/OrderSummary.tsx
-"use client"
-import { CartItem } from "@/lib/types"
-import OrderItem from "./OrderItem"
-import PaymentButton from "./PaymentButton"
+"use client";
+import { CartItem } from "@/lib/types";
+import OrderItem from "./OrderItem";
+import PaymentButton from "./PaymentButton";
 
 interface OrderSummaryProps {
-  cart: CartItem[]
-  subtotal: number
-  totalItemDiscount: number
-  totalOrderDiscountPercent: number
-  totalOrderDiscountAmount: number
-  total: number
-  activePaymentMethod: string
-  setTotalOrderDiscountPercent: (percent: number) => void
-  setActivePaymentMethod: (method: string) => void
-  handleUpdateQuantity: (cartItemId: string, change: number) => void
-  onCheckout: () => void
-  isCheckingOut: boolean
+  cart: CartItem[];
+  subtotal: number;
+  totalItemDiscount: number;
+  totalOrderDiscountPercent: number;
+  totalOrderDiscountAmount: number;
+  total: number;
+  activePaymentMethod: string;
+  setTotalOrderDiscountPercent: (percent: number) => void;
+  setActivePaymentMethod: (method: string) => void;
+  handleUpdateQuantity: (cartItemId: string, change: number) => void;
+  onCheckout: () => void;
+  isCheckingOut: boolean;
 }
 
 export default function OrderSummary({
@@ -35,7 +35,9 @@ export default function OrderSummary({
 }: OrderSummaryProps) {
   return (
     <aside className="w-96 shrink-0 rounded-3xl bg-white p-6 shadow-xl flex flex-col h-full">
-      <h2 className="text-xl font-extrabold text-gray-900 mb-4 shrink-0 border-b pb-2">CURRENT ORDER</h2>
+      <h2 className="text-xl font-extrabold text-gray-900 mb-4 shrink-0 border-b pb-2">
+        CURRENT ORDER
+      </h2>
 
       {/* Scrollable Order Items List */}
       <div className="flex-1 overflow-y-auto pr-2">
@@ -60,7 +62,9 @@ export default function OrderSummary({
         </div>
         <div className="flex justify-between text-sm text-gray-600 mb-2">
           <span>Item Discounts</span>
-          <span className="text-red-600 font-semibold">- PHP {totalItemDiscount.toFixed(2)}</span>
+          <span className="text-red-600 font-semibold">
+            - PHP {totalItemDiscount.toFixed(2)}
+          </span>
         </div>
 
         {/* Order Discount Input */}
@@ -72,14 +76,20 @@ export default function OrderSummary({
             type="number"
             id="orderDiscount"
             placeholder="0"
-            value={totalOrderDiscountPercent === 0 ? "" : totalOrderDiscountPercent}
-            onChange={(e) => setTotalOrderDiscountPercent(Number(e.target.value) || 0)}
+            value={
+              totalOrderDiscountPercent === 0 ? "" : totalOrderDiscountPercent
+            }
+            onChange={(e) =>
+              setTotalOrderDiscountPercent(Number(e.target.value) || 0)
+            }
             className="w-16 rounded-md border border-gray-300 p-0.5 text-right shadow-sm focus:border-[#6290C3] focus:ring-[#6290C3] text-gray-900 text-xs transition-all"
           />
         </div>
         <div className="flex justify-between text-sm text-gray-600 mb-3">
           <span>Order Discount Amount</span>
-          <span className="text-red-600 font-semibold">- PHP {totalOrderDiscountAmount.toFixed(2)}</span>
+          <span className="text-red-600 font-semibold">
+            - PHP {totalOrderDiscountAmount.toFixed(2)}
+          </span>
         </div>
 
         {/* TOTAL */}
@@ -111,5 +121,5 @@ export default function OrderSummary({
         </button>
       </div>
     </aside>
-  )
+  );
 }

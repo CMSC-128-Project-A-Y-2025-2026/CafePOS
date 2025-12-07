@@ -1,14 +1,18 @@
 // src/app/order/components/PaymentButton.tsx
-"use client"
-import type React from "react"
+"use client";
+import type React from "react";
 
 interface PaymentButtonProps {
-  children: React.ReactNode
-  active: boolean
-  onClick: () => void
+  children: React.ReactNode;
+  active: boolean;
+  onClick: () => void;
 }
 
-export default function PaymentButton({ children, active, onClick }: PaymentButtonProps) {
+export default function PaymentButton({
+  children,
+  active,
+  onClick,
+}: PaymentButtonProps) {
   return (
     <button
       onClick={onClick}
@@ -20,5 +24,5 @@ export default function PaymentButton({ children, active, onClick }: PaymentButt
     >
       {children}
     </button>
-  )
+  );
 }

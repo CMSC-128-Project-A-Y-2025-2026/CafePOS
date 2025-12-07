@@ -1,5 +1,5 @@
 // src/app/order/mockData.ts
-import { Category, Product, Option, CartItem } from "@/lib/types"
+import { Category, Product, Option, CartItem } from "@/lib/types";
 
 // Categories List
 export const newCategories: Category[] = [
@@ -13,10 +13,10 @@ export const newCategories: Category[] = [
   { id: "waffles", label: "Waffles" },
   { id: "pasta-sandwich", label: "Pasta & Sandwich" },
   { id: "pika-pika", label: "Pika-Pika" },
-]
+];
 
 // Products List - Now fetched from API instead
-export const products: Product[] = []
+export const products: Product[] = [];
 
 // Constants for ADD-ONS
 export const ADD_ONS: Option[] = [
@@ -29,7 +29,7 @@ export const ADD_ONS: Option[] = [
   { name: "Caramel", price: 15 },
   { name: "Chocolate", price: 20 },
   { name: "Espresso", price: 35 },
-]
+];
 
 // Initial Cart Data - empty by default, will be populated by user
-export const initialCart: CartItem[] = []
+export const initialCart: CartItem[] = [];

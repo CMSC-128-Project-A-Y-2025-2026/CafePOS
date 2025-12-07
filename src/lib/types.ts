@@ -86,19 +86,19 @@ export interface CartItem {
 }
 
 export interface OrderItem {
-  productId: string | number
-  productName: string
-  quantity: number
-  unitPrice: number
-  totalPrice: number
-  options: Option[]
-  notes: string
+  productId: string | number;
+  productName: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+  options: Option[];
+  notes: string;
 }
 
 export interface OrderPayload {
-  items: OrderItem[]
-  subtotal: number
-  discount: number
-  total: number
-  paymentMethod: string
+  items: OrderItem[];
+  subtotal: number;
+  discount: number;
+  total: number;
+  paymentMethod: string;
 }
