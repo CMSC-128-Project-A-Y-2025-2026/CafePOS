@@ -32,7 +32,7 @@ export default function OrderTerminal({
     const fetchProducts = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch("/api/products/addProduct");
+        const response = await fetch("/api/products/getProduct");
         if (!response.ok) throw new Error("Failed to fetch products");
         const result = await response.json();
 
