@@ -1,7 +1,15 @@
-// src/app/inventory/components/InventoryTable.tsx
 import React from "react";
 import { InventoryItem } from "@/lib/types";
-import { TableActionButton } from "./Buttons";
+// 1. Import Lucide icons for consistency
+import { Trash2, Pencil } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface InventoryTableProps {
   filteredInventory: InventoryItem[];
@@ -16,44 +24,50 @@ export default function InventoryTable({
 }: InventoryTableProps) {
   return (
     <main className="flex-1 rounded-2xl bg-white p-8 shadow-lg flex flex-col overflow-hidden">
-      {/* Table Header */}
-      <div className="grid grid-cols-6 gap-4 rounded-lg bg-[#E5F1FB] px-6 py-4 shrink-0">
-        <div className="font-bold text-gray-700">Product</div>
-        <div className="font-bold text-gray-700">Category</div>
-        <div className="font-bold text-gray-700">Stock</div>
-        <div className="font-bold text-gray-700">Status</div>
-        <div className="font-bold text-gray-700">Cost</div>
-        <div className="font-bold text-gray-700">Actions</div>
-      </div>
-
-      {/* Table Body */}
-      <div className="mt-4 flex flex-col gap-4 flex-1 overflow-y-auto">
-        {filteredInventory.map((item) => (
-          <div
-            key={item.id}
-            className="grid grid-cols-6 items-center gap-4 border-b border-gray-100 px-6 py-4 hover:bg-gray-50 transition-colors"
-          >
-            <div className="font-medium text-gray-900">{item.product}</div>
-            <div className="text-gray-700">{item.category}</div>
-            <div className="text-gray-700">{item.stock}</div>
-            <div className="text-gray-700">{item.status}</div>
-            <div className="text-gray-700">{item.cost}</div>
-            <div className="flex gap-2">
-              <TableActionButton
-                className="bg-[#D7EFE0] text-[#34A853] hover:bg-[#BDECD5]"
-                onClick={() => setProductToEdit(item)}
-              >
-                edit
-              </TableActionButton>
-              <TableActionButton
-                className="bg-[#FADADD] text-[#E53935] hover:bg-[#F8C6D2]"
-                onClick={() => setProductToDelete(item)}
-              >
-                del
-              </TableActionButton>
-            </div>
-          </div>
-        ))}
+      <div className="rounded-md border flex-1 overflow-auto">
+        <Table>
+          <TableHeader className="bg-[#E5F1FB] sticky top-0 z-10">
+            <TableRow>
+              <TableHead className="font-bold text-gray-700">Product</TableHead>
+              <TableHead className="font-bold text-gray-700">Category</TableHead>
+              <TableHead className="font-bold text-gray-700">Stock</TableHead>
+              <TableHead className="font-bold text-gray-700">Status</TableHead>
+              <TableHead className="font-bold text-gray-700">Cost</TableHead>
+              <TableHead className="font-bold text-gray-700 text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredInventory.map((item) => (
+              <TableRow key={item.id} className="hover:bg-gray-50 transition-colors">
+                <TableCell className="font-medium text-gray-900">{item.product}</TableCell>
+                <TableCell className="text-gray-700">{item.category}</TableCell>
+                <TableCell className="text-gray-700">{item.stock}</TableCell>
+                <TableCell className="text-gray-700">{item.status}</TableCell>
+                <TableCell className="text-gray-700">{item.cost}</TableCell>
+                
+                {/* 2. Updated Actions to use icons consistent with the Menu Table */}
+                <TableCell className="text-right">
+                  <div className="flex gap-3 justify-end">
+                    <button
+                      onClick={() => setProductToEdit(item)}
+                      className="text-[#6290C3] hover:text-[#1A1B41] transition-colors p-1 rounded-md"
+                      title="Edit Item"
+                    >
+                      <Pencil size={18} />
+                    </button>
+                    <button
+                      onClick={() => setProductToDelete(item)}
+                      className="text-red-500 hover:text-red-700 transition-colors p-1 rounded-md"
+                      title="Delete Item"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
     </main>
   );
