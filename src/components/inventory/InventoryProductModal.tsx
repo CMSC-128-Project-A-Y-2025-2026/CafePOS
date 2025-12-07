@@ -79,11 +79,10 @@ export default function InventoryProductModal({
   const isEditMode = initialData !== undefined;
 
   return (
-    /** * MODIFIED: Added backdrop-blur-md and changed bg-black to a semi-transparent white 
-     * to keep the background bright but blurred. 
+    /** * MODIFIED: Added backdrop-blur-md and changed bg-black to a semi-transparent white
+     * to keep the background bright but blurred.
      */
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm transition-all">
-      
       {/* Clickable overlay to close modal */}
       <div className="absolute inset-0" onClick={onClose} />
 

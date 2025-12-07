@@ -13,11 +13,10 @@ export default function DeleteConfirmationModal({
   onConfirm,
 }: DeleteConfirmationModalProps) {
   return (
-    /** * MODIFIED: Replaced fixed black background with a semi-transparent 
+    /** * MODIFIED: Replaced fixed black background with a semi-transparent
      * blur effect for visual continuity with the menu grid below.
      */
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm transition-all">
-      
       {/* Clickable overlay div to close if clicking outside the modal */}
       <div className="absolute inset-0" onClick={onClose} />
 
@@ -44,7 +43,7 @@ export default function DeleteConfirmationModal({
             </div>
           </div>
         </div>
-        
+
         <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
           <button
             type="button"

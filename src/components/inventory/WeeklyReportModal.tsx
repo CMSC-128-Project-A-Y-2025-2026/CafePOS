@@ -15,11 +15,10 @@ export default function WeeklyReportModal({
   const lowStock = inventory.filter((item) => item.status === "low stock");
 
   return (
-    /** * MODIFIED: Added backdrop-blur-md and changed overlay to bg-black/20 
+    /** * MODIFIED: Added backdrop-blur-md and changed overlay to bg-black/20
      * for consistent design across all modals.
      */
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm transition-all">
-      
       {/* Clickable overlay to close the report */}
       <div className="absolute inset-0" onClick={onClose} />
 
