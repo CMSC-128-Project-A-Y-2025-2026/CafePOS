@@ -29,11 +29,18 @@ export interface UpdateInventoryInput {
   status?: string;
 }
 
+export interface MenuItemIngredient {
+  inventory_id: string;
+  name: string;
+  quantity: number;
+}
+
 export interface MenuItem {
   id: string;
   name: string;
   price: number;
   category: string;
+  ingredients?: MenuItemIngredient[];
 }
 
 export interface SalesItem {
