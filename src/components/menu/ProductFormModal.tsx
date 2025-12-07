@@ -165,9 +165,9 @@ export default function ProductFormModal({
       price: Number(price),
       ingredients: ingredients.map((i) => {
         const inv = normalizedInventory.find(
-          (item) => String(item.id) === i.inventory_id
+          (item) => String(item.id) === i.inventory_id,
         );
-      
+
         return {
           inventory_id: String(i.inventory_id),
           quantity: Number(i.quantity),
@@ -175,7 +175,6 @@ export default function ProductFormModal({
         };
       }),
     };
-
 
     if (isEditMode) {
       onSave({ id: initialData!.id, ...payload });

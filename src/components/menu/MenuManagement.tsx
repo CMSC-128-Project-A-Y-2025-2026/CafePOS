@@ -18,7 +18,11 @@ const filterCategories = [
 
 const ingredientNameCache: Record<string, string> = {};
 
-export default function MenuManagement({ fontClassName }: { fontClassName: string }) {
+export default function MenuManagement({
+  fontClassName,
+}: {
+  fontClassName: string;
+}) {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -30,7 +34,6 @@ export default function MenuManagement({ fontClassName }: { fontClassName: strin
 
   const LS_MENU = "menu-cache";
   const LS_INVENTORY = "inventory-cache";
-
 
   const fetchIngredientName = useCallback(async (item_id: string) => {
     if (ingredientNameCache[item_id]) {
@@ -47,7 +50,6 @@ export default function MenuManagement({ fontClassName }: { fontClassName: strin
     return name;
   }, []);
 
-
   const fetchIngredientList = useCallback(
     async (product_id: string) => {
       const response = await fetch(`/api/products/${product_id}/ingredients`);
@@ -62,12 +64,12 @@ export default function MenuManagement({ fontClassName }: { fontClassName: strin
           inventory_id: String(item.item_id),
           name: await fetchIngredientName(String(item.item_id)),
           quantity: item.quantity_needed,
-        }))
+        })),
       );
 
       return ingredientList;
     },
-    [fetchIngredientName]
+    [fetchIngredientName],
   );
 
   useEffect(() => {
@@ -121,7 +123,7 @@ export default function MenuManagement({ fontClassName }: { fontClassName: strin
             price: item.product_cost,
             category: item.product_category,
             ingredients: await fetchIngredientList(String(item.id)),
-          }))
+          })),
         );
 
         localStorage.setItem(LS_MENU, JSON.stringify(products));
@@ -154,7 +156,9 @@ export default function MenuManagement({ fontClassName }: { fontClassName: strin
           savedProductId = newProduct.id;
 
           setMenuItems((items) => {
-            const updated = items.map((i) => (i.id === newProduct.id ? newProduct : i));
+            const updated = items.map((i) =>
+              i.id === newProduct.id ? newProduct : i,
+            );
             localStorage.setItem(LS_MENU, JSON.stringify(updated));
             return updated;
           });
@@ -208,7 +212,7 @@ export default function MenuManagement({ fontClassName }: { fontClassName: strin
         }
       } catch {}
     },
-    []
+    [],
   );
 
   const handleConfirmDelete = useCallback(async () => {
@@ -237,12 +241,12 @@ export default function MenuManagement({ fontClassName }: { fontClassName: strin
     return menuItems
       .filter(
         (i) =>
-          activeCategoryFilter === "all" || i.category === activeCategoryFilter
+          activeCategoryFilter === "all" || i.category === activeCategoryFilter,
       )
       .filter(
         (i) =>
           i.name.toLowerCase().includes(term) ||
-          i.category.toLowerCase().includes(term)
+          i.category.toLowerCase().includes(term),
       )
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [menuItems, activeCategoryFilter, searchTerm]);
