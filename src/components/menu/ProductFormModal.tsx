@@ -5,6 +5,8 @@ import { MenuItem } from "@/lib/types";
 import { InventoryItem } from "@/lib/types";
 import { menuCategories } from "@/lib/arrays";
 import { Plus } from "lucide-react";
+// 1. Import Sonner toast
+import { toast } from "sonner";
 
 import {
   Sheet,
@@ -68,7 +70,6 @@ function makeUid() {
   return Math.random().toString(36).slice(2);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function normalizeInventoryItem(inv: any, idx: number) {
   const id = inv?.id ?? inv?.item_id ?? inv?.itemId ?? null;
   const name = inv?.item_name ?? inv?.itemName ?? inv?.product ?? `Item ${idx}`;
@@ -120,7 +121,6 @@ export default function ProductFormModal({
     setName(initialData?.name ?? "");
     setCategory(initialData?.category ?? menuCategories[0] ?? "");
     setPrice(initialData?.price != null ? String(initialData.price) : "");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialData?.id]);
 
   function hasUnsavedChanges() {
@@ -156,8 +156,17 @@ export default function ProductFormModal({
     setShowDiscard(false);
   }
 
+  // 2. Modified handleSubmit to trigger toasts
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validation: Ensure ingredients are selected
+    if (ingredients.length === 0) {
+      toast.warning("Incomplete Recipe", {
+        description: "Please add at least one ingredient to save this product.",
+      });
+      return;
+    }
 
     const payload = {
       name,
@@ -178,10 +187,17 @@ export default function ProductFormModal({
 
     if (isEditMode) {
       onSave({ id: initialData!.id, ...payload });
+      toast.success("Product Updated", {
+        description: `${name} has been successfully modified in the menu.`,
+      });
     } else {
       onSave(payload);
+      toast.success("Product Created", {
+        description: `${name} is now available in your store menu.`,
+      });
     }
     resetForm();
+    onClose();
   };
 
   function addIngredient() {
@@ -194,7 +210,6 @@ export default function ProductFormModal({
   function updateIngredient(
     uid: string,
     field: keyof Omit<IngredientRow, "uid">,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     value: any,
   ) {
     setIngredients((prev) =>
@@ -338,7 +353,7 @@ export default function ProductFormModal({
 
                       <button
                         type="button"
-                        className="text-xs px-2 py-1 rounded bg-red-200 text-red-700"
+                        className="text-xs px-2 py-1 rounded bg-red-200 text-red-700 hover:bg-red-300"
                         onClick={() => removeIngredient(item.uid)}
                       >
                         Remove
@@ -379,7 +394,7 @@ export default function ProductFormModal({
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDiscard}
-              className="bg-red-600 text-white"
+              className="bg-red-600 text-white hover:bg-red-700"
             >
               Discard
             </AlertDialogAction>

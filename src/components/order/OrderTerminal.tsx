@@ -172,7 +172,7 @@ export default function OrderTerminal({
       }
 
       const result = await response.json();
-      alert(`Order placed successfully! Order ID: ${result.orderId}`);
+      //alert(`Order placed successfully! Order ID: ${result.orderId}`);
 
       // Clear cart after successful order
       setCart([]);

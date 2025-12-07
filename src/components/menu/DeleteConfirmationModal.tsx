@@ -1,5 +1,9 @@
+"use client";
+
 import React from "react";
 import { AlertTriangle } from "lucide-react";
+// 1. Import Sonner toast
+import { toast } from "sonner";
 
 interface DeleteConfirmationModalProps {
   productName: string;
@@ -12,12 +16,19 @@ export default function DeleteConfirmationModal({
   onClose,
   onConfirm,
 }: DeleteConfirmationModalProps) {
+
+  // 2. Wrap confirmation logic to trigger toast
+  const handleConfirm = () => {
+    onConfirm();
+    toast.success("Product Deleted", {
+      description: `"${productName}" has been removed from the menu inventory.`,
+      duration: 4000,
+    });
+    // Modal will close based on state management in parent (onConfirm)
+  };
+
   return (
-    /** * MODIFIED: Replaced fixed black background with a semi-transparent
-     * blur effect for visual continuity with the menu grid below.
-     */
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm transition-all">
-      {/* Clickable overlay div to close if clicking outside the modal */}
       <div className="absolute inset-0" onClick={onClose} />
 
       <div className="relative w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl border border-gray-100">
@@ -48,7 +59,8 @@ export default function DeleteConfirmationModal({
           <button
             type="button"
             className="inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 sm:ml-3 sm:w-auto sm:text-sm transition-colors"
-            onClick={onConfirm}
+            // 3. Update to use handleConfirm
+            onClick={handleConfirm}
           >
             Delete
           </button>

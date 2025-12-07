@@ -2,6 +2,8 @@
 import React from "react";
 import { Plus } from "lucide-react";
 import { Product } from "@/lib/types";
+// 1. Import toast from sonner
+import { toast } from "sonner";
 
 interface ProductCardProps {
   product: Product;
@@ -12,6 +14,16 @@ export default function ProductCard({
   product,
   onCustomize,
 }: ProductCardProps) {
+  
+  // 2. Wrap the onCustomize call to include the toast
+  const handleSelect = () => {
+    toast.success(`Opening options for ${product.name}`, {
+      description: "Customize your selection below.",
+      duration: 2000,
+    });
+    onCustomize();
+  };
+
   return (
     <div
       className="
@@ -20,10 +32,9 @@ export default function ProductCard({
         hover:shadow-xl hover:-translate-y-0.5 border border-gray-100
         cursor-pointer h-full min-h-[150px]
       "
-      onClick={onCustomize}
+      // 3. Update the onClick to use handleSelect
+      onClick={handleSelect}
     >
-      {/* Remove Image component as it was just a placeholder and might cause build errors */}
-      {/* <Image src={product.image} alt={product.name} width={150} height={150} className="rounded-lg mb-2" /> */}
       <div className="flex flex-col items-center justify-center grow text-center">
         <h3 className="text-xl font-extrabold text-gray-900 leading-snug">
           {product.name}
