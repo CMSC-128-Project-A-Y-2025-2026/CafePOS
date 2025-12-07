@@ -1,5 +1,3 @@
-// src/app/menu/components/DeleteConfirmationModal.tsx
-
 import React from "react";
 import { AlertTriangle } from "lucide-react";
 
@@ -15,8 +13,14 @@ export default function DeleteConfirmationModal({
   onConfirm,
 }: DeleteConfirmationModalProps) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
+    /** * MODIFIED: Replaced fixed black background with a semi-transparent
+     * blur effect for visual continuity with the menu grid below.
+     */
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm transition-all">
+      {/* Clickable overlay div to close if clicking outside the modal */}
+      <div className="absolute inset-0" onClick={onClose} />
+
+      <div className="relative w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl border border-gray-100">
         <div className="flex items-start">
           <div className="mx-auto shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
             <AlertTriangle
@@ -39,6 +43,7 @@ export default function DeleteConfirmationModal({
             </div>
           </div>
         </div>
+
         <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
           <button
             type="button"

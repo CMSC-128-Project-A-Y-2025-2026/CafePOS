@@ -1,4 +1,3 @@
-// src/app/inventory/components/InventoryProductModal.tsx
 import React, { useState } from "react";
 import { X } from "lucide-react";
 import { InventoryItem } from "@/lib/types";
@@ -70,7 +69,7 @@ export default function InventoryProductModal({
       category,
       stock: Number(stock),
       item_threshold: Number(itemThreshold),
-      status: initialData?.status || "in stock", // status will be auto-set server-side
+      status: initialData?.status || "in stock",
       cost,
     };
 
@@ -80,13 +79,19 @@ export default function InventoryProductModal({
   const isEditMode = initialData !== undefined;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="w-full max-w-lg rounded-2xl bg-white p-8 shadow-2xl">
+    /** * MODIFIED: Added backdrop-blur-md and changed bg-black to a semi-transparent white
+     * to keep the background bright but blurred.
+     */
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm transition-all">
+      {/* Clickable overlay to close modal */}
+      <div className="absolute inset-0" onClick={onClose} />
+
+      <div className="relative w-full max-w-lg rounded-2xl bg-white p-8 shadow-2xl border border-gray-100">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-700"
+            className="text-gray-400 hover:text-gray-700 transition-colors"
           >
             <X size={24} />
           </button>
@@ -102,7 +107,6 @@ export default function InventoryProductModal({
             }
           />
 
-          {/* New Category Dropdown - Replaces the old InputField */}
           <div>
             <label
               htmlFor="category"
@@ -131,7 +135,6 @@ export default function InventoryProductModal({
               ))}
             </select>
           </div>
-          {/* End of New Category Dropdown */}
 
           <InputField
             label="Stock"
