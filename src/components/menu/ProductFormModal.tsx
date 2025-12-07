@@ -163,10 +163,17 @@ export default function ProductFormModal({
       name,
       category,
       price: Number(price),
-      ingredients: ingredients.map((i) => ({
-        inventory_id: String(i.inventory_id),
-        quantity: Number(i.quantity),
-      })),
+      ingredients: ingredients.map((i) => {
+        const inv = normalizedInventory.find(
+          (item) => String(item.id) === i.inventory_id,
+        );
+
+        return {
+          inventory_id: String(i.inventory_id),
+          quantity: Number(i.quantity),
+          name: inv?.name ?? "",
+        };
+      }),
     };
 
     if (isEditMode) {

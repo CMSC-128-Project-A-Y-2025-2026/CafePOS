@@ -1,14 +1,13 @@
 // src/components/menu/MenuManagement.tsx
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { Search, Plus } from "lucide-react";
 import MenuTable from "#/src/components/menu/MenuTable";
 import ProductFormModal from "#/src/components/menu/ProductFormModal";
 import DeleteConfirmationModal from "#/src/components/menu/DeleteConfirmationModal";
 import CategoryFilterPill from "#/src/components/menu/CategoryFilterPill";
-import { MenuItem } from "@/lib/types";
-import { InventoryItem } from "@/lib/types";
+import { MenuItem, MenuItemIngredient, InventoryItem } from "@/lib/types";
 import { menuCategories } from "@/lib/arrays";
 import { SpinnerDemo } from "../ui/spinnerLoader";
 
@@ -16,6 +15,8 @@ const filterCategories = [
   { key: "all", label: "all" },
   ...menuCategories.map((c) => ({ key: c, label: c })),
 ];
+
+const ingredientNameCache: Record<string, string> = {};
 
 export default function MenuManagement({
   fontClassName,
@@ -31,41 +32,78 @@ export default function MenuManagement({
   const [activeCategoryFilter, setActiveCategoryFilter] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setIsLoading(true);
-        const response = await fetch("/api/products/addProduct");
-        if (!response.ok) throw new Error();
-        const result = await response.json();
+  const LS_MENU = "menu-cache";
+  const LS_INVENTORY = "inventory-cache";
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const products: MenuItem[] = result.data.map((item: any) => ({
-          id: String(item.id),
-          name: item.product_name,
-          price: item.product_cost,
-          category: item.product_category,
-        }));
+  const fetchIngredientName = useCallback(async (item_id: string) => {
+    if (ingredientNameCache[item_id]) {
+      return ingredientNameCache[item_id];
+    }
 
-        setMenuItems(products);
-      } catch {
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    const response = await fetch(`/api/inventory/${item_id}/name`);
+    if (!response.ok) return "";
 
-    fetchProducts();
+    const result = await response.json();
+    const name = result[0]?.item_name || "";
+
+    ingredientNameCache[item_id] = name;
+    return name;
   }, []);
 
+  const fetchIngredientList = useCallback(
+    async (product_id: string) => {
+      const response = await fetch(`/api/products/${product_id}/ingredients`);
+      if (!response.ok) return [];
+
+      const result = await response.json();
+      const items = result.data || [];
+
+      const ingredientList: MenuItemIngredient[] = await Promise.all(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        items.map(async (item: any) => ({
+          inventory_id: String(item.item_id),
+          name: await fetchIngredientName(String(item.item_id)),
+          quantity: item.quantity_needed,
+        })),
+      );
+
+      return ingredientList;
+    },
+    [fetchIngredientName],
+  );
+
   useEffect(() => {
-    const fetchInventory = async () => {
+    const cachedMenu = localStorage.getItem(LS_MENU);
+    const cachedInventory = localStorage.getItem(LS_INVENTORY);
+
+    if (cachedMenu) {
       try {
-        const response = await fetch("/api/inventory/getItem");
-        if (!response.ok) throw new Error();
-        const result = await response.json();
+        setMenuItems(JSON.parse(cachedMenu));
+      } catch {}
+    }
+
+    if (cachedInventory) {
+      try {
+        setInventoryItems(JSON.parse(cachedInventory));
+      } catch {}
+    }
+
+    setIsLoading(false);
+
+    const fetchFresh = async () => {
+      try {
+        const [productRes, inventoryRes] = await Promise.all([
+          fetch("/api/products/getProduct", { cache: "no-store" }),
+          fetch("/api/inventory/getItem", { cache: "no-store" }),
+        ]);
+
+        if (!productRes.ok || !inventoryRes.ok) throw new Error();
+
+        const productData = await productRes.json();
+        const inventoryData = await inventoryRes.json();
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const inventory: InventoryItem[] = result.map((item: any) => ({
+        const inventory: InventoryItem[] = inventoryData.map((item: any) => ({
           id: String(item.item_id),
           product: item.item_name,
           category: item.item_category,
@@ -74,90 +112,111 @@ export default function MenuManagement({
           cost: item.item_cost,
         }));
 
+        localStorage.setItem(LS_INVENTORY, JSON.stringify(inventory));
         setInventoryItems(inventory);
+
+        const products: MenuItem[] = await Promise.all(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          productData.data.map(async (item: any) => ({
+            id: String(item.id),
+            name: item.product_name,
+            price: item.product_cost,
+            category: item.product_category,
+            ingredients: await fetchIngredientList(String(item.id)),
+          })),
+        );
+
+        localStorage.setItem(LS_MENU, JSON.stringify(products));
+        setMenuItems(products);
       } catch {}
     };
 
-    fetchInventory();
-  }, []);
+    fetchFresh();
+  }, [fetchIngredientList]);
 
-  const handleSaveProduct = async (
-    newProduct: Omit<MenuItem, "id"> | MenuItem,
-  ) => {
-    try {
-      let savedProductId: string;
+  const handleSaveProduct = useCallback(
+    async (newProduct: Omit<MenuItem, "id"> | MenuItem) => {
+      try {
+        let savedProductId = "0";
 
-      if ("id" in newProduct) {
-        // EDIT
-        const response = await fetch("/api/products/editProduct", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            id: newProduct.id,
-            product: newProduct.name,
-            category: newProduct.category,
-            price: newProduct.price,
-          }),
-        });
+        if ("id" in newProduct) {
+          const response = await fetch("/api/products/editProduct", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              id: newProduct.id,
+              product: newProduct.name,
+              category: newProduct.category,
+              price: newProduct.price,
+            }),
+          });
 
-        if (!response.ok) throw new Error();
+          if (!response.ok) throw new Error();
 
-        savedProductId = newProduct.id;
-        setMenuItems((items) =>
-          items.map((i) => (i.id === newProduct.id ? newProduct : i)),
-        );
-        setProductToEdit(null);
-      } else {
-        // CREATE
-        const response = await fetch("/api/products/addProduct", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            product: newProduct.name,
-            category: newProduct.category,
-            price: newProduct.price,
-          }),
-        });
+          savedProductId = newProduct.id;
 
-        if (!response.ok) throw new Error();
-        const result = await response.json();
+          setMenuItems((items) => {
+            const updated = items.map((i) =>
+              i.id === newProduct.id ? newProduct : i,
+            );
+            localStorage.setItem(LS_MENU, JSON.stringify(updated));
+            return updated;
+          });
 
-        const addedProduct: MenuItem = {
-          id: String(result.data[0].id),
-          name: result.data[0].product_name,
-          price: result.data[0].product_cost,
-          category: result.data[0].product_category,
-        };
+          setProductToEdit(null);
+        } else {
+          const response = await fetch("/api/products/addProduct", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              product: newProduct.name,
+              category: newProduct.category,
+              price: newProduct.price,
+            }),
+          });
 
-        savedProductId = addedProduct.id;
+          if (!response.ok) throw new Error();
 
-        setMenuItems((items) => [addedProduct, ...items]);
-        setIsAddModalOpen(false);
-      }
+          const result = await response.json();
+          const addedProduct: MenuItem = {
+            id: String(result.data[0].id),
+            name: result.data[0].product_name,
+            price: result.data[0].product_cost,
+            category: result.data[0].product_category,
+            ingredients: [],
+          };
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const ing = (newProduct as any).ingredients ?? [];
-      console.log(ing);
+          savedProductId = addedProduct.id;
 
-      for (const ingredient of ing) {
-        await fetch(`/api/products/${savedProductId}/ingredients`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            item: ingredient.inventory_id,
-            quantity: ingredient.quantity,
-          }),
-        });
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Failed to save product. Please try again.");
-    }
-  };
+          setMenuItems((items) => {
+            const updated = [addedProduct, ...items];
+            localStorage.setItem(LS_MENU, JSON.stringify(updated));
+            return updated;
+          });
 
-  const handleConfirmDelete = async () => {
+          setIsAddModalOpen(false);
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const ingredients = (newProduct as any).ingredients ?? [];
+
+        for (const ingredient of ingredients) {
+          await fetch(`/api/products/${savedProductId}/ingredients`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              item: ingredient.inventory_id,
+              quantity: ingredient.quantity,
+            }),
+          });
+        }
+      } catch {}
+    },
+    [],
+  );
+
+  const handleConfirmDelete = useCallback(async () => {
     if (!productToDelete) return;
-
     try {
       const response = await fetch("/api/products/removeProduct", {
         method: "DELETE",
@@ -167,14 +226,18 @@ export default function MenuManagement({
 
       if (!response.ok) throw new Error();
 
-      setMenuItems((items) => items.filter((i) => i.id !== productToDelete.id));
+      setMenuItems((items) => {
+        const updated = items.filter((i) => i.id !== productToDelete.id);
+        localStorage.setItem(LS_MENU, JSON.stringify(updated));
+        return updated;
+      });
+
       setProductToDelete(null);
-    } catch {
-      alert("Failed to delete product. Please try again.");
-    }
-  };
+    } catch {}
+  }, [productToDelete]);
 
   const filteredMenuItems = useMemo(() => {
+    const term = searchTerm.toLowerCase();
     return menuItems
       .filter(
         (i) =>
@@ -182,8 +245,8 @@ export default function MenuManagement({
       )
       .filter(
         (i) =>
-          i.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          i.category.toLowerCase().includes(searchTerm.toLowerCase()),
+          i.name.toLowerCase().includes(term) ||
+          i.category.toLowerCase().includes(term),
       )
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [menuItems, activeCategoryFilter, searchTerm]);
@@ -251,9 +314,7 @@ export default function MenuManagement({
 
         {isLoading ? (
           <div className="flex items-center justify-center flex-1">
-            <div className="text-lg text-gray-600">
-              <SpinnerDemo name={"products"} />
-            </div>
+            <SpinnerDemo name={"products"} />
           </div>
         ) : (
           <MenuTable

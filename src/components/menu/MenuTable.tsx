@@ -64,7 +64,7 @@ export default function MenuTable({
                           key={idx}
                           className="bg-gray-100 px-2 py-0.5 rounded text-xs"
                         >
-                          {ing}
+                          {ing.name} × {ing.quantity}
                         </span>
                       ))}
                     </div>
