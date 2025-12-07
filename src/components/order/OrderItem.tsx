@@ -1,5 +1,5 @@
 // src/app/order/components/OrderItem.tsx
-import React from "react";
+"use client";
 import { Plus, Minus } from "lucide-react";
 import { CartItem } from "@/lib/types";
 

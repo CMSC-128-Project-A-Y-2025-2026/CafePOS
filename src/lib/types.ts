@@ -84,3 +84,21 @@ export interface CartItem {
   discountPercent: number;
   discountAmount: number;
 }
+
+export interface OrderItem {
+  productId: string | number
+  productName: string
+  quantity: number
+  unitPrice: number
+  totalPrice: number
+  options: Option[]
+  notes: string
+}
+
+export interface OrderPayload {
+  items: OrderItem[]
+  subtotal: number
+  discount: number
+  total: number
+  paymentMethod: string
+}
