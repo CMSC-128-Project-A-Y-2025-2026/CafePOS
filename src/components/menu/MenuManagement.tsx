@@ -90,49 +90,44 @@ export default function MenuManagement({
 
     setIsLoading(false);
 
-    const fetchFresh = async () => {
-      try {
-        const [productRes, inventoryRes] = await Promise.all([
-          fetch("/api/products/getProduct", { cache: "no-store" }),
-          fetch("/api/inventory/getItem", { cache: "no-store" }),
-        ]);
-
-        if (!productRes.ok || !inventoryRes.ok) throw new Error();
-
-        const productData = await productRes.json();
-        const inventoryData = await inventoryRes.json();
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const inventory: InventoryItem[] = inventoryData.map((item: any) => ({
-          id: String(item.item_id),
-          product: item.item_name,
-          category: item.item_category,
-          stock: item.stock,
-          status: item.stock_status,
-          cost: item.item_cost,
-        }));
-
-        localStorage.setItem(LS_INVENTORY, JSON.stringify(inventory));
-        setInventoryItems(inventory);
-
-        const products: MenuItem[] = await Promise.all(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          productData.data.map(async (item: any) => ({
-            id: String(item.id),
-            name: item.product_name,
-            price: item.product_cost,
-            category: item.product_category,
-            ingredients: await fetchIngredientList(String(item.id)),
-          })),
-        );
-
-        localStorage.setItem(LS_MENU, JSON.stringify(products));
-        setMenuItems(products);
-      } catch {}
-    };
-
-    fetchFresh();
+    fetchFresh(fetchIngredientList);
   }, [fetchIngredientList]);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async function fetchFresh(fetchIngredientList: any) {
+    try {
+      const [productRes, inventoryRes] = await Promise.all([
+        fetch("/api/products/getProduct", { cache: "no-store" }),
+        fetch("/api/inventory/getItem", { cache: "no-store" }),
+      ]);
+      if (!productRes.ok || !inventoryRes.ok) throw new Error();
+      const productData = await productRes.json();
+      const inventoryData = await inventoryRes.json();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const inventory: InventoryItem[] = inventoryData.map((item: any) => ({
+        id: String(item.item_id),
+        product: item.item_name,
+        category: item.item_category,
+        stock: item.stock,
+        status: item.stock_status,
+        cost: item.item_cost,
+      }));
+      localStorage.setItem(LS_INVENTORY, JSON.stringify(inventory));
+      setInventoryItems(inventory);
+      const products: MenuItem[] = await Promise.all(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        productData.data.map(async (item: any) => ({
+          id: String(item.id),
+          name: item.product_name,
+          price: item.product_cost,
+          category: item.product_category,
+          ingredients: await fetchIngredientList(String(item.id)),
+        })),
+      );
+      localStorage.setItem(LS_MENU, JSON.stringify(products));
+      setMenuItems(products);
+    } catch {}
+  }
 
   const handleSaveProduct = useCallback(
     async (newProduct: Omit<MenuItem, "id"> | MenuItem) => {
@@ -210,9 +205,11 @@ export default function MenuManagement({
             }),
           });
         }
+
+        fetchFresh(fetchIngredientList);
       } catch {}
     },
-    [],
+    [fetchIngredientList],
   );
 
   const handleConfirmDelete = useCallback(async () => {
