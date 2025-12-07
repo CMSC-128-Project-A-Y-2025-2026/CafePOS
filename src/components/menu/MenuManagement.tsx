@@ -94,7 +94,7 @@ export default function MenuManagement({
   }, [fetchIngredientList]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async function fetchFresh(fetchIngredientList: any){
+  async function fetchFresh(fetchIngredientList: any) {
     try {
       const [productRes, inventoryRes] = await Promise.all([
         fetch("/api/products/getProduct", { cache: "no-store" }),
@@ -206,7 +206,7 @@ export default function MenuManagement({
           });
         }
 
-        fetchFresh(fetchIngredientList)
+        fetchFresh(fetchIngredientList);
       } catch {}
     },
     [fetchIngredientList],
