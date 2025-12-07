@@ -195,6 +195,13 @@ export default function MenuManagement({
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const ingredients = (newProduct as any).ingredients ?? [];
 
+        await fetch(`/api/products/${savedProductId}/ingredients`, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ product_id: savedProductId }),
+        });
+
+
         for (const ingredient of ingredients) {
           await fetch(`/api/products/${savedProductId}/ingredients`, {
             method: "POST",

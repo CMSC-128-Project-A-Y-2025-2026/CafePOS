@@ -26,8 +26,6 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    console.log("Updating product:", { id, product, category, price });
-
     const { data, error } = await supabase
       .from("products")
       .update({
@@ -56,7 +54,6 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    console.log("Update successful:", data);
     return NextResponse.json({ data }, { status: 200 });
   } catch (error) {
     console.error("Product PUT Error", error);
