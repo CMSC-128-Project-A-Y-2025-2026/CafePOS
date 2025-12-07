@@ -1,4 +1,3 @@
-// src/app/inventory/components/WeeklyReportModal.tsx
 import React from "react";
 import { X } from "lucide-react";
 import { InventoryItem } from "@/lib/types";
@@ -16,8 +15,14 @@ export default function WeeklyReportModal({
   const lowStock = inventory.filter((item) => item.status === "low stock");
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="w-full max-w-lg rounded-2xl bg-white p-8 shadow-2xl">
+    /** * MODIFIED: Added backdrop-blur-md and changed overlay to bg-black/20
+     * for consistent design across all modals.
+     */
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm transition-all">
+      {/* Clickable overlay to close the report */}
+      <div className="absolute inset-0" onClick={onClose} />
+
+      <div className="relative w-full max-w-lg rounded-2xl bg-white p-8 shadow-2xl border border-gray-100">
         {/* Header */}
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-900">
@@ -25,7 +30,7 @@ export default function WeeklyReportModal({
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-gray-400 hover:text-gray-600 transition-colors"
           >
             <X size={24} />
           </button>
