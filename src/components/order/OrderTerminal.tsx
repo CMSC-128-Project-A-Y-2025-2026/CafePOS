@@ -31,7 +31,7 @@ export default function OrderTerminal({
     const fetchProducts = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch("/api/products/getProduct");
+        const response = await fetch("/api/products/getProductsWithStock");
         if (!response.ok) throw new Error("Failed to fetch products");
         const result = await response.json();
 
@@ -43,6 +43,16 @@ export default function OrderTerminal({
             price: item.product_cost as number,
             category: item.product_category as string,
             image: `https://placehold.co/150x150/F9F1E9/333?text=${encodeURIComponent(item.product_name as string)}`,
+            hasLowStock: item.hasLowStock as boolean,
+            hasOutOfStock: item.hasOutOfStock as boolean,
+            ingredients: item.ingredients as Array<{
+              item_id: string;
+              item_name: string;
+              stock: number;
+              stock_status: string;
+              item_threshold: number;
+              quantity_needed: number;
+            }>,
           }),
         );
 
