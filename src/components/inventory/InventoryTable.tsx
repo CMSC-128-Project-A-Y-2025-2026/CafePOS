@@ -29,22 +29,31 @@ export default function InventoryTable({
           <TableHeader className="bg-[#E5F1FB] sticky top-0 z-10">
             <TableRow>
               <TableHead className="font-bold text-gray-700">Product</TableHead>
-              <TableHead className="font-bold text-gray-700">Category</TableHead>
+              <TableHead className="font-bold text-gray-700">
+                Category
+              </TableHead>
               <TableHead className="font-bold text-gray-700">Stock</TableHead>
               <TableHead className="font-bold text-gray-700">Status</TableHead>
               <TableHead className="font-bold text-gray-700">Cost</TableHead>
-              <TableHead className="font-bold text-gray-700 text-right">Actions</TableHead>
+              <TableHead className="font-bold text-gray-700 text-right">
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredInventory.map((item) => (
-              <TableRow key={item.id} className="hover:bg-gray-50 transition-colors">
-                <TableCell className="font-medium text-gray-900">{item.product}</TableCell>
+              <TableRow
+                key={item.id}
+                className="hover:bg-gray-50 transition-colors"
+              >
+                <TableCell className="font-medium text-gray-900">
+                  {item.product}
+                </TableCell>
                 <TableCell className="text-gray-700">{item.category}</TableCell>
                 <TableCell className="text-gray-700">{item.stock}</TableCell>
                 <TableCell className="text-gray-700">{item.status}</TableCell>
                 <TableCell className="text-gray-700">{item.cost}</TableCell>
-                
+
                 {/* 2. Updated Actions to use icons consistent with the Menu Table */}
                 <TableCell className="text-right">
                   <div className="flex gap-3 justify-end">

@@ -29,27 +29,43 @@ export default function MenuTable({
         <Table>
           <TableHeader className="bg-[#E5F1FB] sticky top-0 z-10">
             <TableRow>
-              <TableHead className="font-bold text-gray-700 w-1/4">Product Name</TableHead>
-              <TableHead className="font-bold text-gray-700">Category</TableHead>
+              <TableHead className="font-bold text-gray-700 w-1/4">
+                Product Name
+              </TableHead>
+              <TableHead className="font-bold text-gray-700">
+                Category
+              </TableHead>
               {/* NEW COLUMN */}
-              <TableHead className="font-bold text-gray-700">Ingredients</TableHead>
+              <TableHead className="font-bold text-gray-700">
+                Ingredients
+              </TableHead>
               <TableHead className="font-bold text-gray-700">Price</TableHead>
-              <TableHead className="font-bold text-gray-700 text-right">Actions</TableHead>
+              <TableHead className="font-bold text-gray-700 text-right">
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
 
           <TableBody>
             {menuItems.map((item) => (
-              <TableRow key={item.id} className="hover:bg-gray-50 transition-colors">
-                <TableCell className="font-medium text-gray-900">{item.name}</TableCell>
+              <TableRow
+                key={item.id}
+                className="hover:bg-gray-50 transition-colors"
+              >
+                <TableCell className="font-medium text-gray-900">
+                  {item.name}
+                </TableCell>
                 <TableCell className="text-gray-700">{item.category}</TableCell>
-                
+
                 {/* INGREDIENTS CELL */}
                 <TableCell className="text-gray-600 max-w-[200px]">
                   {item.ingredients && item.ingredients.length > 0 ? (
                     <div className="flex flex-wrap gap-1">
                       {item.ingredients.map((ing, idx) => (
-                        <span key={idx} className="bg-gray-100 px-2 py-0.5 rounded text-xs">
+                        <span
+                          key={idx}
+                          className="bg-gray-100 px-2 py-0.5 rounded text-xs"
+                        >
                           {ing}
                         </span>
                       ))}
@@ -59,14 +75,22 @@ export default function MenuTable({
                   )}
                 </TableCell>
 
-                <TableCell className="text-gray-700">PHP {item.price.toFixed(2)}</TableCell>
+                <TableCell className="text-gray-700">
+                  PHP {item.price.toFixed(2)}
+                </TableCell>
 
                 <TableCell className="text-right">
                   <div className="flex gap-3 justify-end">
-                    <button onClick={() => onEdit(item)} className="text-[#6290C3] p-1">
+                    <button
+                      onClick={() => onEdit(item)}
+                      className="text-[#6290C3] p-1"
+                    >
                       <Pencil size={18} />
                     </button>
-                    <button onClick={() => onDelete(item)} className="text-red-500 p-1">
+                    <button
+                      onClick={() => onDelete(item)}
+                      className="text-red-500 p-1"
+                    >
                       <Trash2 size={18} />
                     </button>
                   </div>
