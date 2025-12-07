@@ -34,7 +34,6 @@ export default function OrderSummary({
   onCheckout,
   isCheckingOut,
 }: OrderSummaryProps) {
-
   // 2. Define the handleCheckout triggered by the button
   const handleCheckoutClick = () => {
     // Fire toast before clearing state
@@ -86,8 +85,12 @@ export default function OrderSummary({
             type="number"
             id="orderDiscount"
             placeholder="0"
-            value={totalOrderDiscountPercent === 0 ? "" : totalOrderDiscountPercent}
-            onChange={(e) => setTotalOrderDiscountPercent(Number(e.target.value) || 0)}
+            value={
+              totalOrderDiscountPercent === 0 ? "" : totalOrderDiscountPercent
+            }
+            onChange={(e) =>
+              setTotalOrderDiscountPercent(Number(e.target.value) || 0)
+            }
             className="w-16 rounded-md border border-gray-300 p-0.5 text-right shadow-sm focus:border-[#6290C3] focus:ring-[#6290C3] text-gray-900 text-xs transition-all"
           />
         </div>

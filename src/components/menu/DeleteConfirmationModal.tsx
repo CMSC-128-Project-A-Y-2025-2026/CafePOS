@@ -16,7 +16,6 @@ export default function DeleteConfirmationModal({
   onClose,
   onConfirm,
 }: DeleteConfirmationModalProps) {
-
   // 2. Wrap confirmation logic to trigger toast
   const handleConfirm = () => {
     onConfirm();

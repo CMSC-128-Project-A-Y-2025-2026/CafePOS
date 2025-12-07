@@ -26,32 +26,37 @@ export async function POST(request: NextRequest) {
       .select();
 
     if (saleError) throw saleError;
-    
+
     for (const item of items) {
-      const { data: selectData, count, error: selectError } = await supabase
+      const {
+        data: selectData,
+        count,
+        error: selectError,
+      } = await supabase
         .from("sales_analytics")
-        .select("*", { count: 'exact', head: false })
+        .select("*", { count: "exact", head: false })
         .eq("product_id", item.productId);
 
       if (selectError) throw selectError;
 
-      if (count === 0){
-        const { error: insertionError } = await supabase.from("sales_analytics").insert([
-          {
-            product_id: item.productId,
-            total_sold: item.quantity,
-          },
-        ]);
+      if (count === 0) {
+        const { error: insertionError } = await supabase
+          .from("sales_analytics")
+          .insert([
+            {
+              product_id: item.productId,
+              total_sold: item.quantity,
+            },
+          ]);
         if (insertionError) throw insertionError;
-      }
-      else {
+      } else {
         const total_sold = selectData?.[0]?.total_sold ?? 0;
         const new_total = total_sold + item.quantity;
 
         const { error: updateError } = await supabase
           .from("sales_analytics")
           .update({
-            total_sold: new_total
+            total_sold: new_total,
           })
           .eq("product_id", item.productId);
 

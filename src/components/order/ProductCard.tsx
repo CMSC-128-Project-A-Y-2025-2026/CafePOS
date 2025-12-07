@@ -14,7 +14,6 @@ export default function ProductCard({
   product,
   onCustomize,
 }: ProductCardProps) {
-  
   // 2. Wrap the onCustomize call to include the toast
   const handleSelect = () => {
     toast.success(`Opening options for ${product.name}`, {

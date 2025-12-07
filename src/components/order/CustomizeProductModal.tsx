@@ -13,7 +13,7 @@ interface CustomizeProductModalProps {
     product: Product,
     options: Option[],
     notes: string,
-    discountPercent: number
+    discountPercent: number,
   ) => void;
 }
 
@@ -54,15 +54,15 @@ export default function CustomizeProductModal({
           price: getSizePrice(),
         }
       : isDrink
-      ? { name: "Regular Size", price: 0 }
-      : null;
+        ? { name: "Regular Size", price: 0 }
+        : null;
 
   const sugarOption: Option | null = isDrink
     ? { name: `Sugar: ${sugar}`, price: 0 }
     : null;
 
   const addOnOptions: Option[] = ADD_ONS.filter((ao) =>
-    selectedAddOns.includes(ao.name)
+    selectedAddOns.includes(ao.name),
   ).map((ao) => ({ name: `Add-on: ${ao.name}`, price: ao.price }));
 
   const allOptions: Option[] = [
@@ -79,7 +79,7 @@ export default function CustomizeProductModal({
   // --- Handlers ---
   const handleAddOnToggle = (name: string) => {
     setSelectedAddOns((prev) =>
-      prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name]
+      prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name],
     );
   };
 
@@ -92,10 +92,10 @@ export default function CustomizeProductModal({
     }
 
     onAddToCart(product, allOptions, notes, discountPercent);
-    
+
     toast.success(`${product.name} added to order`, {
-      description: isDrink 
-        ? `${size.charAt(0).toUpperCase() + size.slice(1)} size, ${sugar} sugar.` 
+      description: isDrink
+        ? `${size.charAt(0).toUpperCase() + size.slice(1)} size, ${sugar} sugar.`
         : "Item added successfully.",
     });
 
@@ -117,13 +117,13 @@ export default function CustomizeProductModal({
   };
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-white/30 backdrop-blur-sm transition-all duration-300"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div 
+      <div
         className="w-full max-w-lg rounded-2xl bg-white p-8 shadow-2xl max-h-[90vh] overflow-y-auto transform transition-all"
         onClick={(e) => e.stopPropagation()}
       >
@@ -143,7 +143,9 @@ export default function CustomizeProductModal({
           {/* Size Selection */}
           {isDrink && (
             <div className="border-b pb-6">
-              <label className="block text-lg font-bold text-gray-900 mb-3">Size Selection</label>
+              <label className="block text-lg font-bold text-gray-900 mb-3">
+                Size Selection
+              </label>
               <div className="mt-2 flex gap-3">
                 {["regular", "medium", "large"].map((s) => (
                   <label
@@ -158,9 +160,15 @@ export default function CustomizeProductModal({
                       onChange={(e) => setSize(e.target.value)}
                       className="sr-only"
                     />
-                    <span className="block text-center text-base font-bold text-gray-900 capitalize">{s}</span>
+                    <span className="block text-center text-base font-bold text-gray-900 capitalize">
+                      {s}
+                    </span>
                     <span className="block text-center text-sm text-gray-500">
-                      {s === "medium" ? "(+ PHP 20.00)" : s === "large" ? "(+ PHP 40.00)" : "(Base)"}
+                      {s === "medium"
+                        ? "(+ PHP 20.00)"
+                        : s === "large"
+                          ? "(+ PHP 40.00)"
+                          : "(Base)"}
                     </span>
                   </label>
                 ))}
@@ -171,7 +179,9 @@ export default function CustomizeProductModal({
           {/* Sugar Level */}
           {isDrink && (
             <div className="border-b pb-6">
-              <label className="block text-lg font-bold text-gray-900 mb-3">Sugar Level</label>
+              <label className="block text-lg font-bold text-gray-900 mb-3">
+                Sugar Level
+              </label>
               <div className="mt-2 grid grid-cols-4 gap-3">
                 {["0%", "25%", "50%", "100%"].map((level) => (
                   <label
@@ -186,7 +196,9 @@ export default function CustomizeProductModal({
                       onChange={(e) => setSugar(e.target.value)}
                       className="sr-only"
                     />
-                    <span className="block text-center text-base font-bold text-gray-900">{level}</span>
+                    <span className="block text-center text-base font-bold text-gray-900">
+                      {level}
+                    </span>
                   </label>
                 ))}
               </div>
@@ -196,7 +208,9 @@ export default function CustomizeProductModal({
           {/* Add-ons */}
           {isDrink && (
             <div className="border-b pb-6">
-              <label className="block text-lg font-bold text-gray-900 mb-3">Add Ons</label>
+              <label className="block text-lg font-bold text-gray-900 mb-3">
+                Add Ons
+              </label>
               <div className="mt-2 grid grid-cols-3 gap-3">
                 {ADD_ONS.map((ao) => (
                   <button
@@ -204,7 +218,9 @@ export default function CustomizeProductModal({
                     onClick={() => handleAddOnToggle(ao.name)}
                     className={`rounded-xl p-3 border-2 cursor-pointer transition-all text-left ${selectedAddOns.includes(ao.name) ? "border-[#6290C3] bg-[#E5F1FB]" : "border-gray-300 bg-white hover:bg-gray-50"}`}
                   >
-                    <span className="block text-sm font-bold text-gray-900 leading-tight">{ao.name}</span>
+                    <span className="block text-sm font-bold text-gray-900 leading-tight">
+                      {ao.name}
+                    </span>
                     <span className="block text-xs text-gray-500 mt-1">{`(+ PHP ${ao.price.toFixed(2)})`}</span>
                   </button>
                 ))}
@@ -214,7 +230,12 @@ export default function CustomizeProductModal({
 
           {/* Notes */}
           <div className="border-b pb-6">
-            <label htmlFor="notes" className="block text-lg font-bold text-gray-900 mb-3">Notes</label>
+            <label
+              htmlFor="notes"
+              className="block text-lg font-bold text-gray-900 mb-3"
+            >
+              Notes
+            </label>
             <textarea
               id="notes"
               rows={3}
@@ -227,7 +248,12 @@ export default function CustomizeProductModal({
 
           {/* Discount */}
           <div className="border-b pb-6">
-            <label htmlFor="discount" className="block text-lg font-bold text-gray-900 mb-3">Item Discount (%)</label>
+            <label
+              htmlFor="discount"
+              className="block text-lg font-bold text-gray-900 mb-3"
+            >
+              Item Discount (%)
+            </label>
             <input
               type="number"
               id="discount"

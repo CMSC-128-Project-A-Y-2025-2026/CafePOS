@@ -72,8 +72,16 @@ function makeUid() {
 // Fixed 'any' type to unknown record for ESLint
 function normalizeInventoryItem(inv: Record<string, unknown>, idx: number) {
   const id = inv?.id ?? inv?.item_id ?? inv?.itemId ?? null;
-  const name = (inv?.item_name as string) ?? (inv?.itemName as string) ?? (inv?.product as string) ?? `Item ${idx}`;
-  const category = (inv?.item_category as string) ?? (inv?.category as string) ?? (inv?.itemCategory as string) ?? "";
+  const name =
+    (inv?.item_name as string) ??
+    (inv?.itemName as string) ??
+    (inv?.product as string) ??
+    `Item ${idx}`;
+  const category =
+    (inv?.item_category as string) ??
+    (inv?.category as string) ??
+    (inv?.itemCategory as string) ??
+    "";
   const optionKey = id != null ? String(id) : `${name}-${category}-${idx}`;
   const optionValue = id != null ? String(id) : `${name}-${idx}`;
   const label = category ? `${name} (${category})` : name;
@@ -89,8 +97,12 @@ export default function ProductFormModal({
   inventoryItems,
 }: ProductFormModalProps) {
   const [name, setName] = useState(() => initialData?.name ?? "");
-  const [category, setCategory] = useState(() => initialData?.category ?? menuCategories[0] ?? "");
-  const [price, setPrice] = useState(() => initialData?.price != null ? String(initialData.price) : "");
+  const [category, setCategory] = useState(
+    () => initialData?.category ?? menuCategories[0] ?? "",
+  );
+  const [price, setPrice] = useState(() =>
+    initialData?.price != null ? String(initialData.price) : "",
+  );
   const [ingredients, setIngredients] = useState<IngredientRow[]>(() => {
     if (initialData?.ingredients && Array.isArray(initialData.ingredients)) {
       return initialData.ingredients.map((ing) => ({
@@ -211,7 +223,7 @@ export default function ProductFormModal({
   function updateIngredient(
     uid: string,
     field: keyof Omit<IngredientRow, "uid">,
-    value: string | number, 
+    value: string | number,
   ) {
     setIngredients((prev) =>
       prev.map((it) => (it.uid === uid ? { ...it, [field]: value } : it)),

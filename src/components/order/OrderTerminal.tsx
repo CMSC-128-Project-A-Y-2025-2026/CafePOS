@@ -36,13 +36,15 @@ export default function OrderTerminal({
         const result = await response.json();
 
         // Fix: Use Record type to avoid any-type lint error
-        const productsData: Product[] = result.data.map((item: Record<string, unknown>) => ({
-          id: String(item.id),
-          name: item.product_name as string,
-          price: item.product_cost as number,
-          category: item.product_category as string,
-          image: `https://placehold.co/150x150/F9F1E9/333?text=${encodeURIComponent(item.product_name as string)}`,
-        }));
+        const productsData: Product[] = result.data.map(
+          (item: Record<string, unknown>) => ({
+            id: String(item.id),
+            name: item.product_name as string,
+            price: item.product_cost as number,
+            category: item.product_category as string,
+            image: `https://placehold.co/150x150/F9F1E9/333?text=${encodeURIComponent(item.product_name as string)}`,
+          }),
+        );
 
         setProducts(productsData);
       } catch (error) {
