@@ -1,7 +1,14 @@
 // src/app/analytics/components/AnalyticsHeader.tsx
 "use client";
 import { useEffect, useState } from "react";
-import { Coffee, ClipboardPen, PieChart, Boxes, Menu, Bell } from "lucide-react";
+import {
+  Coffee,
+  ClipboardPen,
+  PieChart,
+  Boxes,
+  Menu,
+  Bell,
+} from "lucide-react";
 import { DropdownItem } from "#/src/components/ui/HelperComponents";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -49,10 +56,11 @@ export default function UniversalHeader({
         const response = await fetch("/api/inventory/getItem");
         if (!response.ok) return;
         const data = await response.json();
-        
+
         const lowStockItems = data.filter(
-          (item: { stock_status: string }) => 
-            item.stock_status === "low stock" || item.stock_status === "out of stock"
+          (item: { stock_status: string }) =>
+            item.stock_status === "low stock" ||
+            item.stock_status === "out of stock",
         );
         setLowStockCount(lowStockItems.length);
       } catch (error) {
@@ -71,10 +79,11 @@ export default function UniversalHeader({
       const response = await fetch("/api/inventory/getItem");
       if (!response.ok) throw new Error("Failed to fetch inventory");
       const data = await response.json();
-      
+
       const lowStockItems = data.filter(
-        (item: { stock_status: string }) => 
-          item.stock_status === "low stock" || item.stock_status === "out of stock"
+        (item: { stock_status: string }) =>
+          item.stock_status === "low stock" ||
+          item.stock_status === "out of stock",
       );
 
       if (lowStockItems.length === 0) {
@@ -83,25 +92,36 @@ export default function UniversalHeader({
       }
 
       // Group by status
-      const outOfStock = lowStockItems.filter((item: { stock_status: string }) => item.stock_status === "out of stock");
-      const lowStock = lowStockItems.filter((item: { stock_status: string }) => item.stock_status === "low stock");
+      const outOfStock = lowStockItems.filter(
+        (item: { stock_status: string }) =>
+          item.stock_status === "out of stock",
+      );
+      const lowStock = lowStockItems.filter(
+        (item: { stock_status: string }) => item.stock_status === "low stock",
+      );
 
       // Create message
       let message = "";
-      
+
       if (outOfStock.length > 0) {
         message += "🔴 OUT OF STOCK:\n";
         outOfStock.forEach((item: { item_name: string; stock: number }) => {
           message += `• ${item.item_name} (${item.stock})\n`;
         });
       }
-      
+
       if (lowStock.length > 0) {
         if (message) message += "\n";
         message += "🟡 LOW STOCK:\n";
-        lowStock.forEach((item: { item_name: string; stock: number; item_threshold: number }) => {
-          message += `• ${item.item_name} (${item.stock}/${item.item_threshold})\n`;
-        });
+        lowStock.forEach(
+          (item: {
+            item_name: string;
+            stock: number;
+            item_threshold: number;
+          }) => {
+            message += `• ${item.item_name} (${item.stock}/${item.item_threshold})\n`;
+          },
+        );
       }
 
       toast.error(message, {

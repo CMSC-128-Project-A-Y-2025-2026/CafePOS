@@ -17,10 +17,11 @@ export default function ProductCard({
   // 2. Wrap the onCustomize call to include the toast
   const handleSelect = () => {
     if (product.hasOutOfStock) {
-      const outOfStockItems = product.ingredients?.filter(
-        (ing) => ing.stock_status === "out of stock"
-      ) || [];
-      
+      const outOfStockItems =
+        product.ingredients?.filter(
+          (ing) => ing.stock_status === "out of stock",
+        ) || [];
+
       toast.error(
         `⚠️ Cannot prepare ${product.name}\n\nOut of stock ingredients:\n${outOfStockItems.map((ing) => `• ${ing.item_name}`).join("\n")}`,
         {
@@ -28,16 +29,17 @@ export default function ProductCard({
           style: {
             whiteSpace: "pre-line",
           },
-        }
+        },
       );
       return;
     }
 
     if (product.hasLowStock) {
-      const lowStockItems = product.ingredients?.filter(
-        (ing) => ing.stock_status === "low stock"
-      ) || [];
-      
+      const lowStockItems =
+        product.ingredients?.filter(
+          (ing) => ing.stock_status === "low stock",
+        ) || [];
+
       toast.warning(
         `⚠️ Low stock alert for ${product.name}\n\n${lowStockItems.map((ing) => `• ${ing.item_name} (${ing.stock}/${ing.item_threshold})`).join("\n")}`,
         {
@@ -45,7 +47,7 @@ export default function ProductCard({
           style: {
             whiteSpace: "pre-line",
           },
-        }
+        },
       );
     } else {
       toast.success(`Opening options for ${product.name}`, {
@@ -53,7 +55,7 @@ export default function ProductCard({
         duration: 2000,
       });
     }
-    
+
     onCustomize();
   };
 
@@ -64,7 +66,7 @@ export default function ProductCard({
         shadow-md transition-all duration-200
         hover:shadow-xl hover:-translate-y-0.5 border border-gray-100
         cursor-pointer h-full min-h-[150px] relative
-        ${product.hasOutOfStock ? 'opacity-60' : ''}
+        ${product.hasOutOfStock ? "opacity-60" : ""}
       `}
       // 3. Update the onClick to use handleSelect
       onClick={handleSelect}
@@ -91,15 +93,17 @@ export default function ProductCard({
       </div>
 
       <div className="mt-4 w-full shrink-0">
-        <div className={`w-full flex items-center justify-center gap-2 rounded-lg p-2 font-semibold transition-all ${
-          product.hasOutOfStock 
-            ? 'bg-red-100 text-red-600 group-hover:bg-red-200' 
-            : product.hasLowStock
-            ? 'bg-yellow-100 text-yellow-700 group-hover:bg-yellow-200'
-            : 'bg-[#E5F1FB] text-[#6290C3] group-hover:bg-[#6290C3] group-hover:text-white'
-        }`}>
+        <div
+          className={`w-full flex items-center justify-center gap-2 rounded-lg p-2 font-semibold transition-all ${
+            product.hasOutOfStock
+              ? "bg-red-100 text-red-600 group-hover:bg-red-200"
+              : product.hasLowStock
+                ? "bg-yellow-100 text-yellow-700 group-hover:bg-yellow-200"
+                : "bg-[#E5F1FB] text-[#6290C3] group-hover:bg-[#6290C3] group-hover:text-white"
+          }`}
+        >
           <Plus size={18} />
-          <span>{product.hasOutOfStock ? 'Out of Stock' : 'Select'}</span>
+          <span>{product.hasOutOfStock ? "Out of Stock" : "Select"}</span>
         </div>
       </div>
     </div>
