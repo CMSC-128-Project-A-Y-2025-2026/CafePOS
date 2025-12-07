@@ -1,5 +1,3 @@
-// src/app/menu/components/MenuTable.tsx
-
 import React from "react";
 import { MenuItem } from "@/lib/types";
 import { Trash2, Pencil } from "lucide-react";
