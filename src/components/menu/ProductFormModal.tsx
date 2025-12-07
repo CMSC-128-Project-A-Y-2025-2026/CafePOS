@@ -5,6 +5,7 @@ import { MenuItem } from "@/lib/types";
 import { InventoryItem } from "@/lib/types";
 import { menuCategories } from "@/lib/arrays";
 import { Plus } from "lucide-react";
+import { toast } from "sonner";
 
 import {
   Sheet,
@@ -68,12 +69,19 @@ function makeUid() {
   return Math.random().toString(36).slice(2);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function normalizeInventoryItem(inv: any, idx: number) {
+// Fixed 'any' type to unknown record for ESLint
+function normalizeInventoryItem(inv: Record<string, unknown>, idx: number) {
   const id = inv?.id ?? inv?.item_id ?? inv?.itemId ?? null;
-  const name = inv?.item_name ?? inv?.itemName ?? inv?.product ?? `Item ${idx}`;
+  const name =
+    (inv?.item_name as string) ??
+    (inv?.itemName as string) ??
+    (inv?.product as string) ??
+    `Item ${idx}`;
   const category =
-    inv?.item_category ?? inv?.category ?? inv?.itemCategory ?? "";
+    (inv?.item_category as string) ??
+    (inv?.category as string) ??
+    (inv?.itemCategory as string) ??
+    "";
   const optionKey = id != null ? String(id) : `${name}-${category}-${idx}`;
   const optionValue = id != null ? String(id) : `${name}-${idx}`;
   const label = category ? `${name} (${category})` : name;
@@ -88,17 +96,25 @@ export default function ProductFormModal({
   open,
   inventoryItems,
 }: ProductFormModalProps) {
-  const [name, setName] = useState(initialData?.name ?? "");
+  const [name, setName] = useState(() => initialData?.name ?? "");
   const [category, setCategory] = useState(
-    initialData?.category ?? menuCategories[0] ?? "",
+    () => initialData?.category ?? menuCategories[0] ?? "",
   );
-  const [price, setPrice] = useState(
+  const [price, setPrice] = useState(() =>
     initialData?.price != null ? String(initialData.price) : "",
   );
-  const [ingredients, setIngredients] = useState<IngredientRow[]>([]);
+  const [ingredients, setIngredients] = useState<IngredientRow[]>(() => {
+    if (initialData?.ingredients && Array.isArray(initialData.ingredients)) {
+      return initialData.ingredients.map((ing) => ({
+        uid: makeUid(),
+        inventory_id: ing.inventory_id != null ? String(ing.inventory_id) : "",
+        quantity: typeof ing.quantity === "number" ? ing.quantity : "",
+      }));
+    }
+    return [];
+  });
 
   const [showDiscard, setShowDiscard] = useState(false);
-
   const isEditMode = !!initialData;
 
   useEffect(() => {
@@ -124,8 +140,7 @@ export default function ProductFormModal({
   }, [initialData?.id]);
 
   function hasUnsavedChanges() {
-    if (!name && !price && ingredients.length === 0) return false;
-    return true;
+    return name || price || ingredients.length > 0;
   }
 
   function resetForm() {
@@ -159,6 +174,13 @@ export default function ProductFormModal({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (ingredients.length === 0) {
+      toast.warning("Incomplete Recipe", {
+        description: "Please add at least one ingredient to save this product.",
+      });
+      return;
+    }
+
     const payload = {
       name,
       category,
@@ -178,10 +200,17 @@ export default function ProductFormModal({
 
     if (isEditMode) {
       onSave({ id: initialData!.id, ...payload });
+      toast.success("Product Updated", {
+        description: `${name} has been successfully modified.`,
+      });
     } else {
       onSave(payload);
+      toast.success("Product Created", {
+        description: `${name} is now available in your menu.`,
+      });
     }
     resetForm();
+    onClose();
   };
 
   function addIngredient() {
@@ -194,8 +223,7 @@ export default function ProductFormModal({
   function updateIngredient(
     uid: string,
     field: keyof Omit<IngredientRow, "uid">,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    value: any,
+    value: string | number,
   ) {
     setIngredients((prev) =>
       prev.map((it) => (it.uid === uid ? { ...it, [field]: value } : it)),
@@ -207,7 +235,7 @@ export default function ProductFormModal({
   }
 
   const normalizedInventory = (inventoryItems ?? []).map((inv, idx) =>
-    normalizeInventoryItem(inv, idx),
+    normalizeInventoryItem(inv as unknown as Record<string, unknown>, idx),
   );
 
   return (
@@ -338,7 +366,7 @@ export default function ProductFormModal({
 
                       <button
                         type="button"
-                        className="text-xs px-2 py-1 rounded bg-red-200 text-red-700"
+                        className="text-xs px-2 py-1 rounded bg-red-200 text-red-700 hover:bg-red-300"
                         onClick={() => removeIngredient(item.uid)}
                       >
                         Remove
@@ -379,7 +407,7 @@ export default function ProductFormModal({
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDiscard}
-              className="bg-red-600 text-white"
+              className="bg-red-600 text-white hover:bg-red-700"
             >
               Discard
             </AlertDialogAction>

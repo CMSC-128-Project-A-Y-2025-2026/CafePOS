@@ -1,8 +1,11 @@
+"use client";
+
 import React, { useState } from "react";
 import { X } from "lucide-react";
 import { InventoryItem } from "@/lib/types";
-// Import the structured categories array
 import { inventoryCategories } from "@/lib/arrays";
+// 1. Import Sonner toast
+import { toast } from "sonner";
 
 interface InventoryProductModalProps {
   title: string;
@@ -60,6 +63,9 @@ export default function InventoryProductModal({
   );
   const [cost, setCost] = useState(initialData?.cost || "");
 
+  const isEditMode = initialData !== undefined;
+
+  // 2. Updated handleSubmit with Toasts
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -74,16 +80,22 @@ export default function InventoryProductModal({
     };
 
     onSave(productData);
+
+    if (isEditMode) {
+      toast.success("Inventory Updated", {
+        description: `${product} stock levels and details have been updated.`,
+      });
+    } else {
+      toast.success("New Item Tracked", {
+        description: `${product} has been added to the inventory system.`,
+      });
+    }
+
+    onClose();
   };
 
-  const isEditMode = initialData !== undefined;
-
   return (
-    /** * MODIFIED: Added backdrop-blur-md and changed bg-black to a semi-transparent white
-     * to keep the background bright but blurred.
-     */
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm transition-all">
-      {/* Clickable overlay to close modal */}
       <div className="absolute inset-0" onClick={onClose} />
 
       <div className="relative w-full max-w-lg rounded-2xl bg-white p-8 shadow-2xl border border-gray-100">

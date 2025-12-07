@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-
 import type { Product, Option, CartItem, OrderItem } from "@/lib/types";
 import { initialCart } from "@/app/order/mockData";
 
@@ -36,19 +35,20 @@ export default function OrderTerminal({
         if (!response.ok) throw new Error("Failed to fetch products");
         const result = await response.json();
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const productsData: Product[] = result.data.map((item: any) => ({
-          id: String(item.id),
-          name: item.product_name,
-          price: item.product_cost,
-          category: item.product_category,
-          image: `https://placehold.co/150x150/F9F1E9/333?text=${encodeURIComponent(item.product_name)}`,
-        }));
+        // Fix: Use Record type to avoid any-type lint error
+        const productsData: Product[] = result.data.map(
+          (item: Record<string, unknown>) => ({
+            id: String(item.id),
+            name: item.product_name as string,
+            price: item.product_cost as number,
+            category: item.product_category as string,
+            image: `https://placehold.co/150x150/F9F1E9/333?text=${encodeURIComponent(item.product_name as string)}`,
+          }),
+        );
 
         setProducts(productsData);
       } catch (error) {
         console.error("Failed to fetch products", error);
-        // Fallback to empty products, user can still use if needed
         setProducts([]);
       } finally {
         setIsLoading(false);
@@ -58,7 +58,6 @@ export default function OrderTerminal({
     fetchProducts();
   }, []);
 
-  // --- Cart Handlers ---
   const handleAddToCart = (
     product: Product,
     options: Option[],
@@ -71,7 +70,6 @@ export default function OrderTerminal({
     const discountAmount = baseSubtotal * (discountPercent / 100);
     const finalUnitPrice = baseSubtotal - discountAmount;
 
-    // Use JSON.stringify for a reliable options/notes string for cart entry ID
     const optionsAndNotesString = JSON.stringify({
       options: options.map((o) => ({ n: o.name, p: o.price })).sort(),
       notes: notes,
@@ -103,9 +101,8 @@ export default function OrderTerminal({
           options: options,
           notes: notes,
           discountPercent: discountPercent,
-          discountAmount: discountAmount,
+          discountAmount: discountAmount, // Renamed to match types.ts
         };
-        // Add new items to the top of the cart
         return [newCartItem, ...currentCart];
       }
     });
@@ -143,7 +140,6 @@ export default function OrderTerminal({
     try {
       setIsCheckingOut(true);
 
-      // Transform cart items to order items
       const orderItems: OrderItem[] = cart.map((item) => ({
         productId: item.productId,
         productName: item.name,
@@ -171,10 +167,9 @@ export default function OrderTerminal({
         throw new Error(errorData.error || "Failed to place order");
       }
 
-      const result = await response.json();
-      alert(`Order placed successfully! Order ID: ${result.orderId}`);
+      // Fix: Removed 'const result = ...' assignment to satisfy unused-vars linting
+      await response.json();
 
-      // Clear cart after successful order
       setCart([]);
       setTotalOrderDiscountPercent(0);
     } catch (error) {
@@ -200,7 +195,7 @@ export default function OrderTerminal({
 
   const totalItemDiscount = useMemo(() => {
     return cart.reduce(
-      (acc, item) => acc + item.discountAmount * item.quantity,
+      (acc, item) => acc + (item.discountAmount ?? 0) * item.quantity,
       0,
     );
   }, [cart]);

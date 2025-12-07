@@ -1,8 +1,9 @@
-// src/app/order/components/OrderSummary.tsx
 "use client";
 import { CartItem } from "@/lib/types";
 import OrderItem from "./OrderItem";
 import PaymentButton from "./PaymentButton";
+// 1. Import toast
+import { toast } from "sonner";
 
 interface OrderSummaryProps {
   cart: CartItem[];
@@ -33,13 +34,24 @@ export default function OrderSummary({
   onCheckout,
   isCheckingOut,
 }: OrderSummaryProps) {
+  // 2. Define the handleCheckout triggered by the button
+  const handleCheckoutClick = () => {
+    // Fire toast before clearing state
+    toast.success("Transaction Successful", {
+      description: `Total: PHP ${total.toFixed(2)} paid via ${activePaymentMethod.toUpperCase()}`,
+      duration: 5000, // Longer duration for visibility during transitions
+    });
+
+    // Execute the actual checkout logic (parent function)
+    onCheckout();
+  };
+
   return (
     <aside className="w-96 shrink-0 rounded-3xl bg-white p-6 shadow-xl flex flex-col h-full">
       <h2 className="text-xl font-extrabold text-gray-900 mb-4 shrink-0 border-b pb-2">
         CURRENT ORDER
       </h2>
 
-      {/* Scrollable Order Items List */}
       <div className="flex-1 overflow-y-auto pr-2">
         <div className="flex flex-col gap-4">
           {cart.map((item) => (
@@ -53,9 +65,7 @@ export default function OrderSummary({
         </div>
       </div>
 
-      {/* Breakdown Section */}
       <div className="mt-4 border-t-2 border-gray-200 pt-3 shrink-0">
-        {/* Subtotal & Item Discounts */}
         <div className="flex justify-between text-sm text-gray-600 mb-0.5">
           <span>Subtotal</span>
           <span>PHP {subtotal.toFixed(2)}</span>
@@ -67,7 +77,6 @@ export default function OrderSummary({
           </span>
         </div>
 
-        {/* Order Discount Input */}
         <div className="flex justify-between items-center text-sm text-gray-600 mb-1 pt-0.5 border-t border-dashed border-gray-200">
           <label htmlFor="orderDiscount" className="font-bold">
             Order Discount (%)
@@ -92,13 +101,11 @@ export default function OrderSummary({
           </span>
         </div>
 
-        {/* TOTAL */}
         <div className="flex justify-between text-xl font-black text-gray-900 mb-3 pt-1 border-t-2 border-gray-300">
           <span>TOTAL</span>
           <span>PHP {total.toFixed(2)}</span>
         </div>
 
-        {/* Payment Method Buttons */}
         <div className="flex justify-between mb-3 gap-2">
           {["cash", "gcash", "card"].map((method) => (
             <PaymentButton
@@ -111,9 +118,9 @@ export default function OrderSummary({
           ))}
         </div>
 
-        {/* CHECK OUT Button */}
+        {/* 3. Button now triggers handleCheckoutClick locally */}
         <button
-          onClick={onCheckout}
+          onClick={handleCheckoutClick}
           disabled={cart.length === 0 || isCheckingOut}
           className="w-full rounded-xl bg-[#6290C3] py-3 text-lg font-black text-white transition-all hover:bg-[#1A1B41] disabled:bg-gray-400 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
         >

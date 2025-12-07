@@ -1,8 +1,10 @@
-// src/app/order/components/CustomizeProductModal.tsx
+"use client";
+
 import React, { useState } from "react";
 import { X } from "lucide-react";
 import { Product, Option } from "@/lib/types";
 import { ADD_ONS } from "../../app/order/mockData";
+import { toast } from "sonner";
 
 interface CustomizeProductModalProps {
   product: Product;
@@ -30,7 +32,7 @@ export default function CustomizeProductModal({
   ].includes(product.category);
 
   // States for customization
-  const [size, setSize] = useState("regular"); // 'regular', 'medium', 'large'
+  const [size, setSize] = useState("regular");
   const [sugar, setSugar] = useState("100%");
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
@@ -39,7 +41,6 @@ export default function CustomizeProductModal({
   const basePrice = product.price;
 
   // --- Option Calculation ---
-
   const getSizePrice = () => {
     if (size === "medium") return 20;
     if (size === "large") return 40;
@@ -64,7 +65,6 @@ export default function CustomizeProductModal({
     selectedAddOns.includes(ao.name),
   ).map((ao) => ({ name: `Add-on: ${ao.name}`, price: ao.price }));
 
-  // Combine all active options
   const allOptions: Option[] = [
     ...(sizeOption ? [sizeOption] : []),
     ...(sugarOption ? [sugarOption] : []),
@@ -84,7 +84,21 @@ export default function CustomizeProductModal({
   };
 
   const handleSubmit = () => {
+    if (discountPercent > 100 || discountPercent < 0) {
+      toast.error("Invalid Discount", {
+        description: "Discount cannot be less than 0% or more than 100%.",
+      });
+      return;
+    }
+
     onAddToCart(product, allOptions, notes, discountPercent);
+
+    toast.success(`${product.name} added to order`, {
+      description: isDrink
+        ? `${size.charAt(0).toUpperCase() + size.slice(1)} size, ${sugar} sugar.`
+        : "Item added successfully.",
+    });
+
     onClose();
   };
 
@@ -95,13 +109,24 @@ export default function CustomizeProductModal({
           { name: "Sugar: 100%", price: 0 },
         ]
       : [];
-    onAddToCart(product, defaultOptions, "", 0); // No discount on skip
+    onAddToCart(product, defaultOptions, "", 0);
+
+    toast.success(`${product.name} added with default settings`);
+
     onClose();
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="w-full max-w-lg rounded-2xl bg-white p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-white/30 backdrop-blur-sm transition-all duration-300"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div
+        className="w-full max-w-lg rounded-2xl bg-white p-8 shadow-2xl max-h-[90vh] overflow-y-auto transform transition-all"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between border-b pb-3">
           <h2 className="text-2xl font-bold text-gray-900">
             Customize: {product.name}
@@ -115,7 +140,7 @@ export default function CustomizeProductModal({
         </div>
 
         <div className="mt-6 space-y-8">
-          {/* Size Selection (Only for drinks) */}
+          {/* Size Selection */}
           {isDrink && (
             <div className="border-b pb-6">
               <label className="block text-lg font-bold text-gray-900 mb-3">
@@ -151,7 +176,7 @@ export default function CustomizeProductModal({
             </div>
           )}
 
-          {/* Sugar Level (Only for drinks) */}
+          {/* Sugar Level */}
           {isDrink && (
             <div className="border-b pb-6">
               <label className="block text-lg font-bold text-gray-900 mb-3">
@@ -180,7 +205,7 @@ export default function CustomizeProductModal({
             </div>
           )}
 
-          {/* Add-ons Section (Only for drinks) */}
+          {/* Add-ons */}
           {isDrink && (
             <div className="border-b pb-6">
               <label className="block text-lg font-bold text-gray-900 mb-3">
@@ -191,17 +216,12 @@ export default function CustomizeProductModal({
                   <button
                     key={ao.name}
                     onClick={() => handleAddOnToggle(ao.name)}
-                    className={`
-                      rounded-xl p-3 border-2 cursor-pointer transition-all text-left
-                      ${selectedAddOns.includes(ao.name) ? "border-[#6290C3] bg-[#E5F1FB]" : "border-gray-300 bg-white hover:bg-gray-50"}
-                    `}
+                    className={`rounded-xl p-3 border-2 cursor-pointer transition-all text-left ${selectedAddOns.includes(ao.name) ? "border-[#6290C3] bg-[#E5F1FB]" : "border-gray-300 bg-white hover:bg-gray-50"}`}
                   >
                     <span className="block text-sm font-bold text-gray-900 leading-tight">
                       {ao.name}
                     </span>
-                    <span className="block text-xs text-gray-500 mt-1">
-                      {`(+ PHP ${ao.price.toFixed(2)})`}
-                    </span>
+                    <span className="block text-xs text-gray-500 mt-1">{`(+ PHP ${ao.price.toFixed(2)})`}</span>
                   </button>
                 ))}
               </div>
@@ -222,11 +242,11 @@ export default function CustomizeProductModal({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-3 focus:border-[#6290C3] focus:ring-[#6290C3] text-gray-900 transition-all"
-              placeholder="Customer requests (e.g., iced, hot, less salt)..."
+              placeholder="Customer requests..."
             />
           </div>
 
-          {/* Item Discount */}
+          {/* Discount */}
           <div className="border-b pb-6">
             <label
               htmlFor="discount"
@@ -237,24 +257,15 @@ export default function CustomizeProductModal({
             <input
               type="number"
               id="discount"
-              placeholder="0"
               value={discountPercent === 0 ? "" : discountPercent}
               onChange={(e) => setDiscountPercent(Number(e.target.value) || 0)}
-              className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-3 focus:border-[#6290C3] focus:ring-[#6290C3] text-gray-900 transition-all"
+              className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-3 focus:border-[#6290C3] focus:ring-[#6290C3] text-gray-900"
             />
           </div>
 
           {/* Summary */}
           <div className="pt-2 space-y-2">
             <div className="flex justify-between text-base text-gray-600">
-              <span>Base Price:</span>
-              <span>PHP {basePrice.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between text-base text-gray-600">
-              <span>Options Total:</span>
-              <span>+ PHP {optionsPrice.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between text-base font-semibold text-gray-700 border-t border-gray-200 pt-1">
               <span>Subtotal:</span>
               <span>PHP {subtotal.toFixed(2)}</span>
             </div>
