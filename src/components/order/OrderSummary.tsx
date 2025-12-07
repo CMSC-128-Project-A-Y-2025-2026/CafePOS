@@ -1,5 +1,5 @@
 // src/app/order/components/OrderSummary.tsx
-import React from "react";
+"use client";
 import { CartItem } from "@/lib/types";
 import OrderItem from "./OrderItem";
 import PaymentButton from "./PaymentButton";
@@ -15,6 +15,8 @@ interface OrderSummaryProps {
   setTotalOrderDiscountPercent: (percent: number) => void;
   setActivePaymentMethod: (method: string) => void;
   handleUpdateQuantity: (cartItemId: string, change: number) => void;
+  onCheckout: () => void;
+  isCheckingOut: boolean;
 }
 
 export default function OrderSummary({
@@ -28,6 +30,8 @@ export default function OrderSummary({
   setTotalOrderDiscountPercent,
   setActivePaymentMethod,
   handleUpdateQuantity,
+  onCheckout,
+  isCheckingOut,
 }: OrderSummaryProps) {
   return (
     <aside className="w-96 shrink-0 rounded-3xl bg-white p-6 shadow-xl flex flex-col h-full">
@@ -94,31 +98,26 @@ export default function OrderSummary({
           <span>PHP {total.toFixed(2)}</span>
         </div>
 
-        {/* Payment Buttons */}
+        {/* Payment Method Buttons */}
         <div className="flex justify-between mb-3 gap-2">
-          <PaymentButton
-            active={activePaymentMethod === "cash"}
-            onClick={() => setActivePaymentMethod("cash")}
-          >
-            cash
-          </PaymentButton>
-          <PaymentButton
-            active={activePaymentMethod === "gcash"}
-            onClick={() => setActivePaymentMethod("gcash")}
-          >
-            gcash
-          </PaymentButton>
-          <PaymentButton
-            active={activePaymentMethod === "card"}
-            onClick={() => setActivePaymentMethod("card")}
-          >
-            card
-          </PaymentButton>
+          {["cash", "gcash", "card"].map((method) => (
+            <PaymentButton
+              key={method}
+              active={activePaymentMethod === method}
+              onClick={() => setActivePaymentMethod(method)}
+            >
+              {method}
+            </PaymentButton>
+          ))}
         </div>
 
         {/* CHECK OUT Button */}
-        <button className="w-full rounded-xl bg-[#6290C3] py-3 text-lg font-black text-white transition-all hover:bg-[#1A1B41] shadow-lg hover:shadow-xl">
-          CHECK OUT
+        <button
+          onClick={onCheckout}
+          disabled={cart.length === 0 || isCheckingOut}
+          className="w-full rounded-xl bg-[#6290C3] py-3 text-lg font-black text-white transition-all hover:bg-[#1A1B41] disabled:bg-gray-400 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+        >
+          {isCheckingOut ? "Processing..." : "CHECK OUT"}
         </button>
       </div>
     </aside>

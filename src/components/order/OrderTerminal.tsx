@@ -1,10 +1,10 @@
 // src/components/order/OrderTerminal.tsx
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
-import { Product, Option, CartItem } from "@/lib/types";
-import { products, initialCart } from "#/src/app/order/mockData";
+import type { Product, Option, CartItem, OrderItem } from "@/lib/types";
+import { initialCart } from "@/app/order/mockData";
 
 import ProductList from "./ProductList";
 import OrderSummary from "./OrderSummary";
@@ -24,6 +24,39 @@ export default function OrderTerminal({
   );
   const [totalOrderDiscountPercent, setTotalOrderDiscountPercent] = useState(0);
   const [cart, setCart] = useState<CartItem[]>(initialCart);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch("/api/products/addProduct");
+        if (!response.ok) throw new Error("Failed to fetch products");
+        const result = await response.json();
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const productsData: Product[] = result.data.map((item: any) => ({
+          id: String(item.id),
+          name: item.product_name,
+          price: item.product_cost,
+          category: item.product_category,
+          image: `https://placehold.co/150x150/F9F1E9/333?text=${encodeURIComponent(item.product_name)}`,
+        }));
+
+        setProducts(productsData);
+      } catch (error) {
+        console.error("Failed to fetch products", error);
+        // Fallback to empty products, user can still use if needed
+        setProducts([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   // --- Cart Handlers ---
   const handleAddToCart = (
@@ -101,11 +134,62 @@ export default function OrderTerminal({
     });
   };
 
+  const handleCheckout = async () => {
+    if (cart.length === 0) {
+      alert("Your cart is empty. Please add items before checkout.");
+      return;
+    }
+
+    try {
+      setIsCheckingOut(true);
+
+      // Transform cart items to order items
+      const orderItems: OrderItem[] = cart.map((item) => ({
+        productId: item.productId,
+        productName: item.name,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        totalPrice: item.unitPrice * item.quantity,
+        options: item.options,
+        notes: item.notes,
+      }));
+
+      const response = await fetch("/api/order/placeOrder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: orderItems,
+          subtotal,
+          discount: totalOrderDiscountAmount,
+          total,
+          paymentMethod: activePaymentMethod,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to place order");
+      }
+
+      const result = await response.json();
+      alert(`Order placed successfully! Order ID: ${result.orderId}`);
+
+      // Clear cart after successful order
+      setCart([]);
+      setTotalOrderDiscountPercent(0);
+    } catch (error) {
+      console.error("Checkout error", error);
+      alert(error instanceof Error ? error.message : "Failed to place order");
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
+
   const filteredProducts = useMemo(() => {
     return products
       .filter((p) => activeCategory === "all" || p.category === activeCategory)
       .filter((p) => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
-  }, [activeCategory, searchTerm]);
+  }, [activeCategory, searchTerm, products]);
 
   const subtotal = useMemo(() => {
     return cart.reduce(
@@ -140,27 +224,37 @@ export default function OrderTerminal({
         <UniversalHeader pageName1="Pres" pageName2="Kopee" />
 
         <div className="mt-6 flex flex-1 gap-6 overflow-hidden p-4 pb-6 pt-1">
-          <ProductList
-            filteredProducts={filteredProducts}
-            activeCategory={activeCategory}
-            searchTerm={searchTerm}
-            setActiveCategory={setActiveCategory}
-            setSearchTerm={setSearchTerm}
-            setProductToCustomize={setProductToCustomize}
-          />
+          {isLoading ? (
+            <div className="flex items-center justify-center flex-1">
+              <p className="text-lg text-gray-600">Loading products...</p>
+            </div>
+          ) : (
+            <>
+              <ProductList
+                filteredProducts={filteredProducts}
+                activeCategory={activeCategory}
+                searchTerm={searchTerm}
+                setActiveCategory={setActiveCategory}
+                setSearchTerm={setSearchTerm}
+                setProductToCustomize={setProductToCustomize}
+              />
 
-          <OrderSummary
-            cart={cart}
-            subtotal={subtotal}
-            totalItemDiscount={totalItemDiscount}
-            totalOrderDiscountPercent={totalOrderDiscountPercent}
-            totalOrderDiscountAmount={totalOrderDiscountAmount}
-            total={total}
-            activePaymentMethod={activePaymentMethod}
-            setTotalOrderDiscountPercent={setTotalOrderDiscountPercent}
-            setActivePaymentMethod={setActivePaymentMethod}
-            handleUpdateQuantity={handleUpdateQuantity}
-          />
+              <OrderSummary
+                cart={cart}
+                subtotal={subtotal}
+                totalItemDiscount={totalItemDiscount}
+                totalOrderDiscountPercent={totalOrderDiscountPercent}
+                totalOrderDiscountAmount={totalOrderDiscountAmount}
+                total={total}
+                activePaymentMethod={activePaymentMethod}
+                setTotalOrderDiscountPercent={setTotalOrderDiscountPercent}
+                setActivePaymentMethod={setActivePaymentMethod}
+                handleUpdateQuantity={handleUpdateQuantity}
+                onCheckout={handleCheckout}
+                isCheckingOut={isCheckingOut}
+              />
+            </>
+          )}
         </div>
       </div>
     </div>
