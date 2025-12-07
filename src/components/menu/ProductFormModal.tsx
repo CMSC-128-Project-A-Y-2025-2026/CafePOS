@@ -88,7 +88,6 @@ export default function ProductFormModal({
   open,
   inventoryItems,
 }: ProductFormModalProps) {
-  // Initialization pattern ensures state is set during mount, avoiding cascaded re-renders
   const [name, setName] = useState(() => initialData?.name ?? "");
   const [category, setCategory] = useState(() => initialData?.category ?? menuCategories[0] ?? "");
   const [price, setPrice] = useState(() => initialData?.price != null ? String(initialData.price) : "");
@@ -106,21 +105,27 @@ export default function ProductFormModal({
   const [showDiscard, setShowDiscard] = useState(false);
   const isEditMode = !!initialData;
 
-  // Sync state only when open status or initialData changes
   useEffect(() => {
-    if (open) {
-      setName(initialData?.name ?? "");
-      setCategory(initialData?.category ?? menuCategories[0] ?? "");
-      setPrice(initialData?.price != null ? String(initialData.price) : "");
+    if (initialData?.ingredients && Array.isArray(initialData.ingredients)) {
       setIngredients(
-        initialData?.ingredients?.map((ing) => ({
+        initialData.ingredients.map((ing) => ({
           uid: makeUid(),
-          inventory_id: ing.inventory_id != null ? String(ing.inventory_id) : "",
+          inventory_id:
+            ing.inventory_id != null ? String(ing.inventory_id) : "",
           quantity: typeof ing.quantity === "number" ? ing.quantity : "",
-        })) ?? []
+        })),
       );
+    } else {
+      if (!initialData) {
+        setIngredients([]);
+      }
     }
-  }, [open, initialData]); 
+
+    setName(initialData?.name ?? "");
+    setCategory(initialData?.category ?? menuCategories[0] ?? "");
+    setPrice(initialData?.price != null ? String(initialData.price) : "");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialData?.id]);
 
   function hasUnsavedChanges() {
     return name || price || ingredients.length > 0;
