@@ -70,6 +70,16 @@ export interface Product {
   price: number;
   image: string;
   category: string;
+  hasLowStock?: boolean;
+  hasOutOfStock?: boolean;
+  ingredients?: Array<{
+    item_id: string;
+    item_name: string;
+    stock: number;
+    stock_status: string;
+    item_threshold: number;
+    quantity_needed: number;
+  }>;
 }
 
 export interface Option {
