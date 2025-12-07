@@ -39,6 +39,38 @@ export async function POST(request: NextRequest) {
 
       if (selectError) throw selectError;
 
+      const { data: selectConnectorData, error: selectConnectorError } =
+        await supabase
+          .from("product_items_needed")
+          .select("*")
+          .eq("product_id", item.productId);
+
+      if (selectConnectorError) throw selectConnectorError;
+
+      for (const connector of selectConnectorData) {
+        const { data: inventoryData, error: inventoryError } = await supabase
+          .from("inventory")
+          .select("*")
+          .eq("item_id", connector.item_id);
+        if (inventoryError) throw inventoryError;
+
+        const stock = inventoryData?.[0]?.stock ?? 0;
+        const threshold = inventoryData?.[0]?.item_threshold ?? 0;
+        let new_stock = 0;
+        let new_status = "in stock";
+        if (stock > connector.quantity_needed)
+          new_stock = stock - connector.quantity_needed;
+
+        if (new_stock <= threshold) new_status = "low stock";
+        else if (new_stock === 0) new_status = "out of stock";
+
+        const { error: updateInvError } = await supabase
+          .from("inventory")
+          .update({ stock: new_stock, stock_status: new_status })
+          .eq("item_id", connector.item_id);
+        if (updateInvError) throw updateInvError;
+      }
+
       if (count === 0) {
         const { error: insertionError } = await supabase
           .from("sales_analytics")

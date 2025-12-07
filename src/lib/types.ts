@@ -119,3 +119,10 @@ export interface OrderPayload {
   total: number;
   paymentMethod: string;
 }
+
+export interface ItemProductConnector {
+  id: number;
+  product_id: string;
+  item_id: string;
+  quantity_needed: number;
+}
