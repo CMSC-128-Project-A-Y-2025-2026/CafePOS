@@ -24,24 +24,31 @@ export default function MenuTable({
 }: MenuTableProps) {
   return (
     <main className="h-full min-h-0 rounded-2xl bg-white p-8 shadow-lg flex flex-col overflow-hidden">
-      
       {/* 2. Scrollable container wrapper */}
       <div className="rounded-md border flex-1 overflow-auto">
         <Table>
-          
           {/* 3. Sticky header pinned to the top */}
           <TableHeader className="bg-[#E5F1FB] sticky top-0 z-10">
             <TableRow>
-              <TableHead className="font-bold text-gray-700 w-1/3">Product Name</TableHead>
-              <TableHead className="font-bold text-gray-700">Category</TableHead>
+              <TableHead className="font-bold text-gray-700 w-1/3">
+                Product Name
+              </TableHead>
+              <TableHead className="font-bold text-gray-700">
+                Category
+              </TableHead>
               <TableHead className="font-bold text-gray-700">Price</TableHead>
-              <TableHead className="font-bold text-gray-700 text-right">Actions</TableHead>
+              <TableHead className="font-bold text-gray-700 text-right">
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
 
           <TableBody>
             {menuItems.map((item) => (
-              <TableRow key={item.id} className="hover:bg-gray-50 transition-colors">
+              <TableRow
+                key={item.id}
+                className="hover:bg-gray-50 transition-colors"
+              >
                 <TableCell className="font-medium text-gray-900">
                   {item.name}
                 </TableCell>
