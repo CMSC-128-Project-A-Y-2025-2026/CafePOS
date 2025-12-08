@@ -61,8 +61,9 @@ export async function POST(request: NextRequest) {
         if (stock > connector.quantity_needed)
           new_stock = stock - connector.quantity_needed;
 
-        if (new_stock <= threshold) new_status = "low stock";
-        else if (new_stock === 0) new_status = "out of stock";
+        if (new_stock <= threshold && new_stock > 0) new_status = "low stock";
+        else if (new_stock > threshold) new_status = "in stock";
+        else new_status = "out of stock";
 
         const { error: updateInvError } = await supabase
           .from("inventory")

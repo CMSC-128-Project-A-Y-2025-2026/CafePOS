@@ -25,7 +25,7 @@ export default function ProductCard({
       toast.error(
         `⚠️ Cannot prepare ${product.name}\n\nOut of stock ingredients:\n${outOfStockItems.map((ing) => `• ${ing.item_name}`).join("\n")}`,
         {
-          duration: 5000,
+          duration: 2000,
           style: {
             whiteSpace: "pre-line",
           },
@@ -43,17 +43,12 @@ export default function ProductCard({
       toast.warning(
         `⚠️ Low stock alert for ${product.name}\n\n${lowStockItems.map((ing) => `• ${ing.item_name} (${ing.stock}/${ing.item_threshold})`).join("\n")}`,
         {
-          duration: 4000,
+          duration: 2000,
           style: {
             whiteSpace: "pre-line",
           },
         },
       );
-    } else {
-      toast.success(`Opening options for ${product.name}`, {
-        description: "Customize your selection below.",
-        duration: 2000,
-      });
     }
 
     onCustomize();

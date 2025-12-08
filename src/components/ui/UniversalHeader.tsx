@@ -105,8 +105,8 @@ export default function UniversalHeader({
 
       if (outOfStock.length > 0) {
         message += "🔴 OUT OF STOCK:\n";
-        outOfStock.forEach((item: { item_name: string; stock: number }) => {
-          message += `• ${item.item_name} (${item.stock})\n`;
+        outOfStock.forEach((item: { item_name: string }) => {
+          message += `• ${item.item_name}\n`;
         });
       }
 
@@ -126,6 +126,7 @@ export default function UniversalHeader({
 
       toast.error(message, {
         duration: 10000,
+        closeButton: true,
         style: {
           whiteSpace: "pre-line",
           maxWidth: "500px",
