@@ -29,11 +29,18 @@ export interface UpdateInventoryInput {
   status?: string;
 }
 
+export interface MenuItemIngredient {
+  inventory_id: string;
+  name: string;
+  quantity: number;
+}
+
 export interface MenuItem {
   id: string;
   name: string;
   price: number;
   category: string;
+  ingredients?: MenuItemIngredient[];
 }
 
 export interface SalesItem {
@@ -41,6 +48,12 @@ export interface SalesItem {
   day?: string;
   sales: number;
   color?: string;
+}
+
+export interface SalesAnalytics {
+  id: number;
+  product_id: string;
+  total_sold: number;
 }
 
 export interface TopSellerProduct {
@@ -63,6 +76,16 @@ export interface Product {
   price: number;
   image: string;
   category: string;
+  hasLowStock?: boolean;
+  hasOutOfStock?: boolean;
+  ingredients?: Array<{
+    item_id: string;
+    item_name: string;
+    stock: number;
+    stock_status: string;
+    item_threshold: number;
+    quantity_needed: number;
+  }>;
 }
 
 export interface Option {
@@ -83,4 +106,29 @@ export interface CartItem {
   notes: string;
   discountPercent: number;
   discountAmount: number;
+}
+
+export interface OrderItem {
+  productId: string | number;
+  productName: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+  options: Option[];
+  notes: string;
+}
+
+export interface OrderPayload {
+  items: OrderItem[];
+  subtotal: number;
+  discount: number;
+  total: number;
+  paymentMethod: string;
+}
+
+export interface ItemProductConnector {
+  id: number;
+  product_id: string;
+  item_id: string;
+  quantity_needed: number;
 }

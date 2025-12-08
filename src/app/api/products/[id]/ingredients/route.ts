@@ -68,3 +68,29 @@ export async function DELETE(
     );
   }
 }
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const supabase = await createClient();
+  const { id } = await params;
+
+  try {
+    const { data, error } = await supabase
+      .from("product_items_needed")
+      .select("*")
+      .eq("product_id", id);
+
+    if (error) throw error;
+
+    return NextResponse.json({ data }, { status: 200 });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    return NextResponse.json(
+      { error: error.message ?? "Internal server error." },
+      { status: 500 },
+    );
+  }
+}

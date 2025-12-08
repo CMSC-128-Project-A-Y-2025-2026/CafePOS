@@ -1,5 +1,9 @@
+"use client";
+
 import React from "react";
 import { AlertTriangle } from "lucide-react";
+// 1. Import toast from sonner
+import { toast } from "sonner";
 
 interface DeleteConfirmationModalProps {
   productName: string;
@@ -12,6 +16,15 @@ export default function DeleteConfirmationModal({
   onClose,
   onConfirm,
 }: DeleteConfirmationModalProps) {
+  // 2. Wrap the confirm logic to trigger a success toast
+  const handleConfirm = () => {
+    onConfirm();
+    toast.success("Inventory Item Removed", {
+      description: `"${productName}" is no longer being tracked.`,
+      duration: 4000,
+    });
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm transition-all">
       {/* Clickable background overlay */}
@@ -27,7 +40,7 @@ export default function DeleteConfirmationModal({
           </div>
           <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
             <h3 className="text-lg leading-6 font-medium text-gray-900">
-              Delete Product
+              Delete Inventory Item
             </h3>
             <div className="mt-2">
               <p className="text-sm text-gray-500">
@@ -35,7 +48,7 @@ export default function DeleteConfirmationModal({
                 <span className="font-semibold text-gray-700">
                   &quot;{productName}&quot;
                 </span>
-                ? This action cannot be undone.
+                ? This will stop tracking this supply in the database.
               </p>
             </div>
           </div>
@@ -44,7 +57,8 @@ export default function DeleteConfirmationModal({
           <button
             type="button"
             className="inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 sm:ml-3 sm:w-auto sm:text-sm transition-colors"
-            onClick={onConfirm}
+            // 3. Update trigger to handleConfirm
+            onClick={handleConfirm}
           >
             Delete
           </button>
