@@ -195,16 +195,3 @@ export const allTopBestsellers: TopSellerProduct[] = [
     itemsSold: 85,
   },
 ];
-
-export const bestsellerCategories = [
-  { id: "all", label: "All" },
-  { id: "signature", label: "Signature" },
-  { id: "coffee-based", label: "Coffee Based" },
-  { id: "frappe-based", label: "Frappe Based" },
-  { id: "non-coffee", label: "Non-Coffee" },
-  { id: "matcha-based", label: "Matcha Based" },
-  { id: "soda-based", label: "Soda Based" },
-  { id: "waffles", label: "Waffles" },
-  { id: "pasta-sandwich", label: "Pasta & Sandwich" },
-  { id: "pika-pika", label: "Pika-Pika" },
-];
