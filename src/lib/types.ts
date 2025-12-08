@@ -50,6 +50,12 @@ export interface SalesItem {
   color?: string;
 }
 
+export interface SalesAnalytics {
+  id: number;
+  product_id: string;
+  total_sold: number;
+}
+
 export interface TopSellerProduct {
   id: number;
   productName: string;

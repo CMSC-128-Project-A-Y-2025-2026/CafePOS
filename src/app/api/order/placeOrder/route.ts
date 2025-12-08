@@ -54,12 +54,13 @@ export async function POST(request: NextRequest) {
           .eq("item_id", connector.item_id);
         if (inventoryError) throw inventoryError;
 
+        const quantity = item.quantity;
+        const quantity_needed = connector.quantity_needed * quantity;
         const stock = inventoryData?.[0]?.stock ?? 0;
         const threshold = inventoryData?.[0]?.item_threshold ?? 0;
         let new_stock = 0;
         let new_status = "in stock";
-        if (stock > connector.quantity_needed)
-          new_stock = stock - connector.quantity_needed;
+        if (stock > quantity_needed) new_stock = stock - quantity_needed;
 
         if (new_stock <= threshold && new_stock > 0) new_status = "low stock";
         else if (new_stock > threshold) new_status = "in stock";

@@ -51,9 +51,11 @@ export default function InventoryTable({
                 </TableCell>
                 <TableCell className="text-gray-700">{item.category}</TableCell>
                 <TableCell className="text-gray-700">{item.stock}</TableCell>
-                <TableCell className="text-gray-700">{item.status.replace(/\b(in|low|out|stock)\b/g, m => 
-                  m[0].toUpperCase() + m.slice(1)
-                )}
+                <TableCell className="text-gray-700">
+                  {item.status.replace(
+                    /\b(in|low|out|stock)\b/g,
+                    (m) => m[0].toUpperCase() + m.slice(1),
+                  )}
                 </TableCell>
                 <TableCell className="text-gray-700">{item.cost}</TableCell>
 
