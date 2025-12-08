@@ -51,9 +51,9 @@ export interface SalesItem {
 }
 
 export interface SalesAnalytics {
-  id: number,
-  product_id: string,
-  total_sold: number
+  id: number;
+  product_id: string;
+  total_sold: number;
 }
 
 export interface TopSellerProduct {
@@ -62,7 +62,7 @@ export interface TopSellerProduct {
   price: number;
   category: string;
   itemsSold: number;
-  rank?: number,
+  rank?: number;
 }
 
 export interface Category {

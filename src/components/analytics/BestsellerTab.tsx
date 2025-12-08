@@ -12,8 +12,7 @@ const ANALYTICS_CACHE_KEY = "cached_analytics";
 const CACHE_EXP_MINUTES = 10;
 
 const now = () => Date.now();
-const isExpired = (t: number) =>
-  now() - t > CACHE_EXP_MINUTES * 60 * 1000;
+const isExpired = (t: number) => now() - t > CACHE_EXP_MINUTES * 60 * 1000;
 
 export default function BestsellerTab() {
   const [filter, setFilter] = useState("all");
@@ -33,10 +32,8 @@ export default function BestsellerTab() {
           setLoading(false);
         });
       }
-    } catch {
-    }
+    } catch {}
   }, []);
-
 
   useEffect(() => {
     let mounted = true;
@@ -82,16 +79,16 @@ export default function BestsellerTab() {
               category: item.product_category,
               itemsSold: sales,
             };
-          })
+          }),
         );
 
         localStorage.setItem(
           PRODUCT_CACHE_KEY,
-          JSON.stringify({ value: freshProducts, timestamp: now() })
+          JSON.stringify({ value: freshProducts, timestamp: now() }),
         );
         localStorage.setItem(
           ANALYTICS_CACHE_KEY,
-          JSON.stringify(analyticsCache)
+          JSON.stringify(analyticsCache),
         );
 
         if (mounted) {
@@ -121,7 +118,7 @@ export default function BestsellerTab() {
 
   const selectedCategoryLabel = useMemo(
     () => bestsellerCategories.find((c) => c.id === filter)?.label ?? "",
-    [filter]
+    [filter],
   );
 
   return (

@@ -60,8 +60,7 @@ export async function POST(request: NextRequest) {
         const threshold = inventoryData?.[0]?.item_threshold ?? 0;
         let new_stock = 0;
         let new_status = "in stock";
-        if (stock > quantity_needed)
-          new_stock = stock - quantity_needed;
+        if (stock > quantity_needed) new_stock = stock - quantity_needed;
 
         if (new_stock <= threshold && new_stock > 0) new_status = "low stock";
         else if (new_stock > threshold) new_status = "in stock";
