@@ -10,7 +10,7 @@ import OrderSummary from "./OrderSummary";
 import CustomizeProductModal from "./CustomizeProductModal";
 import UniversalHeader from "../ui/UniversalHeader";
 
-export default function OrderTerminal({ 
+export default function OrderTerminal({
   fontClassName,
 }: {
   fontClassName: string;
@@ -18,7 +18,9 @@ export default function OrderTerminal({
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [activePaymentMethod, setActivePaymentMethod] = useState("gcash");
-  const [productToCustomize, setProductToCustomize] = useState<Product | null>(null);
+  const [productToCustomize, setProductToCustomize] = useState<Product | null>(
+    null,
+  );
   const [totalOrderDiscountPercent, setTotalOrderDiscountPercent] = useState(0);
   const [cart, setCart] = useState<CartItem[]>(initialCart);
   const [products, setProducts] = useState<Product[]>([]);
@@ -49,7 +51,7 @@ export default function OrderTerminal({
             price: item.product_cost as number,
             category: item.product_category as string,
             image: `https://placehold.co/150x150/F9F1E9/333?text=${encodeURIComponent(
-              item.product_name as string
+              item.product_name as string,
             )}`,
             hasLowStock: item.hasLowStock as boolean,
             hasOutOfStock: item.hasOutOfStock as boolean,
@@ -61,7 +63,7 @@ export default function OrderTerminal({
               item_threshold: number;
               quantity_needed: number;
             }>,
-          })
+          }),
         );
 
         if (JSON.stringify(productsData) !== cached) {
@@ -83,7 +85,7 @@ export default function OrderTerminal({
     product: Product,
     options: Option[],
     notes: string,
-    discountPercent: number
+    discountPercent: number,
   ) => {
     const basePrice = product.price;
     const optionsPrice = options.reduce((acc, opt) => acc + opt.price, 0);
@@ -99,12 +101,14 @@ export default function OrderTerminal({
     const cartEntryId = `${product.id}-${optionsAndNotesString}`;
 
     setCart((currentCart) => {
-      const existing = currentCart.find((item) => item.cartEntryId === cartEntryId);
+      const existing = currentCart.find(
+        (item) => item.cartEntryId === cartEntryId,
+      );
       if (existing) {
         return currentCart.map((item) =>
           item.cartEntryId === cartEntryId
             ? { ...item, quantity: item.quantity + 1 }
-            : item
+            : item,
         );
       }
 
@@ -140,7 +144,9 @@ export default function OrderTerminal({
       }
 
       return currentCart.map((item) =>
-        item.cartItemId === cartItemId ? { ...item, quantity: newQuantity } : item
+        item.cartItemId === cartItemId
+          ? { ...item, quantity: newQuantity }
+          : item,
       );
     });
   };
@@ -200,24 +206,24 @@ export default function OrderTerminal({
   }, [activeCategory, searchTerm, products]);
 
   const subtotal = useMemo(
-    () => cart.reduce((acc, item) => acc + item.baseSubtotal * item.quantity, 0),
-    [cart]
+    () =>
+      cart.reduce((acc, item) => acc + item.baseSubtotal * item.quantity, 0),
+    [cart],
   );
 
   const totalItemDiscount = useMemo(
     () =>
       cart.reduce(
         (acc, item) => acc + (item.discountAmount ?? 0) * item.quantity,
-        0
+        0,
       ),
-    [cart]
+    [cart],
   );
 
   const subtotalAfterItemDiscounts = subtotal - totalItemDiscount;
   const totalOrderDiscountAmount =
     subtotalAfterItemDiscounts * (totalOrderDiscountPercent / 100);
-  const total =
-    subtotalAfterItemDiscounts - totalOrderDiscountAmount;
+  const total = subtotalAfterItemDiscounts - totalOrderDiscountAmount;
 
   return (
     <div className={fontClassName}>

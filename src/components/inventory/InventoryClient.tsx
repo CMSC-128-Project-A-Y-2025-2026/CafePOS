@@ -29,9 +29,10 @@ function formatInventoryItem(raw: any): InventoryItem {
 export default function InventoryClient() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [productToEdit, setProductToEdit] = useState<InventoryItem | null>(
-    null);
+    null,
+  );
   const [productToDelete, setProductToDelete] = useState<InventoryItem | null>(
-    null
+    null,
   );
   const [inventoryData, setInventoryData] = useState<InventoryItem[]>([]);
   const [activeStatusFilter, setActiveStatusFilter] = useState("all");
@@ -129,7 +130,7 @@ export default function InventoryClient() {
 
       setInventoryData((prev) => {
         const newList = prev.map((item) =>
-          item.id === updated.id ? updatedItem : item
+          item.id === updated.id ? updatedItem : item,
         );
 
         // --- Update Local Storage Cache ---
@@ -157,9 +158,7 @@ export default function InventoryClient() {
       if (!response.ok) throw new Error("Failed to delete");
 
       setInventoryData((prev) => {
-        const newList = prev.filter(
-          (item) => item.id !== productToDelete.id
-        );
+        const newList = prev.filter((item) => item.id !== productToDelete.id);
 
         // --- Update Local Storage Cache ---
         localStorage.setItem("inventory-cache", JSON.stringify(newList));
@@ -180,12 +179,12 @@ export default function InventoryClient() {
       .filter((item) =>
         activeStatusFilter === "all"
           ? true
-          : item.status === activeStatusFilter
+          : item.status === activeStatusFilter,
       )
       .filter(
         (item) =>
           item.product.toLowerCase().includes(query) ||
-          item.category.toLowerCase().includes(query)
+          item.category.toLowerCase().includes(query),
       )
       .sort((a, b) => a.product.localeCompare(b.product));
   }, [inventoryData, activeStatusFilter, searchTerm]);
