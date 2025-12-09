@@ -10,7 +10,7 @@ import OrderSummary from "./OrderSummary";
 import CustomizeProductModal from "./CustomizeProductModal";
 import UniversalHeader from "../ui/UniversalHeader";
 
-export default function OrderTerminal({
+export default function OrderTerminal({ 
   fontClassName,
 }: {
   fontClassName: string;
@@ -18,31 +18,39 @@ export default function OrderTerminal({
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [activePaymentMethod, setActivePaymentMethod] = useState("gcash");
-  const [productToCustomize, setProductToCustomize] = useState<Product | null>(
-    null,
-  );
+  const [productToCustomize, setProductToCustomize] = useState<Product | null>(null);
   const [totalOrderDiscountPercent, setTotalOrderDiscountPercent] = useState(0);
   const [cart, setCart] = useState<CartItem[]>(initialCart);
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
+  // --- Uses LocalStorage Caching ---
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch("/api/products/getProductsWithStock");
+
+        const cached = localStorage.getItem("products-cache");
+        if (cached) {
+          setProducts(JSON.parse(cached));
+        }
+
+        const response = await fetch("/api/products/getProductsWithStock", {
+          cache: "no-store",
+        });
         if (!response.ok) throw new Error("Failed to fetch products");
         const result = await response.json();
 
-        // Fix: Use Record type to avoid any-type lint error
         const productsData: Product[] = result.data.map(
           (item: Record<string, unknown>) => ({
             id: String(item.id),
             name: item.product_name as string,
             price: item.product_cost as number,
             category: item.product_category as string,
-            image: `https://placehold.co/150x150/F9F1E9/333?text=${encodeURIComponent(item.product_name as string)}`,
+            image: `https://placehold.co/150x150/F9F1E9/333?text=${encodeURIComponent(
+              item.product_name as string
+            )}`,
             hasLowStock: item.hasLowStock as boolean,
             hasOutOfStock: item.hasOutOfStock as boolean,
             ingredients: item.ingredients as Array<{
@@ -53,10 +61,13 @@ export default function OrderTerminal({
               item_threshold: number;
               quantity_needed: number;
             }>,
-          }),
+          })
         );
 
-        setProducts(productsData);
+        if (JSON.stringify(productsData) !== cached) {
+          localStorage.setItem("products-cache", JSON.stringify(productsData));
+          setProducts(productsData);
+        }
       } catch (error) {
         console.error("Failed to fetch products", error);
         setProducts([]);
@@ -72,7 +83,7 @@ export default function OrderTerminal({
     product: Product,
     options: Option[],
     notes: string,
-    discountPercent: number,
+    discountPercent: number
   ) => {
     const basePrice = product.price;
     const optionsPrice = options.reduce((acc, opt) => acc + opt.price, 0);
@@ -82,39 +93,37 @@ export default function OrderTerminal({
 
     const optionsAndNotesString = JSON.stringify({
       options: options.map((o) => ({ n: o.name, p: o.price })).sort(),
-      notes: notes,
-      discountPercent: discountPercent,
+      notes,
+      discountPercent,
     });
     const cartEntryId = `${product.id}-${optionsAndNotesString}`;
 
     setCart((currentCart) => {
-      const existingItem = currentCart.find(
-        (item) => item.cartEntryId === cartEntryId,
-      );
-
-      if (existingItem) {
+      const existing = currentCart.find((item) => item.cartEntryId === cartEntryId);
+      if (existing) {
         return currentCart.map((item) =>
           item.cartEntryId === cartEntryId
             ? { ...item, quantity: item.quantity + 1 }
-            : item,
+            : item
         );
-      } else {
-        const newCartItem: CartItem = {
-          cartItemId: crypto.randomUUID(),
-          cartEntryId: cartEntryId,
-          productId: product.id,
-          name: product.name,
-          basePrice: basePrice,
-          unitPrice: finalUnitPrice,
-          baseSubtotal: baseSubtotal,
-          quantity: 1,
-          options: options,
-          notes: notes,
-          discountPercent: discountPercent,
-          discountAmount: discountAmount, // Renamed to match types.ts
-        };
-        return [newCartItem, ...currentCart];
       }
+
+      const newItem: CartItem = {
+        cartItemId: crypto.randomUUID(),
+        cartEntryId,
+        productId: product.id,
+        name: product.name,
+        basePrice,
+        unitPrice: finalUnitPrice,
+        baseSubtotal,
+        quantity: 1,
+        options,
+        notes,
+        discountPercent,
+        discountAmount,
+      };
+
+      return [newItem, ...currentCart];
     });
 
     setProductToCustomize(null);
@@ -122,22 +131,17 @@ export default function OrderTerminal({
 
   const handleUpdateQuantity = (cartItemId: string, change: number) => {
     setCart((currentCart) => {
-      const targetItem = currentCart.find(
-        (item) => item.cartItemId === cartItemId,
-      );
-      if (!targetItem) return currentCart;
+      const target = currentCart.find((item) => item.cartItemId === cartItemId);
+      if (!target) return currentCart;
 
-      const newQuantity = targetItem.quantity + change;
-
+      const newQuantity = target.quantity + change;
       if (newQuantity <= 0) {
         return currentCart.filter((item) => item.cartItemId !== cartItemId);
-      } else {
-        return currentCart.map((item) =>
-          item.cartItemId === cartItemId
-            ? { ...item, quantity: newQuantity }
-            : item,
-        );
       }
+
+      return currentCart.map((item) =>
+        item.cartItemId === cartItemId ? { ...item, quantity: newQuantity } : item
+      );
     });
   };
 
@@ -176,7 +180,6 @@ export default function OrderTerminal({
         const errorData = await response.json();
         throw new Error(errorData.error || "Failed to place order");
       }
-
       // Fix: Removed 'const result = ...' assignment to satisfy unused-vars linting
       await response.json();
 
@@ -196,24 +199,25 @@ export default function OrderTerminal({
       .filter((p) => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
   }, [activeCategory, searchTerm, products]);
 
-  const subtotal = useMemo(() => {
-    return cart.reduce(
-      (acc, item) => acc + item.baseSubtotal * item.quantity,
-      0,
-    );
-  }, [cart]);
+  const subtotal = useMemo(
+    () => cart.reduce((acc, item) => acc + item.baseSubtotal * item.quantity, 0),
+    [cart]
+  );
 
-  const totalItemDiscount = useMemo(() => {
-    return cart.reduce(
-      (acc, item) => acc + (item.discountAmount ?? 0) * item.quantity,
-      0,
-    );
-  }, [cart]);
+  const totalItemDiscount = useMemo(
+    () =>
+      cart.reduce(
+        (acc, item) => acc + (item.discountAmount ?? 0) * item.quantity,
+        0
+      ),
+    [cart]
+  );
 
   const subtotalAfterItemDiscounts = subtotal - totalItemDiscount;
   const totalOrderDiscountAmount =
     subtotalAfterItemDiscounts * (totalOrderDiscountPercent / 100);
-  const total = subtotalAfterItemDiscounts - totalOrderDiscountAmount;
+  const total =
+    subtotalAfterItemDiscounts - totalOrderDiscountAmount;
 
   return (
     <div className={fontClassName}>

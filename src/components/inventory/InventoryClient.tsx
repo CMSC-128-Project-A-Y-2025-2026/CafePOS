@@ -29,10 +29,9 @@ function formatInventoryItem(raw: any): InventoryItem {
 export default function InventoryClient() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [productToEdit, setProductToEdit] = useState<InventoryItem | null>(
-    null,
-  );
+    null);
   const [productToDelete, setProductToDelete] = useState<InventoryItem | null>(
-    null,
+    null
   );
   const [inventoryData, setInventoryData] = useState<InventoryItem[]>([]);
   const [activeStatusFilter, setActiveStatusFilter] = useState("all");
@@ -43,13 +42,26 @@ export default function InventoryClient() {
   const loadInventory = useCallback(async () => {
     try {
       setLoading(true);
+
+      // --- Local Storage Cache Check ---
+      const cached = localStorage.getItem("inventory-cache");
+      if (cached) {
+        setInventoryData(JSON.parse(cached));
+      }
+
       const response = await fetch("/api/inventory/getItem", {
         cache: "no-store",
       });
       if (!response.ok) throw new Error("Failed to fetch items");
       const json = await response.json();
 
-      setInventoryData(json.map(formatInventoryItem));
+      const formatted = json.map(formatInventoryItem);
+
+      // Update cache only if data changed
+      if (JSON.stringify(formatted) !== JSON.stringify(cached)) {
+        localStorage.setItem("inventory-cache", JSON.stringify(formatted));
+        setInventoryData(formatted);
+      }
     } catch (err) {
       console.error("Inventory fetch failed:", err);
     } finally {
@@ -79,10 +91,17 @@ export default function InventoryClient() {
       }
 
       const result = await response.json();
-      setInventoryData((prev) => [
-        formatInventoryItem(result.data[0]),
-        ...prev,
-      ]);
+      const newItem = formatInventoryItem(result.data[0]);
+
+      setInventoryData((prev) => {
+        const updated = [newItem, ...prev];
+
+        // --- Update Local Storage Cache ---
+        localStorage.setItem("inventory-cache", JSON.stringify(updated));
+
+        return updated;
+      });
+
       setIsAddModalOpen(false);
     } catch (err) {
       console.error("[Add Product Error]", err);
@@ -108,9 +127,16 @@ export default function InventoryClient() {
       const result = await response.json();
       const updatedItem = formatInventoryItem(result.data[0]);
 
-      setInventoryData((prev) =>
-        prev.map((item) => (item.id === updated.id ? updatedItem : item)),
-      );
+      setInventoryData((prev) => {
+        const newList = prev.map((item) =>
+          item.id === updated.id ? updatedItem : item
+        );
+
+        // --- Update Local Storage Cache ---
+        localStorage.setItem("inventory-cache", JSON.stringify(newList));
+
+        return newList;
+      });
 
       setProductToEdit(null);
     } catch (err) {
@@ -130,9 +156,16 @@ export default function InventoryClient() {
 
       if (!response.ok) throw new Error("Failed to delete");
 
-      setInventoryData((prev) =>
-        prev.filter((item) => item.id !== productToDelete.id),
-      );
+      setInventoryData((prev) => {
+        const newList = prev.filter(
+          (item) => item.id !== productToDelete.id
+        );
+
+        // --- Update Local Storage Cache ---
+        localStorage.setItem("inventory-cache", JSON.stringify(newList));
+
+        return newList;
+      });
 
       setProductToDelete(null);
     } catch (err) {
@@ -147,12 +180,12 @@ export default function InventoryClient() {
       .filter((item) =>
         activeStatusFilter === "all"
           ? true
-          : item.status === activeStatusFilter,
+          : item.status === activeStatusFilter
       )
       .filter(
         (item) =>
           item.product.toLowerCase().includes(query) ||
-          item.category.toLowerCase().includes(query),
+          item.category.toLowerCase().includes(query)
       )
       .sort((a, b) => a.product.localeCompare(b.product));
   }, [inventoryData, activeStatusFilter, searchTerm]);
@@ -191,10 +224,8 @@ export default function InventoryClient() {
           onClose={() => setIsReportModalOpen(false)}
         />
       )}
-
       {/* Header */}
       <UniversalHeader pageName1="Inventory" pageName2="Management" />
-
       {/* Filters + Actions */}
       <InventoryActions
         searchTerm={searchTerm}
@@ -204,7 +235,6 @@ export default function InventoryClient() {
         onAddProductClick={() => setIsAddModalOpen(true)}
         onGenerateReportClick={() => setIsReportModalOpen(true)}
       />
-
       {/* Table */}
       {loading ? (
         <div className="flex items-center justify-center flex-1">
