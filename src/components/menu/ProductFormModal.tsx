@@ -358,22 +358,30 @@ export default function ProductFormModal({
                     <div className="flex items-center gap-3">
                       {(() => {
                         const inv = normalizedInventory.find(
-                          (i) => String(i.id) === item.inventory_id
+                          (i) => String(i.id) === item.inventory_id,
                         );
-                        const unit = inv ? getUnitBySubcategory(inv.category) : "";
-                      
+                        const unit = inv
+                          ? getUnitBySubcategory(inv.category)
+                          : "";
+
                         return (
                           <>
                             <div className="relative flex-1">
                               <input
                                 type="number"
                                 min="0"
-                                value={item.quantity === "" ? "" : String(item.quantity)}
+                                value={
+                                  item.quantity === ""
+                                    ? ""
+                                    : String(item.quantity)
+                                }
                                 onChange={(e) =>
                                   updateIngredient(
                                     item.uid,
                                     "quantity",
-                                    e.target.value === "" ? "" : Number(e.target.value),
+                                    e.target.value === ""
+                                      ? ""
+                                      : Number(e.target.value),
                                   )
                                 }
                                 required
@@ -386,7 +394,7 @@ export default function ProductFormModal({
                                 </span>
                               )}
                             </div>
-                            
+
                             <button
                               type="button"
                               className="text-xs px-2 py-1 rounded bg-red-200 text-red-700 hover:bg-red-300"

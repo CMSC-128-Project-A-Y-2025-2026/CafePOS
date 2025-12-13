@@ -14,7 +14,7 @@ import {
 function getUnitByCategory(category: string) {
   for (const main of inventoryCategories) {
     const sub = main.subcategories.find(
-      (s) => s.value === category || s.label === category
+      (s) => s.value === category || s.label === category,
     );
     if (sub && "unit" in sub) return sub.unit;
   }
@@ -51,7 +51,6 @@ export default function InventoryTable({
             </TableRow>
           </TableHeader>
 
-
           <TableBody>
             {filteredInventory.map((item) => {
               const unit = getUnitByCategory(item.category);
@@ -72,23 +71,17 @@ export default function InventoryTable({
                   {/* ---------- Stock + unit ---------- */}
                   <TableCell className="text-gray-700">
                     {item.stock}
-                    {unit && (
-                      <span className="text-gray-400 ml-1">
-                        {unit}
-                      </span>
-                    )}
+                    {unit && <span className="text-gray-400 ml-1">{unit}</span>}
                   </TableCell>
 
                   <TableCell className="text-gray-700">
                     {item.status.replace(
                       /\b(in|low|out|stock)\b/g,
-                      (m) => m[0].toUpperCase() + m.slice(1)
+                      (m) => m[0].toUpperCase() + m.slice(1),
                     )}
                   </TableCell>
 
-                  <TableCell className="text-gray-700">
-                    {item.cost}
-                  </TableCell>
+                  <TableCell className="text-gray-700">{item.cost}</TableCell>
 
                   <TableCell className="text-right">
                     <div className="flex gap-3 justify-end">

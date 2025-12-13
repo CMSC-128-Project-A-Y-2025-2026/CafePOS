@@ -66,7 +66,7 @@ export default function InventoryProductModal({
   const [category, setCategory] = useState(initialData?.category || "");
   const [stock, setStock] = useState(initialData?.stock.toString() || "");
   const [itemThreshold, setItemThreshold] = useState(
-    initialData?.item_threshold?.toString() || ""
+    initialData?.item_threshold?.toString() || "",
   );
   const [cost, setCost] = useState(initialData?.cost || "");
 
@@ -92,14 +92,11 @@ export default function InventoryProductModal({
 
     onSave(productData);
 
-    toast.success(
-      isEditMode ? "Inventory Updated" : "New Item Tracked",
-      {
-        description: `${product} ${
-          isEditMode ? "has been updated." : "has been added to inventory."
-        }`,
-      }
-    );
+    toast.success(isEditMode ? "Inventory Updated" : "New Item Tracked", {
+      description: `${product} ${
+        isEditMode ? "has been updated." : "has been added to inventory."
+      }`,
+    });
 
     onClose();
   };
@@ -155,7 +152,7 @@ export default function InventoryProductModal({
               ))}
             </select>
           </div>
-          
+
           <div>
             <label
               htmlFor="stock"
