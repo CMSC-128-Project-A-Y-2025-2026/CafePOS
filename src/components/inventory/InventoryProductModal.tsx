@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { X } from "lucide-react";
 import { InventoryItem } from "@/lib/types";
 import { inventoryCategories } from "@/lib/arrays";
-// 1. Import Sonner toast
 import { toast } from "sonner";
 
 interface InventoryProductModalProps {
@@ -49,6 +48,14 @@ const InputField = ({
   </div>
 );
 
+function getUnitBySubcategory(subValue: string) {
+  for (const cat of inventoryCategories) {
+    const sub = cat.subcategories.find((s) => s.value === subValue);
+    if (sub && "unit" in sub) return sub.unit;
+  }
+  return "";
+}
+
 export default function InventoryProductModal({
   title,
   initialData,
@@ -65,7 +72,11 @@ export default function InventoryProductModal({
 
   const isEditMode = initialData !== undefined;
 
-  // 2. Updated handleSubmit with Toasts
+  const unit = useMemo(() => {
+    if (!category) return "";
+    return getUnitBySubcategory(category);
+  }, [category]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -81,21 +92,17 @@ export default function InventoryProductModal({
 
     onSave(productData);
 
-    if (isEditMode) {
-      toast.success("Inventory Updated", {
-        description: `${product} stock levels and details have been updated.`,
-      });
-    } else {
-      toast.success("New Item Tracked", {
-        description: `${product} has been added to the inventory system.`,
-      });
-    }
+    toast.success(isEditMode ? "Inventory Updated" : "New Item Tracked", {
+      description: `${product} ${
+        isEditMode ? "has been updated." : "has been added to inventory."
+      }`,
+    });
 
     onClose();
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm transition-all">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
       <div className="absolute inset-0" onClick={onClose} />
 
       <div className="relative w-full max-w-lg rounded-2xl bg-white p-8 shadow-2xl border border-gray-100">
@@ -114,9 +121,7 @@ export default function InventoryProductModal({
             label="Product Name"
             id="product"
             value={product}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setProduct(e.target.value)
-            }
+            onChange={(e) => setProduct(e.target.value)}
           />
 
           <div>
@@ -130,17 +135,17 @@ export default function InventoryProductModal({
               id="category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-[#6290C3] focus:ring-[#6290C3] text-gray-900 transition-all"
+              className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-[#6290C3] focus:ring-[#6290C3]"
               required
             >
               <option value="" disabled>
                 Select an Inventory Category
               </option>
-              {inventoryCategories.map((mainCategory) => (
-                <optgroup key={mainCategory.value} label={mainCategory.label}>
-                  {mainCategory.subcategories.map((subCategory) => (
-                    <option key={subCategory.value} value={subCategory.label}>
-                      {subCategory.label}
+              {inventoryCategories.map((main) => (
+                <optgroup key={main.value} label={main.label}>
+                  {main.subcategories.map((sub) => (
+                    <option key={sub.value} value={sub.value}>
+                      {sub.label}
                     </option>
                   ))}
                 </optgroup>
@@ -148,25 +153,38 @@ export default function InventoryProductModal({
             </select>
           </div>
 
-          <InputField
-            label="Stock"
-            id="stock"
-            type="number"
-            value={stock}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setStock(e.target.value)
-            }
-            min="0"
-          />
+          <div>
+            <label
+              htmlFor="stock"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Stock {unit && <span className="text-gray-400">({unit})</span>}
+            </label>
+
+            <div className="relative">
+              <input
+                type="number"
+                id="stock"
+                value={stock}
+                onChange={(e) => setStock(e.target.value)}
+                min="0"
+                className="mt-1 block w-full rounded-md border border-gray-300 p-2 pr-14 shadow-sm focus:border-[#6290C3] focus:ring-[#6290C3]"
+                required
+              />
+              {unit && (
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+                  {unit}
+                </span>
+              )}
+            </div>
+          </div>
 
           <InputField
             label="Low Stock Threshold"
             id="item_threshold"
             type="number"
             value={itemThreshold}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setItemThreshold(e.target.value)
-            }
+            onChange={(e) => setItemThreshold(e.target.value)}
             min="0"
           />
 
@@ -174,22 +192,20 @@ export default function InventoryProductModal({
             label="Cost (e.g., PHP 95)"
             id="cost"
             value={cost}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setCost(e.target.value)
-            }
+            onChange={(e) => setCost(e.target.value)}
           />
 
           <div className="mt-6 flex justify-end gap-4">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg bg-gray-200 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 transition-colors"
+              className="rounded-lg bg-gray-200 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="rounded-lg bg-[#6290C3] px-5 py-2 text-sm font-medium text-white transition-all hover:bg-[#1A1B41]"
+              className="rounded-lg bg-[#6290C3] px-5 py-2 text-sm font-medium text-white hover:bg-[#1A1B41]"
             >
               {isEditMode ? "Save Changes" : "Add Product"}
             </button>

@@ -1,6 +1,7 @@
 import React from "react";
 import { MenuItem } from "@/lib/types";
 import { Trash2, Pencil } from "lucide-react";
+import { inventoryCategories } from "@/lib/arrays";
 import {
   Table,
   TableBody,
@@ -14,6 +15,14 @@ interface MenuTableProps {
   menuItems: MenuItem[];
   onEdit: (item: MenuItem) => void;
   onDelete: (item: MenuItem) => void;
+}
+
+function getUnitBySubcategory(subValue: string) {
+  for (const cat of inventoryCategories) {
+    const sub = cat.subcategories.find((s) => s.label === subValue);
+    if (sub && "unit" in sub) return sub.unit;
+  }
+  return "";
 }
 
 export default function MenuTable({
@@ -55,18 +64,21 @@ export default function MenuTable({
                 </TableCell>
                 <TableCell className="text-gray-700">{item.category}</TableCell>
 
-                {/* INGREDIENTS CELL */}
                 <TableCell className="text-gray-600 max-w-[200px]">
                   {item.ingredients && item.ingredients.length > 0 ? (
                     <div className="flex flex-wrap gap-1">
-                      {item.ingredients.map((ing, idx) => (
-                        <span
-                          key={idx}
-                          className="bg-gray-100 px-2 py-0.5 rounded text-xs"
-                        >
-                          {ing.name} × {ing.quantity}
-                        </span>
-                      ))}
+                      {item.ingredients.map((ing, idx) => {
+                        const unit = getUnitBySubcategory(ing.category ?? "");
+
+                        return (
+                          <span
+                            key={idx}
+                            className="bg-gray-100 px-2 py-0.5 rounded text-xs"
+                          >
+                            {ing.name} × {ing.quantity} {unit}
+                          </span>
+                        );
+                      })}
                     </div>
                   ) : (
                     <span className="italic text-gray-400">None listed</span>

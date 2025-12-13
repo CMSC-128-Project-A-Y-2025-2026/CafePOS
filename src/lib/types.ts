@@ -33,6 +33,7 @@ export interface MenuItemIngredient {
   inventory_id: string;
   name: string;
   quantity: number;
+  category?: string;
 }
 
 export interface MenuItem {
