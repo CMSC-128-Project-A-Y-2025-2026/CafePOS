@@ -140,16 +140,18 @@ When your **Pull Request** is behind `main`.
 
 ## Tech Stack and Tools
 
-- Next.js
-- React
-- TailwindCSS
-- Typescript
-- Shadcn
-- Supabase
-- Vercel
-- ESLint
-- Prettier
-- Github Actions
+<p align="center">
+  <img src="https://img.shields.io/badge/NextJs-000000?logo=next.js&logoColor=white">
+  <img src="https://img.shields.io/badge/-ReactJs-61DAFB?logo=react&logoColor=white">
+  <img src="http://img.shields.io/badge/Tailwind_CSS-grey?logo=tailwind-css&logoColor=38B2AC">
+  <img src="https://shields.io/badge/TypeScript-3178C6?logo=TypeScript&logoColor=FFF">
+  <img src="https://img.shields.io/badge/shadcn%2Fui-000?logo=shadcnui&logoColor=fff">
+  <img src="https://img.shields.io/badge/Supabase-3ECF8E?logo=supabase&logoColor=white">
+  <img src="https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white">
+  <img src="https://img.shields.io/badge/ESLint-3A33D1?logo=eslint">
+  <img src="http://img.shields.io/badge/Prettier-F7B93E?logo=prettier&logoColor=ffffff">
+  <img src="https://img.shields.io/badge/-GitHub%20Actions-333333?logo=github-actions">
+</p>
 
 ## Code Formatting
 
