@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { MenuItem } from "@/lib/types";
 import { InventoryItem } from "@/lib/types";
 import { menuCategories } from "@/lib/arrays";
+import { inventoryCategories } from "@/lib/arrays";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 
@@ -86,6 +87,14 @@ function normalizeInventoryItem(inv: Record<string, unknown>, idx: number) {
   const optionValue = id != null ? String(id) : `${name}-${idx}`;
   const label = category ? `${name} (${category})` : name;
   return { id, name, category, optionKey, optionValue, label };
+}
+
+function getUnitBySubcategory(subValue: string) {
+  for (const cat of inventoryCategories) {
+    const sub = cat.subcategories.find((s) => s.label === subValue);
+    if (sub && "unit" in sub) return sub.unit;
+  }
+  return "";
 }
 
 export default function ProductFormModal({
@@ -347,30 +356,47 @@ export default function ProductFormModal({
                     </Popover>
 
                     <div className="flex items-center gap-3">
-                      <input
-                        type="number"
-                        className="flex-1 rounded-md border p-2"
-                        min="0"
-                        value={
-                          item.quantity === "" ? "" : String(item.quantity)
-                        }
-                        onChange={(e) =>
-                          updateIngredient(
-                            item.uid,
-                            "quantity",
-                            e.target.value === "" ? "" : Number(e.target.value),
-                          )
-                        }
-                        required
-                      />
+                      {(() => {
+                        const inv = normalizedInventory.find(
+                          (i) => String(i.id) === item.inventory_id
+                        );
+                        const unit = inv ? getUnitBySubcategory(inv.category) : "";
+                      
+                        return (
+                          <>
+                            <div className="relative flex-1">
+                              <input
+                                type="number"
+                                min="0"
+                                value={item.quantity === "" ? "" : String(item.quantity)}
+                                onChange={(e) =>
+                                  updateIngredient(
+                                    item.uid,
+                                    "quantity",
+                                    e.target.value === "" ? "" : Number(e.target.value),
+                                  )
+                                }
+                                required
+                                className={`w-full rounded-md border p-2 pr-10`}
+                              />
 
-                      <button
-                        type="button"
-                        className="text-xs px-2 py-1 rounded bg-red-200 text-red-700 hover:bg-red-300"
-                        onClick={() => removeIngredient(item.uid)}
-                      >
-                        Remove
-                      </button>
+                              {unit && (
+                                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+                                  {unit}
+                                </span>
+                              )}
+                            </div>
+                            
+                            <button
+                              type="button"
+                              className="text-xs px-2 py-1 rounded bg-red-200 text-red-700 hover:bg-red-300"
+                              onClick={() => removeIngredient(item.uid)}
+                            >
+                              Remove
+                            </button>
+                          </>
+                        );
+                      })()}
                     </div>
                   </div>
                 ))}

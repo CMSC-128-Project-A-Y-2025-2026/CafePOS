@@ -17,6 +17,7 @@ const filterCategories = [
 ];
 
 const ingredientNameCache: Record<string, string> = {};
+const ingredientCategoryCache: Record<string, string> = {};
 
 export default function MenuManagement({
   fontClassName,
@@ -34,6 +35,21 @@ export default function MenuManagement({
 
   const LS_MENU = "menu-cache";
   const LS_INVENTORY = "inventory-cache";
+
+  const fetchIngredientCategory = useCallback(async (item_id: string) => {
+    if (ingredientCategoryCache[item_id]) {
+      return ingredientCategoryCache[item_id];
+    }
+
+    const response = await fetch(`/api/inventory/${item_id}/category`);
+    if (!response.ok) return "";
+
+    const result = await response.json();
+    const category = result[0]?.item_category || "";
+
+    ingredientCategoryCache[item_id] = category;
+    return category;
+  }, []);
 
   const fetchIngredientName = useCallback(async (item_id: string) => {
     if (ingredientNameCache[item_id]) {
@@ -64,12 +80,13 @@ export default function MenuManagement({
           inventory_id: String(item.item_id),
           name: await fetchIngredientName(String(item.item_id)),
           quantity: item.quantity_needed,
+          category: await fetchIngredientCategory(String(item.item_id)),
         })),
       );
 
       return ingredientList;
     },
-    [fetchIngredientName],
+    [fetchIngredientName, fetchIngredientCategory],
   );
 
   useEffect(() => {
