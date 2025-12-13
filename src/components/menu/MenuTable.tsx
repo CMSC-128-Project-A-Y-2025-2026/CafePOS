@@ -10,7 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { connect } from "http2";
 
 interface MenuTableProps {
   menuItems: MenuItem[];
